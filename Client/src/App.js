@@ -6,13 +6,14 @@ import {
   Switch,
   useParams,
 } from "react-router-dom";
-import Homepage from "./Components/Homepage";
+import Homepage from "./Homepage";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/:id" element={<Homepage />} />
+        <Route path="/" element={<Homepage />} />
       </Routes>
     </Router>
   );
