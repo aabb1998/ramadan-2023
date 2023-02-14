@@ -10,6 +10,7 @@ const Homepage = () => {
     <>
       <div className="homepage">
         <Header />
+        <Footer />
       </div>
 
       {/* <Footer /> */}
