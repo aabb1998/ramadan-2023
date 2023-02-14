@@ -326,9 +326,13 @@
     align-items: center;
     text-align: center;
     justify-content: center;
-        line-height: 18px;
-            margin-right: 20px;
-            cursor: pointer;
+    line-height: 18px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.Footer-bottom-abn {
+    font-size: 10px;
 }
 
 .Footer-bottom-socials a {
@@ -336,7 +340,7 @@
     text-align: center;
     align-items: center;
     color: #A1A5A6;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .Footer-inner-left button {
@@ -348,4 +352,27 @@
     border-radius: 25px;
     padding: 20px;
     font-weight: bold;
+}
+
+.Footer-inner-right h5 {
+    font-size: 25px;
+    line-height: 25px;
+}
+
+.Footer-inner-right {
+    line-height: 10px;
+}
+
+.Footer-inner-right img {
+}
+
+@media screen and (max-width: 842px) {
+    .HeaderMenu-navbar {
+        display: none;
+    }
+
+    .HeaderMenu {
+        align-items: center;
+        justify-content: center;
+    }
 }

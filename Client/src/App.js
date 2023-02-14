@@ -7,6 +7,9 @@ import {
   useParams,
 } from "react-router-dom";
 import Homepage from "./Homepage";
+import ID1 from "./ID1/ID1";
+import ID2 from "./ID2/ID2";
+import ID3 from "./ID3/ID3";
 
 function App() {
   return (

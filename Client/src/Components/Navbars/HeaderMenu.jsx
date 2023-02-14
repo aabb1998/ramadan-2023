@@ -2,13 +2,14 @@ import React from "react";
 import logo from "../../assets/logo.webp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import "./styles.css";
 const HeaderMenu = () => {
   return (
     <div className="HeaderMenu">
       <div>
         <img className="lazyloaded" src={logo} />
       </div>
-      <div>
+      <div className="HeaderMenu-navbar">
         <nav className="headerMenu-nav">
           <ul>
             <li>

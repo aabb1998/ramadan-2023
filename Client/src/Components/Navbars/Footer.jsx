@@ -14,17 +14,25 @@ const Footer = () => {
           <div className="Footer-inner-right">
             <h5>Donation Details</h5>
             <span>You can donate via:</span>
-            <p>St George Bank</p>
-            <p>Acc Name: Al-Ihsan Foundation</p>
-            <p>BSB: 112 879</p>
-            <p>ACCOUNT NO: 425 989 660</p>
+            <p>
+              <strong>St George Bank</strong>
+            </p>
+            <p>
+              <strong>Acc Name: </strong>Al-Ihsan Foundation
+            </p>
+            <p>
+              <strong>BSB: </strong>112 879
+            </p>
+            <p>
+              <strong>ACCOUNT NO: </strong>425 989 660
+            </p>
             <img src="https://test.alihsan.org.au/wp-content/uploads/tax-acnc.png" />
           </div>
         </div>
       </div>
       <div className="Footer-bottom">
         <div>
-          <span>
+          <span className="Footer-bottom-abn">
             © Copyright 2023 Al-Ihsan Foundation | ABN: 53168960361 | CFN: 23924
           </span>
         </div>
