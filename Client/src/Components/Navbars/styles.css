@@ -8,10 +8,61 @@
 .headerMenu {
     display: flex;
     flex-direction: column;
-    background-image: url(https://test.alihsan.org.au/wp-content/uploads/2021/09/parallax-al-ihsan1.jpg);
+    background-image: url(https://alihsan.org.au/wp-content/uploads/Emergency-Appeal-2.jpg);
     background-size: cover;
     width: 100%;
     background-position: center top;
+    height: 1000px;
+    background-color: transparent;
+    opacity: 1;
+    filter: none;
+    transform: translate(0px, 0px);
+}
+
+.HeaderMenu-donate {
+    display: block;
+    position: absolute;
+    pointer-events: auto;
+    z-index: 5;
+    top: 400px;
+    left: 50%;
+    max-width: 200px;
+    visibility: visible;
+    perspective: 601px;
+    z-index: 5;
+    background-color: rgb(190, 60, 60);
+    font-family: Roboto;
+    transform: translateX(-50%);
+    text-transform: uppercase;
+    height: auto;
+    width: auto;
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    white-space: nowrap;
+    min-height: 0px;
+    min-width: 0px;
+    max-height: none;
+    max-width: none;
+    text-align: center;
+    cursor: pointer;
+    line-height: 14px;
+    letter-spacing: 0px;
+    font-weight: 400;
+    font-size: 15px;
+    padding: 14px 30px;
+    border-radius: 30px;
+    transform-origin: 50% 50%;
+    opacity: 1;
+    visibility: visible;
+    border-width: 0px;
+    transition: background-color 0.5s ease;
+    border: 1px solid transparent;
+}
+
+.HeaderMenu-donate:hover {
+    background: white;
+    color: rgb(190, 60, 60);
+    border: 1px solid rgb(190, 60, 60);
 }
 
 .lazyloaded {
@@ -38,59 +89,14 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 90%;
     margin: auto;
+    margin-top: 0px;
     padding: 30px;
 }   
 
 .header svg {
     width: 15px;
     height: 15px;
-}
-
-.header-inner {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 60%;
-    margin: auto;
-    padding: 10px;
-    font-size: 13px;
-    align-items: center;
-    
-}
-
-.header-inner-tax {
-    color: #a3a3a3;
-    font-size: 12px;
-    margin-left: 10px;
-    cursor: pointer;
-}
-
-.header-inner-left {
-    display: flex;
-    align-items: center;
-}
-
-.header-inner-left svg {
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.header-inner-social {
-    line-height: 18px;
-    margin-right: 20px;
-    cursor: pointer;
-}
-
-.header-inner-right {
-    display: flex;
-    align-items: center;
-}
-
-.header-inner-right span{
-    margin-left: 10px;
-    cursor: pointer;
 }
 
 .headerMenu-nav a {
@@ -118,10 +124,10 @@
 }
 
 .headerMenu-nav li {
-        margin: 0 17px 0 0;
-        display: inline-block;
-        height: auto;
-        vertical-align: middle;
+    margin: 0 17px 0 0;
+    display: inline-block;
+    height: auto;
+    vertical-align: middle;
 }
 
 .HeaderMenu {
@@ -231,66 +237,66 @@
 
     .mega-menu-row {
         width: 100%;
-            float: left;
-            transition: none;
-                border-radius: 0;
-                box-shadow: none;
-                background: none;
-                border: 0;
-                bottom: auto;
-                box-sizing: border-box;
-                clip: auto;
-                color: #555;
-                display: block;
-                float: none;
-                font-family: Poppins;
-                font-size: 12px;
-                height: auto;
-                left: auto;
-                line-height: 2;
-                list-style-type: none;
-                margin: 0;
-                min-height: auto;
-                max-height: none;
-                min-width: auto;
-                max-width: none;
-                opacity: 1;
-                outline: none;
-                overflow: visible;
-                padding: 0;
-                position: relative;
-                pointer-events: auto;
-                right: auto;
-                text-align: left;
-                text-decoration: none;
-                text-indent: 0;
-                text-transform: none;
-                transform: none;
-                top: auto;
-                vertical-align: baseline;
-                visibility: inherit;
-                width: auto;
-                word-wrap: break-word;
-                white-space: normal;
+        float: left;
+        transition: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: none;
+        border: 0;
+        bottom: auto;
+        box-sizing: border-box;
+        clip: auto;
+        color: #555;
+        display: block;
+        float: none;
+        font-family: Poppins;
+        font-size: 12px;
+        height: auto;
+        left: auto;
+        line-height: 2;
+        list-style-type: none;
+        margin: 0;
+        min-height: auto;
+        max-height: none;
+        min-width: auto;
+        max-width: none;
+        opacity: 1;
+        outline: none;
+        overflow: visible;
+        padding: 0;
+        position: relative;
+        pointer-events: auto;
+        right: auto;
+        text-align: left;
+        text-decoration: none;
+        text-indent: 0;
+        text-transform: none;
+        transform: none;
+        top: auto;
+        vertical-align: baseline;
+        visibility: inherit;
+        width: auto;
+        word-wrap: break-word;
+        white-space: normal;
     }
 
 
 
 .mega-menu-item {
     padding: 15px 15px 15px 15px;
-        width: 100%;
+    width: 100%;
 }
 
 
 .Footer {
-        background-color: #000000;
-            border-top: 1px solid #ffffff;
-            background-image: url(https://test.alihsan.org.au/wp-content/uploads/2021/09/footer2.jpg);
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-            color: white;
-            
+    background-color: #000000;
+    border-top: 1px solid #ffffff;
+    background-image: url(https://test.alihsan.org.au/wp-content/uploads/2021/09/footer2.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    
 }
 
 .Footer-inner {
@@ -343,6 +349,12 @@
     font-size: 12px;
 }
 
+.Footer-inner-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .Footer-inner-left button {
     background-color: #003f63;
     border: none;
@@ -366,6 +378,51 @@
 .Footer-inner-right img {
 }
 
+.header-inner {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 60%;
+    margin: auto;
+    padding: 10px;
+    font-size: 13px;
+    align-items: center;
+
+}
+
+.header-inner-tax {
+    color: #a3a3a3;
+    font-size: 12px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.header-inner-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-inner-left svg {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.header-inner-social {
+    line-height: 18px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.header-inner-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-inner-right span {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
 @media screen and (max-width: 842px) {
     .HeaderMenu-navbar {
         display: none;
@@ -374,5 +431,64 @@
     .HeaderMenu {
         align-items: center;
         justify-content: center;
+    }
+}
+
+@media screen and (max-width: 973px) {
+    .header-inner {
+width: 90%;
+    }
+
+    .Footer-bottom {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+
+    .Footer-bottom-socials {
+        margin-right: 0px;
+    }
+}
+
+@media screen and (max-width: 626px) {
+    .Footer-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+
+    }
+}
+
+@media screen and (max-width: 567px) {
+    .headerMenu {
+        height: 600px;
+    }
+    .header-inner {
+        width: 96%;
+    }
+
+    .header-inner {
+        font-size: 8px;
+        line-height: 10px;
+
+    }
+
+    .header-inner-tax {
+        font-size: 9px;
+        line-height: 10px;
+    }
+}
+
+@media screen and (max-width: 489px) {
+    .header-inner-right {
+        display: none;
+    }
+    .header-inner {
+        align-items: center;
+        justify-content: center;
+        width: auto;
+    }
+
+    .header-inner-social {
+        display: none;
     }
 }

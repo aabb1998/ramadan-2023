@@ -29,7 +29,10 @@ const Header = () => {
           <span>LOGIN</span>
         </div>
       </div>
+
       <div className="headerMenu">
+        <button className="HeaderMenu-donate">Donate</button>
+
         <div className="headerMenu-inner">
           <HeaderMenu />
         </div>
