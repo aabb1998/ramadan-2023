@@ -33,7 +33,7 @@ const MainDonationAddToCart = () => {
           <div className="MainDonationAddToCart-amounts-row">
             <div
               onClick={() => setSelectAmount(10)}
-              className={`MainDonationAddToCart-amount ${
+              className={`MainDonationAddToCart-amount left ${
                 selectAmount === 10 ? "amount-active" : ""
               }`}
             >
@@ -49,7 +49,7 @@ const MainDonationAddToCart = () => {
             </div>
             <div
               onClick={() => setSelectAmount(50)}
-              className={`MainDonationAddToCart-amount ${
+              className={`MainDonationAddToCart-amount right ${
                 selectAmount === 50 ? "amount-active" : ""
               }`}
             >
@@ -59,7 +59,7 @@ const MainDonationAddToCart = () => {
           <div className="MainDonationAddToCart-amounts-row">
             <div
               onClick={() => setSelectAmount(60)}
-              className={`MainDonationAddToCart-amount ${
+              className={`MainDonationAddToCart-amount left ${
                 selectAmount === 60 ? "amount-active" : ""
               }`}
             >
@@ -75,7 +75,7 @@ const MainDonationAddToCart = () => {
             </div>
             <div
               onClick={() => setSelectAmount(100)}
-              className={`MainDonationAddToCart-amount ${
+              className={`MainDonationAddToCart-amount right ${
                 selectAmount === 100 ? "amount-active" : ""
               }`}
             >
@@ -85,7 +85,7 @@ const MainDonationAddToCart = () => {
         </div>
         <div className="MainDonationAddToCart-input">
           <span>$</span>
-          <input placeholder="0" />
+          <input placeholder={selectAmount} />
         </div>
         <div className="MainDonationAddToCart-button">
           <span>Add To Cart</span>

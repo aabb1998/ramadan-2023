@@ -234,6 +234,14 @@
     justify-content: space-between;
 }
 
+.left {
+    margin-left: 0px;
+}
+
+.right {
+    margin-right: 0px;
+}
+
 .MainDonationAddToCart-button {
     height: 70px;
     background-color: var(--primary-color);
