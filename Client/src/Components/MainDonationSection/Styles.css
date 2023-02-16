@@ -1,237 +1,245 @@
 .MainDonationSection {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 
 .MainDonationSection-inner {
-    display: flex;
-    flex-direction: column;
-    width: 70%;
-    margin: auto;
-    background-color: white;
-    position: relative;
-    top: -200px;
-    padding: 10px;
-    background: #FFFFFF;
-        box-shadow: 0px 82.7553px 70.0237px rgba(11, 112, 89, 0.08);
-        border-radius: 7px;
+	display: flex;
+	flex-direction: column;
+	width: 70%;
+	margin: auto;
+	background-color: white;
+	position: relative;
+	top: -200px;
+	padding: 10px;
+	background: #ffffff;
+	box-shadow: 0px 82.7553px 70.0237px rgba(11, 112, 89, 0.08);
+	border-radius: 7px;
+}
+
+.fade-in {
+	opacity: 0;
+	transition: opacity 1s ease-in-out;
+}
+
+.fade-in.loaded {
+	opacity: 1;
 }
 
 .MainDonationSection-container {
-    width: 90%;
-    margin: auto;
+	width: 90%;
+	margin: auto;
+}
+
+.Cursor Cursor--blinking {
+	display: none !important;
 }
 
 .MainDonationSection-header {
-    text-align: center;
+	text-align: center;
 }
 
 .MainDonationSection-header h5 {
-    font-size: 40px;
-    color: var(--primary-color);
-    font-weight: 400;
-        font-size: 60.1211px;
-        line-height: 110%;
-        margin-top: 30px;
-        margin-bottom: 20px;
+	font-size: 40px;
+	color: var(--primary-color);
+	font-weight: 400;
+	font-size: 60.1211px;
+	line-height: 110%;
+	margin-top: 30px;
+	margin-bottom: 20px;
 }
 
 .MainDonationSection-header span {
-    font-weight: 400;
-    font-size: 20px;
-    color:var(--primary-color);
-    opacity: 0.5;
+	font-weight: 400;
+	font-size: 20px;
+	color: var(--primary-color);
+	opacity: 0.5;
 }
 
 .MainDonationSection-img {
-    margin: auto;
-    margin-top: 30px;
-    
+	margin: auto;
+	margin-top: 30px;
 }
 
-.MainDonationSection-img img{
-    width: 100%;
-    border-radius: 6.08792px;
+.MainDonationSection-img img {
+	width: 100%;
+	border-radius: 6.08792px;
 }
 
 .MainDonationSection-img-desc {
-    display: flex;
-    flex-direction:column;
-    margin-bottom: 30px;
-
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 30px;
 }
 
 .MainDonationSection-img-desc h1 {
-    font-size: 25px;
-    margin: 0px;
-    margin-bottom: 10px;
-    font-family: 'Poppins';
-        font-style: normal;
-        font-weight: 600;
-        font-size: 25.6154px;
-        line-height: 140%;
-        margin-top: 10px;
+	font-size: 25px;
+	margin: 0px;
+	margin-bottom: 10px;
+	font-family: "Poppins";
+	font-style: normal;
+	font-weight: 600;
+	font-size: 25.6154px;
+	line-height: 140%;
+	margin-top: 10px;
 }
 
 .MainDonationSection-img-desc span {
-    font-style: normal;
-    font-weight: 400;
-    font-size: 18.3517px;
-    line-height: 120%;
-    /* identical to box height, or 44px */
+	font-style: normal;
+	font-weight: 400;
+	font-size: 18.3517px;
+	line-height: 120%;
+	/* identical to box height, or 44px */
 
+	color: #1d2c29;
 
-    color: #1D2C29;
-
-    opacity: 0.4;
+	opacity: 0.4;
 }
 
 .MainDonationAddToCart {
-    width: 100%;
+	width: 100%;
 }
 
 .MainDonationAddToCart {
-    margin-top: 100px;
+	margin-top: 100px;
 }
 
 .MainDonationAddToCart-innerBtns {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
 }
 
 .innerBtn {
-    width: 100%;
-    text-align: center;
-    color: var(--primary-color);
-    height: 50px;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    border: 1px solid var(--primary-color);
-    font-family: 'Anton';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 24.1948px;
-        line-height: 120%;
-        /* identical to box height, or 46px */
-    
-        display: flex;
-        align-items: center;
-        text-transform: uppercase;
-        cursor: pointer;
-        color: #003F63;
+	width: 100%;
+	text-align: center;
+	color: var(--primary-color);
+	height: 50px;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	border: 1px solid var(--primary-color);
+	font-family: "Anton";
+	font-style: normal;
+	font-weight: 400;
+	font-size: 24.1948px;
+	line-height: 120%;
+	/* identical to box height, or 46px */
+
+	display: flex;
+	align-items: center;
+	text-transform: uppercase;
+	cursor: pointer;
+	color: #003f63;
 }
 
 .active {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0px 0px 10px var(--primary-color);
-        transition: box-shadow 0.3s ease-in-out;
-        transform: scaleX(-10px);
+	background-color: var(--primary-color);
+	color: white;
+	box-shadow: 0px 0px 10px var(--primary-color);
+	transition: box-shadow 0.3s ease-in-out;
+	transform: scaleX(-10px);
 }
 
 .schedule-span {
-    position: absolute;
+	position: absolute;
 }
 
 .MainDonationAddToCart-scheduleInfo {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-    margin-top: 10px;
-    flex-direction: row;
-
+	display: flex;
+	align-items: center;
+	text-align: center;
+	justify-content: center;
+	margin-top: 10px;
+	flex-direction: row;
 }
 
 .MainDonationAddToCart-scheduleInfo img {
-    width: 30px;
-    margin-left: 10px;
+	width: 30px;
+	margin-left: 10px;
 }
 
 .MainDonationAddToCart-scheduleInfo span {
-        font-family: 'Kalam', cursive;
-        font-style: normal;
-        font-weight: 400;
-        font-size: 15.4632px;
-        line-height: 160%;
-        /* or 41px */
-    
-        display: flex;
-        align-items: center;
-        text-align: center;
-    
-        /* Neutral/Cutty Sark */
-    
-        color: #637E78;
+	font-family: "Kalam", cursive;
+	font-style: normal;
+	font-weight: 400;
+	font-size: 15.4632px;
+	line-height: 160%;
+	/* or 41px */
+
+	display: flex;
+	align-items: center;
+	text-align: center;
+
+	/* Neutral/Cutty Sark */
+
+	color: #637e78;
 }
 
 .MainDonationAddToCart-amounts {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    margin: auto;
-    margin-top: 30px;
-    justify-content: space-around;
-    flex-wrap: wrap;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	margin: auto;
+	margin-top: 30px;
+	justify-content: space-around;
+	flex-wrap: wrap;
 }
 
 .MainDonationAddToCart-amount {
-    width: 100%;
-    margin: auto;
-    align-items: center;
-    justify-content: space-evenly;
-    display: flex;
-    margin: 10px;
-    padding: 5px;
-    border: 1px solid var(--primary-color);
-    cursor: pointer;
-    font-family: 'Poppins';
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20.4632px;
-        line-height: 160%;
-        /* identical to box height, or 41px */
-    
-    
-        color: #353D40;
+	width: 100%;
+	margin: auto;
+	align-items: center;
+	justify-content: space-evenly;
+	display: flex;
+	margin: 10px;
+	padding: 5px;
+	border: 1px solid var(--primary-color);
+	cursor: pointer;
+	font-family: "Poppins";
+	font-style: normal;
+	font-weight: 600;
+	font-size: 20.4632px;
+	line-height: 160%;
+	/* identical to box height, or 41px */
+
+	color: #353d40;
 }
 
 .amount-active {
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
-    border: 1px solid var(--secondary-color);
-    box-shadow: 0px 0px 10px var(--primary-color);
-        transition: box-shadow 0.3s ease-in-out;
-        transform: scaleX(-10px);
+	background-color: var(--secondary-color);
+	color: var(--primary-color);
+	border: 1px solid var(--secondary-color);
+	box-shadow: 0px 0px 10px var(--primary-color);
+	transition: box-shadow 0.3s ease-in-out;
+	transform: scaleX(-10px);
 }
 
 .MainDonationAddToCart-input {
-    display: flex;
-    flex-direction: row;
-    margin-top: 10px;
-    border: 1px solid var(--primary-color);
-    padding: 10px;
+	display: flex;
+	flex-direction: row;
+	margin-top: 10px;
+	border: 1px solid var(--primary-color);
+	padding: 10px;
 }
 
 .MainDonationAddToCart-input input {
-    width: 100%;
-    border: none;
-    outline: none;
-    text-align: end;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
+	width: 100%;
+	border: none;
+	outline: none;
+	text-align: end;
+	font-size: 20px;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 .MainDonationAddToCart-amounts-row {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .left {
@@ -243,33 +251,31 @@
 }
 
 .MainDonationAddToCart-button {
-    height: 70px;
-    background-color: var(--primary-color);
-    color: white;
-    background: #003F63;
-        border-radius: 9.13188px;
-        margin-top: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Poppins';
-            font-style: normal;
-            font-weight: 500;
-            font-size: 20.4544px;
-            line-height: 140%;
-            /* identical to box height, or 54px */
-        
-        
-            color: #FFFFFF;
-            margin-bottom: 30px;
-            cursor: pointer;
-            transition: box-shadow 0.3s ease-in-out,
-                background-color 0.3s ease-in-out,
-                transform 0.3s ease-in-out;
+	height: 70px;
+	background-color: var(--primary-color);
+	color: white;
+	background: #003f63;
+	border-radius: 9.13188px;
+	margin-top: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: "Poppins";
+	font-style: normal;
+	font-weight: 500;
+	font-size: 20.4544px;
+	line-height: 140%;
+	/* identical to box height, or 54px */
+
+	color: #ffffff;
+	margin-bottom: 30px;
+	cursor: pointer;
+	transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out,
+		transform 0.3s ease-in-out;
 }
 
 .MainDonationAddToCart-button:hover {
-background-color: #003f639f;
-    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
-    transform: translateY(-1px);
+	background-color: #003f639f;
+	box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
+	transform: translateY(-1px);
 }
