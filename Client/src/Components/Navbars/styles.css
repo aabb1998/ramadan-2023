@@ -8,15 +8,32 @@
 .headerMenu {
     display: flex;
     flex-direction: column;
-    background-image: url(https://alihsan.org.au/wp-content/uploads/Emergency-Appeal-2.jpg);
+    background-image: url('../../assets//Mask\ group\ \(6\).svg');
     background-size: cover;
+    background-color: #014c77ea;
     width: 100%;
     background-position: center top;
-    height: 1000px;
-    background-color: transparent;
+    height: 500px;
     opacity: 1;
     filter: none;
     transform: translate(0px, 0px);
+}
+
+.headerMenu-maintext {
+    color: white;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-style: normal;
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 50px;
+        /* or 117% */
+    
+        align-items: center;
+        text-align: center;
+        letter-spacing: -0.01em;
+    
+        color: #FFFFFF;
 }
 
 .HeaderMenu-donate {
