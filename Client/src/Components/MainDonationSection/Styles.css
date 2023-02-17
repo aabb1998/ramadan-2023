@@ -41,7 +41,7 @@
 
 .MainDonationSection-header h5 {
 	font-size: 40px;
-	color: var(--primary-color);
+	color: var(--header-color);
 	font-weight: 400;
 	font-size: 60.1211px;
 	line-height: 110%;
@@ -91,9 +91,19 @@
 	line-height: 120%;
 	/* identical to box height, or 44px */
 
-	color: #1d2c29;
+	color: #A5ABA9;
 
-	opacity: 0.4;
+}
+
+.MainDonationAddToCart-innerBtns {
+	display: flex;
+	flex-direction: row;
+}
+
+.MainDonationAddToCart-innerSchedule {
+	display: flex;
+	flex-direction: row;
+		margin-top: 20px;
 }
 
 .MainDonationAddToCart {
@@ -104,12 +114,40 @@
 	margin-top: 100px;
 }
 
-.MainDonationAddToCart-innerBtns {
+.MainDonationAddToCart {
+	margin-top: 100px;
+}
+
+.MainDonationAddToCart-innerSchedule {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
+}
+
+.innerBtn-schedule {
+		width: 100%;
+			text-align: center;
+			color: var(--primary-color);
+			height: 50px;
+			align-items: center;
+			display: flex;
+			justify-content: center;
+			border: 1px solid var(--primary-color);
+			font-family: "Anton";
+			font-style: normal;
+			font-weight: 400;
+			font-size: 14.1948px;
+			line-height: 120%;
+			/* identical to box height, or 46px */
+		
+			display: flex;
+			align-items: center;
+			text-transform: uppercase;
+			cursor: pointer;
+			color: #003f63;
+			margin: 2px;
 }
 
 .innerBtn {
@@ -278,4 +316,64 @@
 	background-color: #003f639f;
 	box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
 	transform: translateY(-1px);
+}
+
+.container {
+	position: relative;
+}
+
+.text {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	height: 3em;
+	transition: all 0.5s ease;
+}
+
+.show {
+	height: auto;
+	white-space: normal;
+}
+
+.read-more {
+	bottom: 0;
+	right: 0;
+	background: transparent;
+	border: none;
+	color: blue;
+	cursor: pointer;
+	font-size: 14px;
+	padding: 0;
+	margin: 0;
+	outline: none;
+	display: inline-block;
+		margin-top: 10px;
+		padding: 5px 10px;
+		border: 2px solid #003F63;
+		color: #003F63;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.5s ease;
+}
+
+.read-more:hover {
+	background-color: #003F63;
+	color: #fff;
+}
+
+@keyframes fade {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+/* apply fade animation to the span when it is shown or hidden */
+.text.show {
+	animation-name: fade;
+	animation-duration: 0.5s;
 }

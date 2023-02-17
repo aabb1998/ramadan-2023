@@ -1,0 +1,121 @@
+.MainUpsellSection {
+    margin-top: 120px;
+
+
+}
+
+.bg-looper-left {
+
+}
+
+
+.UpSellItems {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.MainUpsellSection {
+    display: flex;
+        flex-direction: column;
+}
+
+.MainUpsellSection-inner {
+    display: flex;
+        flex-direction: column;
+        width: 70%;
+        margin: auto;
+        background-color: white;
+        position: relative;
+        top: -200px;
+        padding: 10px;
+        background: #ffffff;
+        box-shadow: 0px 82.7553px 70.0237px rgba(11, 112, 89, 0.08);
+        border-radius: 7px;
+}
+
+.MainUpsellSection-container {
+    width: 90%;
+        margin: auto;
+}
+
+.MainUpsellSection-header {
+    text-align: center;
+}
+
+.MainUpsellSection-header h5 {
+    font-size: 50px;
+    color: var(--primary-color);
+    font-weight: 400;
+    line-height: 110%;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.MainUpsellSection-header span {
+    font-family: 'Poppins';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20.4632px;
+        line-height: 160%;
+        /* identical to box height, or 41px */
+    
+        text-align: center;
+    
+        /* Neutral/Cutty Sark */
+    
+        color: #637E78;
+    
+    
+        /* Inside auto layout */
+    
+        flex: none;
+        order: 1;
+        align-self: stretch;
+        flex-grow: 0;
+}
+
+.MainUpsellSection-cart {
+    display: none;
+}
+
+.MainUpsellSection-cart.show {
+    display: block;
+    animation: my-animation 1s;
+}
+
+@keyframes my-animation {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.UpSellAddToCart-campaignName {
+    align-items: center;
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Poppins';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20.67px;
+        line-height: 31px;
+        /* or 72% */
+    
+        text-align: center;
+        letter-spacing: -0.01em;
+    
+        color: #2E2E2E;
+    
+    
+        /* Inside auto layout */
+    
+        flex: none;
+        order: 1;
+        flex-grow: 0;
+}

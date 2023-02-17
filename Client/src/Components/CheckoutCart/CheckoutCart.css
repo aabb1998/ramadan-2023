@@ -1,0 +1,45 @@
+.CheckoutCart {
+    display: flex;
+    flex-direction: column;
+    margin-top: 100px;
+}
+
+.CheckoutCart-inner {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin: auto;
+    background-color: white;
+    position: relative;
+    top: -200px;
+    padding: 10px;
+    background: #ffffff;
+    box-shadow: 0px 82.7553px 70.0237px rgba(11, 112, 89, 0.08);
+    border-radius: 7px;
+}
+
+.CheckoutCart-container{
+    width: 90%;
+    margin: auto;
+}
+
+.CheckoutCart-header {
+    text-align: center;
+}
+
+.CheckoutCart-header h5 {
+    font-size: 40px;
+    color: var(--header-color);
+    font-weight: 400;
+    font-size: 60.1211px;
+    line-height: 110%;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.CheckoutCart-header span {
+    font-weight: 400;
+    font-size: 20px;
+    color: var(--primary-color);
+    opacity: 0.5;
+}

@@ -1,14 +1,12 @@
-import React, { useState, useRef } from "react";
-import arrow from "../../assets/arrow.svg";
-import ellipse from "../../assets/Looper-3.svg";
-
-const MainDonationAddToCart = ({ targetRef }) => {
+import React, { useState } from "react";
+import arrow from "../../../assets/arrow.svg";
+import icon from "../../../assets/Icon.svg";
+import "./UpsellCart.css";
+const UpsellCart = ({ campaign }) => {
   const [schedule, setSchedule] = useState("onetime");
   const [timeframe, setTimeFrame] = useState("");
-  const [selectAmount, setSelectAmount] = useState(0);
-  const handleButtonClick = () => {
-    targetRef.current.scrollIntoView({ behavior: "smooth" });
-  };
+  const [selectAmount, setSelectAmount] = useState(100);
+
   return (
     <>
       <div className="MainDonationAddToCart">
@@ -71,13 +69,13 @@ const MainDonationAddToCart = ({ targetRef }) => {
             </div>
           </div>
         )}
-
+        <div className="UpSellAddToCart-campaignName">
+          <span>{campaign?.desc}</span>
+        </div>
         <div className="MainDonationAddToCart-amounts">
           <div className="MainDonationAddToCart-amounts-row">
             <div
-              onClick={() => {
-                setSelectAmount(10);
-              }}
+              onClick={() => setSelectAmount(10)}
               className={`MainDonationAddToCart-amount left ${
                 selectAmount === 10 ? "amount-active" : ""
               }`}
@@ -130,21 +128,23 @@ const MainDonationAddToCart = ({ targetRef }) => {
         </div>
         <div className="MainDonationAddToCart-input">
           <span>$</span>
-          <input
-            onChange={(e) => setSelectAmount(e.target.value)}
-            placeholder={selectAmount}
-            value={selectAmount}
-          />
+          <input type={"number"} placeholder={selectAmount} />
         </div>
-        <div
-          onClick={handleButtonClick}
-          className="MainDonationAddToCart-button"
-        >
+        <div className="MainDonationAddToCart-campaign">
+          <div>
+            <span>Campaign you are donating to:</span>
+          </div>
+          <div>
+            <span>{campaign?.name}</span>
+          </div>
+        </div>
+        <div className="UpSellAddToCart-button">
           <span>Add To Cart</span>
+          <img src={icon} />
         </div>
       </div>
     </>
   );
 };
 
-export default MainDonationAddToCart;
+export default UpsellCart;

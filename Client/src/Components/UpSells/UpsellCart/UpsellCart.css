@@ -1,0 +1,72 @@
+.MainDonationAddToCart-campaign {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    border: 1px solid var(--primary-color);
+    padding: 20px;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.MainDonationAddToCart-campaign input {
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: end;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding: 10px 0px;
+}
+
+.MainDonationAddToCart-campaign span {
+    width: 100%;
+    font-weight: bold;
+}
+
+
+
+.UpSellAddToCart-button {
+    height: 50px;
+    background-color: var(--primary-color);
+    color: white;
+    background: #003f63;
+    border-radius: 9.13188px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+font-family: 'Anton';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20.6461px;
+    line-height: 120%;
+    /* or 34px */
+    padding: 10px;
+
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+
+    /* Neutral/White */
+
+    color: #FFFFFF;
+    color: #ffffff;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out,
+        transform 0.3s ease-in-out;
+}
+
+.UpSellAddToCart-button:hover {
+    background-color: #003f639f;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+.UpSellAddToCart-button img {
+    width: 40px;
+}
