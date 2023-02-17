@@ -4,6 +4,12 @@
     margin-top: 100px;
 }
 
+.CheckoutCart-body {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+}
+
 .CheckoutCart-inner {
     display: flex;
     flex-direction: column;
@@ -37,9 +43,44 @@
     margin-bottom: 20px;
 }
 
+.CheckoutCart-body-left {
+    flex: 0.5;
+}
+
 .CheckoutCart-header span {
     font-weight: 400;
     font-size: 20px;
     color: var(--primary-color);
     opacity: 0.5;
+}
+
+.body-left-personal h3, .body-left-shipping h3 {
+font-family: 'Ubuntu', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 28px;
+        /* identical to box height */
+    
+    
+        color: #000000;
+}
+
+#outlined-required {
+        border-radius: 6px;
+        font-family: 'DM Sans';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 18px;
+            /* identical to box height, or 112% */
+        
+        
+            color: black;
+            outline: none;
+}
+
+.css-e70qmq .MuiTextField-root {
+    margin: 2px !important;
+    margin-top: 10px !important;
 }
