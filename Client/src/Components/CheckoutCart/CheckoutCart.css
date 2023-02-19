@@ -8,6 +8,8 @@
     margin-top: 30px;
     display: flex;
     flex-direction: row;
+    margin-bottom: 40px;
+    justify-content: space-between;
 }
 
 .CheckoutCart-inner {
@@ -23,6 +25,8 @@
     box-shadow: 0px 82.7553px 70.0237px rgba(11, 112, 89, 0.08);
     border-radius: 7px;
 }
+
+
 
 .CheckoutCart-container{
     width: 90%;
@@ -54,7 +58,7 @@
     opacity: 0.5;
 }
 
-.body-left-personal h3, .body-left-shipping h3 {
+.body-left-personal h3, .body-left-shipping h3, .body-left-payment h3, .body-right-summary h3 {
 font-family: 'Ubuntu', sans-serif;
         font-style: normal;
         font-weight: 500;
@@ -67,20 +71,222 @@ font-family: 'Ubuntu', sans-serif;
 }
 
 #outlined-required {
-        border-radius: 6px;
-        font-family: 'DM Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-size: 16px;
-            line-height: 18px;
-            /* identical to box height, or 112% */
-        
-        
-            color: black;
-            outline: none;
+    border-radius: 6px;
+    font-family: 'DM Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    /* identical to box height, or 112% */
+
+
+    color: black;
+    outline: none;
 }
 
 .css-e70qmq .MuiTextField-root {
     margin: 2px !important;
     margin-top: 10px !important;
+}
+
+.body-left-payMethods {
+    border: 1px solid var(--light-gray);
+    padding: 15px;
+        font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.4375em;
+            letter-spacing: 0.00938em;
+            color: rgba(0, 0, 0, 0.87);
+            box-sizing: border-box;
+                display: inline-flex;
+                    -webkit-align-items: center;
+                    -webkit-box-align: center;
+                    -ms-flex-align: center;
+                    align-items: center;
+                    position: relative;
+                    border-radius: 4px;
+                    cursor: pointer;
+}
+
+.body-left-paymentContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.body-left-payMethods {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.body-left-payMethods  div {
+    text-align: center;
+    align-items: center;
+    display: flex;
+}
+
+.body-left-payMethods img {
+    margin-right: 5px;
+}
+
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
+input[type="checkbox"]+span:before {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid #f0f0f0;
+    content: "";
+    display: inline-block;
+    margin: 0 16px 0 0;
+    padding: 0;
+    vertical-align: top;
+    border-radius: 50%;
+}
+
+input[type="checkbox"]:checked+span:before {
+    background: #1460c8;
+    border: 1.5px solid #1460c8;
+    box-shadow: inset 0px 0px 0px 1px #fff;
+    color: #333;
+    content: "";
+    text-align: center;
+    border-radius: 50%;
+}
+
+input[type="checkbox"]:focus+span::before {
+    outline: 0;
+}
+
+label {
+    cursor: pointer;
+}
+
+.CheckoutCart-body-right {
+    display: flex;
+    flex: 0.45;
+    margin-left: 20px;
+    width: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.body-right-summary-container {
+    opacity: 0.2;
+        border: 1px solid #0F0D23;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        height: 300px;
+        align-items: center;
+        justify-content: center;
+
+}
+
+.body-right-summary {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.body-right-total-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+}
+
+
+
+.bottom {
+        border-bottom: 1px solid #DDDDDD;
+            padding-top: 20px;
+            padding-bottom: 5px;
+            font-family: 'Ubuntu';
+                font-style: normal;
+                font-weight: 400;
+                font-size: 17px;
+                line-height: 18px;
+                /* identical to box height, or 90% */
+            
+            
+                color: #000000;
+}
+
+.last {
+    margin-top: 30px;
+    font-family: 'Ubuntu';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 18px;
+        /* identical to box height, or 75% */
+    
+    
+        color: #000000;
+}
+
+.body-right-total-checkout {
+    margin-top: 20px;
+}
+
+.checkout-paypal {
+
+background: #003F63;
+    border-radius: 16px;
+    width: 100%;
+height: 60px;
+border: none;
+cursor: pointer;
+font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 18px;
+    /* identical to box height, or 90% */
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.checkout-card {
+    background: #003F63;
+        border-radius: 16px;
+        width: 100%;
+        height: 60px;
+        border: none;
+        cursor: pointer;
+        font-family: 'Ubuntu';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 17px;
+        line-height: 18px;
+        /* identical to box height, or 90% */
+    display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    
+        color: #FFFFFF;
+        transition: background-color 0.3s ease-in-out;
+}
+
+.checkout-card:hover, .checkout-paypal:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.body-right-total-checkout img {
+    margin-right: 5px;
 }

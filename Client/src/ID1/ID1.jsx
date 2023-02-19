@@ -18,17 +18,18 @@ const ID1 = () => {
       <div>
         <MainDonationSection />
       </div>
-      <div className="ID1-upsells">
-        <UpSells />
-      </div>
       <div className="ID1-recentDonations">
         <RecentDonations />
       </div>
-      <div>
-        <MailingList />
+      <div className="ID1-upsells">
+        <UpSells />
       </div>
+
       <div>
         <CheckoutCart />
+      </div>
+      <div>
+        <MailingList />
       </div>
     </div>
   );

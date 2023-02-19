@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import "./CheckoutCart.css";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import paypalIcon from "../../assets/paypal.svg";
+import cards from "../../assets/cards.svg";
+import CheckoutItems from "./CheckoutItems";
 const CheckoutCart = () => {
+  const [paypal, setPaypal] = useState(false);
+
+  const handlePaymentMethod = () => {};
+
   return (
     <>
       <div className="CheckoutCart">
@@ -19,7 +26,6 @@ const CheckoutCart = () => {
               <div className="CheckoutCart-body-left">
                 <div className="body-left-personal">
                   <h3>Personal Details</h3>
-
                   <Box
                     component="form"
                     sx={{
@@ -103,11 +109,102 @@ const CheckoutCart = () => {
                     </div>
                   </Box>
                 </div>
-                <div className="body-left-payments"></div>
+                <div className="body-left-payments">
+                  <div className="body-left-payment">
+                    <h3>Payment Methods</h3>
+                    <div className="body-left-paymentContainer">
+                      <div
+                        className="body-left-payMethods"
+                        style={{ marginRight: "5px" }}
+                        onClick={() => {
+                          if (paypal) {
+                            setPaypal(false);
+                          }
+                        }}
+                      >
+                        <div>
+                          <img src={cards} />
+                          <span>Credit Card</span>
+                        </div>
+                        <div>
+                          <label>
+                            <input
+                              checked={paypal ? false : true}
+                              type="checkbox"
+                              onChange={() => {
+                                if (paypal) {
+                                  setPaypal(false);
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                      <div
+                        className="body-left-payMethods"
+                        onClick={() => {
+                          setPaypal(true);
+                        }}
+                      >
+                        <div>
+                          <img src={paypalIcon} />
+                          <span>Paypal</span>
+                        </div>
+                        <div>
+                          <label>
+                            <input
+                              checked={paypal ? true : false}
+                              type="checkbox"
+                              onChange={() => {
+                                setPaypal(true);
+                                if (paypal === true) {
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="CheckoutCart-body-right">
-                <div className="body-right-summary"></div>
-                <div className="body-right-totals"></div>
+                <div className="body-right-summary">
+                  <h3>Order Summary</h3>
+                  <div className="body-right-summary-container">
+                    <span>You currently have no orders</span>
+                    <CheckoutItems />
+                  </div>
+                </div>
+                <div className="body-right-totals">
+                  <div className="body-right-total-container bottom">
+                    <span>Sub total</span>
+                    <span>$240</span>
+                  </div>
+                  <div className="body-right-total-container bottom">
+                    <span>Processing Fee</span>
+                    <span>$40</span>
+                  </div>
+                  <div className="body-right-total-container last">
+                    <span>Total</span>
+                    <span>$280</span>
+                  </div>
+                </div>
+                {paypal ? (
+                  <div className="body-right-total-checkout">
+                    <button className="checkout-paypal">
+                      <img src={paypalIcon} />
+                      Checkout with Paypal
+                    </button>
+                  </div>
+                ) : (
+                  <div className="body-right-total-checkout">
+                    <button className="checkout-card">
+                      <img src={cards} />
+                      Checkout with Card
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
