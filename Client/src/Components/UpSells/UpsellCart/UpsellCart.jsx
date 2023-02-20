@@ -1,11 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import arrow from "../../../assets/arrow.svg";
 import icon from "../../../assets/Icon.svg";
 import "./UpsellCart.css";
+import cart, { addItemToCart } from "../../../Redux/cart";
+import { NotificationManager } from "react-notifications";
+
 const UpsellCart = ({ campaign }) => {
   const [schedule, setSchedule] = useState("onetime");
   const [timeframe, setTimeFrame] = useState("");
   const [selectAmount, setSelectAmount] = useState(100);
+
+  const dispatch = useDispatch();
+
+  const handleButtonClick = () => {
+    if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
+      NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
+    } else {
+      dispatch(addItemToCart(donation));
+      NotificationManager.success(
+        `$${donation.amount.toLocaleString()} donation - ${donation.name}`,
+        "Added to cart",
+        3000
+      );
+    }
+  };
+
+  const donation = {
+    name: campaign?.name,
+    campaignId: campaign?.campaignId,
+    amount: selectAmount,
+    schedule: schedule === "onetime" ? false : true,
+    time: timeframe,
+    imgUrl: campaign?.imgLink,
+  };
+
+  useEffect(() => {
+    console.log(campaign);
+  }, [campaign]);
 
   return (
     <>
@@ -138,7 +170,7 @@ const UpsellCart = ({ campaign }) => {
             <span>{campaign?.name}</span>
           </div>
         </div>
-        <div className="UpSellAddToCart-button">
+        <div onClick={handleButtonClick} className="UpSellAddToCart-button">
           <span>Add To Cart</span>
           <img src={icon} />
         </div>

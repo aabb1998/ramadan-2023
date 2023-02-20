@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { applyMiddleware } from "@reduxjs/toolkit";
-import counterSlice from "../Redux/counter";
-import cartSlice from "../Redux/cart";
+import counterReducer from "../Redux/counter";
+import cartReducer from "../Redux/cart";
 import thunk from "redux-thunk";
 
 export default configureStore({
-  reducer: { counterSlice, cartSlice },
+  reducer: { counter: counterReducer, cart: cartReducer },
   middleware: [thunk],
 });

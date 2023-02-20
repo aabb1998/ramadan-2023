@@ -178,15 +178,18 @@ label {
 }
 
 .body-right-summary-container {
-    opacity: 0.2;
-        border: 1px solid #0F0D23;
-        border-radius: 15px;
+    border: 1px solid #0f0d232c;
+    border-radius: 15px;
+            border-radius: 15px;
         display: flex;
         flex-direction: column;
         padding: 10px;
-        height: 300px;
+        max-height: 330px;
+        min-height: 330px;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        overflow-y: scroll;
+        overflow-x: hidden;
 
 }
 
@@ -289,4 +292,84 @@ font-family: 'Ubuntu';
 
 .body-right-total-checkout img {
     margin-right: 5px;
+}
+
+.cartItem {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+    align-items: center;
+    text-align: center;
+    margin: 5px;
+    border-bottom: 1px solid #0f0d232c;}
+
+.cartItem img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+}
+
+.cartItem-desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: flex-start;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+}
+
+.cartItem-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.cartItem img {
+    margin-right: 7px;
+}
+
+.cartItem-desc span {
+    font-family: 'Ubuntu';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 18px;
+        /* identical to box height, or 112% */
+    margin: 0 !important;
+    
+        color: #000000;
+}
+
+.cartItem-desc p {
+    font-family: 'Ubuntu';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 18px;
+        /* identical to box height, or 129% */
+    
+    
+        color: #AAAAAA;
+        margin: 0 !important;
+}
+
+.cartItem-price button {
+border: 0.7875px solid #B2BCCA;
+border-radius: 5px;
+margin-right: 10px;
+align-items: center;
+text-align: center;
+cursor: pointer;
+}
+
+.cartItem-price button:hover {
+    background-color: var(--secondary-color);
+    color: white;
 }

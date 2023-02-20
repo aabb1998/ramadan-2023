@@ -18,7 +18,8 @@ const UpSells = () => {
       desc: "Breast cancer death rates declined 40% from",
       goal: 100000,
       raised: 20932,
-      productId: "234jk23lh4j23hl4",
+      campaignId: "234jk23lh4j23hl4",
+
       imgLink:
         "https://alihsan.org.au/wp-content/uploads/bread-givewp-image-600x463.jpg",
     },
@@ -27,7 +28,7 @@ const UpSells = () => {
       desc: "Over the last decade Caridad has provided over ",
       goal: 123674,
       raised: 12332,
-      productId: "234jk23lh42432ddsa23hl4",
+      campaignId: "234jk23lh42432ddsa23hl4",
       imgLink:
         "https://alihsan.org.au/wp-content/uploads/back-to-school-image-1-givewp-600x463.jpg",
     },
@@ -36,7 +37,7 @@ const UpSells = () => {
       desc: "Help poor people give food and Careing african child",
       goal: 874356,
       raised: 75656,
-      productId: "234jac1212k23lh4j23hl4",
+      campaignId: "234jac1212k23lh4j23hl4",
       imgLink:
         "https://alihsan.org.au/wp-content/uploads/2021/08/Clothes-appeal-600x463.png",
     },

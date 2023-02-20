@@ -54,7 +54,7 @@ const MainDonationSection = () => {
               <img
                 onLoad={handleImageLoad}
                 className={`fade-in ${loaded ? "loaded" : ""}`}
-                src="https://scontent.fmel16-1.fna.fbcdn.net/v/t39.30808-6/312659658_499169832238672_8455937611123451192_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=e3f864&_nc_ohc=yVwj2n-uMf0AX90NFW0&_nc_ht=scontent.fmel16-1.fna&oh=00_AfAWqv0pPaXoXUvCU_x0zFFTQIKMzyjPGd-85Wsawai-Lw&oe=63F1E50C"
+                src="https://scontent.fmel16-1.fna.fbcdn.net/v/t39.30808-6/312659658_499169832238672_8455937611123451192_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=e3f864&_nc_ohc=DrisrB6BzjIAX-7kttd&_nc_ht=scontent.fmel16-1.fna&oh=00_AfDBPKlQmAQ-Ouf7XBJCbZ1XVMchPvHovl5VTKb7kRJKwg&oe=63F7D3CC"
               />
             </div>
             <div className="MainDonationSection-img-desc">

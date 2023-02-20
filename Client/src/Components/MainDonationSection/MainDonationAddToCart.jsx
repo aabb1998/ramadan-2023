@@ -1,14 +1,66 @@
 import React, { useState, useRef } from "react";
 import arrow from "../../assets/arrow.svg";
 import ellipse from "../../assets/Looper-3.svg";
-
+import { useDispatch, useSelector } from "react-redux";
+import cart, { addItemToCart } from "../../Redux/cart";
+import { NotificationManager } from "react-notifications";
 const MainDonationAddToCart = ({ targetRef }) => {
   const [schedule, setSchedule] = useState("onetime");
   const [timeframe, setTimeFrame] = useState("");
   const [selectAmount, setSelectAmount] = useState(0);
+  const dispatch = useDispatch();
   const handleButtonClick = () => {
-    targetRef.current.scrollIntoView({ behavior: "smooth" });
+    if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
+      NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
+    } else if (schedule != "onetime" && timeframe === "") {
+      NotificationManager.error("Please enter a schedule.", "Schedule", 2000);
+    } else {
+      // window.scrollBy({
+      //   top: 1300,
+      //   behavior: "smooth", // This line is optional and makes the scrolling smooth
+      // });
+      dispatch(addItemToCart(mainDonation));
+      NotificationManager.success(
+        `$${mainDonation.amount.toLocaleString()} donation - ${
+          mainDonation.name
+        }`,
+        "Added to cart",
+        3000
+      );
+      setSelectAmount(0);
+    }
   };
+
+  function generateRandomID() {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}|:<>?,./;";
+    const idLength = 10;
+    let id = "";
+    for (let i = 0; i < idLength; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      id += characters[randomIndex];
+    }
+    return id;
+  }
+
+  let campaignIds = {
+    campaign1: "maintest123",
+    campaign2: "maintest12345",
+    campaign3: "maintest123234",
+    campaign4: "maintest121233",
+  };
+
+  const mainDonation = {
+    name: "Main Campaign",
+    campaignId: campaignIds.campaign1,
+    amount: parseInt(selectAmount),
+    schedule: schedule === "onetime" ? false : true,
+    time: timeframe,
+    priceId: generateRandomID(),
+    imgUrl:
+      "https://scontent.fmel16-1.fna.fbcdn.net/v/t39.30808-6/312659658_499169832238672_8455937611123451192_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=e3f864&_nc_ohc=DrisrB6BzjIAX-7kttd&_nc_ht=scontent.fmel16-1.fna&oh=00_AfDBPKlQmAQ-Ouf7XBJCbZ1XVMchPvHovl5VTKb7kRJKwg&oe=63F7D3CC",
+  };
+
   return (
     <>
       <div className="MainDonationAddToCart">
@@ -131,9 +183,10 @@ const MainDonationAddToCart = ({ targetRef }) => {
         <div className="MainDonationAddToCart-input">
           <span>$</span>
           <input
-            onChange={(e) => setSelectAmount(e.target.value)}
+            onChange={(e) => setSelectAmount(parseInt(e.target.value))}
             placeholder={selectAmount}
             value={selectAmount}
+            type={"number"}
           />
         </div>
         <div

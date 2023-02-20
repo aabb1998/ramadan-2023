@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CheckoutCart.css";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import paypalIcon from "../../assets/paypal.svg";
 import cards from "../../assets/cards.svg";
 import CheckoutItems from "./CheckoutItems";
+import cart from "../../Redux/cart";
+import { useSelector } from "react-redux";
 const CheckoutCart = () => {
   const [paypal, setPaypal] = useState(false);
+  const { cartItems } = useSelector((state) => state.cart);
+
+  useEffect(() => {}, [cartItems]);
 
   const handlePaymentMethod = () => {};
 
@@ -172,8 +177,16 @@ const CheckoutCart = () => {
                 <div className="body-right-summary">
                   <h3>Order Summary</h3>
                   <div className="body-right-summary-container">
-                    <span>You currently have no orders</span>
-                    <CheckoutItems />
+                    {/* {cartItems[0] === null ? (
+                      cartItems.map((item, index) => (
+                        <CheckoutItems item={item} key={index} />
+                      ))
+                    ) : (
+                      <span>No items in cart</span>
+                    )} */}
+                    {cartItems.map((item, index) => (
+                      <CheckoutItems item={item} key={index} />
+                    ))}
                   </div>
                 </div>
                 <div className="body-right-totals">
