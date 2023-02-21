@@ -80,3 +80,17 @@
     border: none;
     border: 1px solid var(--secondary-color);
 }
+
+@media screen and (max-width: 755px) {
+    .MainUpsellSection-header h5 {
+        font-size: 40px;
+    }
+
+    .MailingListSection-inner {
+        width: 90%;
+    }
+
+    .MailingListSection-input input {
+        min-width: 200px;
+    }
+}

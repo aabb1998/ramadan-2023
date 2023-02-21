@@ -26,7 +26,11 @@
     border-radius: 7px;
 }
 
-
+.sdsd{
+    background-color: var(--secondary-color);
+    color: white;
+    border: 2px solid black !important;
+}
 
 .CheckoutCart-container{
     width: 90%;
@@ -171,7 +175,6 @@ label {
 .CheckoutCart-body-right {
     display: flex;
     flex: 0.45;
-    margin-left: 20px;
     width: 100%;
     flex-direction: column;
     justify-content: space-between;
@@ -372,4 +375,61 @@ cursor: pointer;
 .cartItem-price button:hover {
     background-color: var(--secondary-color);
     color: white;
+}
+
+@media screen and (max-width: 1000px) {
+    .body-left-paymentContainer {
+        flex-direction: column;
+    }
+
+    .body-left-payMethods {
+        margin-top: 10px;
+    }
+
+    .checkout-card {
+        font-size: 12px;
+    }
+
+    .checkout-paypal {
+        font-size: 12px;
+    }
+
+
+
+}
+
+@media screen and (max-width: 761px) {
+    .CheckoutCart-body{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .CheckoutCart-header h5 {
+        font-size: 40px;
+    }
+    .CheckoutCart-header span {
+        font-size: 15px;
+    }
+
+    .cartItem-desc {
+        display: flex;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .cartItem-price {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cartItem-price button {
+        margin-right: 0px;
+    }
+
+    .CheckoutCart-inner {
+        width: 90%;
+    }
 }

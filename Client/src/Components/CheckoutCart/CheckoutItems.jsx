@@ -22,7 +22,11 @@ const CheckoutItems = ({ item }) => {
           <div className="cartItem-desc">
             <span>{item.name}</span>
 
-            <p>{item.schedule ? "Subscription" : "One Time Payment"}</p>
+            <p>
+              {item.schedule
+                ? `Subscription - ${item.time}`
+                : "One Time Payment"}
+            </p>
           </div>
         </div>
 

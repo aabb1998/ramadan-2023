@@ -7,13 +7,43 @@ import cards from "../../assets/cards.svg";
 import CheckoutItems from "./CheckoutItems";
 import cart from "../../Redux/cart";
 import { useSelector } from "react-redux";
+import PaypalCheckout from "./PaypalCheckout";
+import CardCheckout from "./CardCheckout";
 const CheckoutCart = () => {
   const [paypal, setPaypal] = useState(false);
   const { cartItems } = useSelector((state) => state.cart);
+  const totalAmount = cartItems.reduce((total, item) => total + item.amount, 0);
 
-  useEffect(() => {}, [cartItems]);
+  const [personalDetails, setPersonalDetails] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+  });
 
-  const handlePaymentMethod = () => {};
+  const [billingDetails, setBillingDetails] = useState({
+    streetAddress: "",
+    city: "",
+    zip: "",
+    country: "",
+  });
+
+  const handlePersonalDetailsChange = (event) => {
+    const { name, value } = event.target;
+    setPersonalDetails({ ...personalDetails, [name]: value });
+  };
+
+  const handleBillingDetailsChange = (event) => {
+    const { name, value } = event.target;
+    setBillingDetails({ ...billingDetails, [name]: value });
+  };
+
+  useEffect(() => {
+    console.log(totalAmount);
+  }, [cartItems]);
+
+  useEffect(() => {
+    console.log(personalDetails);
+  }, [personalDetails]);
 
   return (
     <>
@@ -44,7 +74,10 @@ const CheckoutCart = () => {
                         required
                         id="outlined-required"
                         label="Full Name"
-                        defaultValue=""
+                        name="fullName"
+                        value={personalDetails.fullName}
+                        onChange={handlePersonalDetailsChange}
+                        type={"text"}
                       />
                     </div>
                     <div>
@@ -52,7 +85,10 @@ const CheckoutCart = () => {
                         required
                         id="outlined-required"
                         label="Email"
-                        defaultValue=""
+                        name="email"
+                        type={"email"}
+                        value={personalDetails.email}
+                        onChange={handlePersonalDetailsChange}
                       />
                     </div>
                     <div>
@@ -60,7 +96,10 @@ const CheckoutCart = () => {
                         required
                         id="outlined-required"
                         label="Phone Number"
-                        defaultValue=""
+                        name="phoneNumber"
+                        type={"number"}
+                        value={personalDetails.phoneNumber}
+                        onChange={handlePersonalDetailsChange}
                       />
                     </div>
                   </Box>
@@ -80,7 +119,10 @@ const CheckoutCart = () => {
                         required
                         id="outlined-required"
                         label="Street Address"
-                        defaultValue=""
+                        name="streetAddress"
+                        type={"text"}
+                        value={billingDetails.streetAddress}
+                        onChange={handleBillingDetailsChange}
                       />
                     </div>
                     <div
@@ -95,13 +137,19 @@ const CheckoutCart = () => {
                         required
                         id="outlined-required"
                         label="City"
-                        defaultValue=""
+                        name="city"
+                        type={"text"}
+                        value={billingDetails.city}
+                        onChange={handleBillingDetailsChange}
                       />
                       <TextField
                         required
                         id="outlined-required"
                         label="Zip Code"
-                        defaultValue=""
+                        name="zip"
+                        type={"text"}
+                        value={billingDetails.zip}
+                        onChange={handleBillingDetailsChange}
                       />
                     </div>
                     <div>
@@ -109,7 +157,10 @@ const CheckoutCart = () => {
                         required
                         id="outlined-required"
                         label="Country"
-                        defaultValue=""
+                        name="country"
+                        type={"text"}
+                        value={billingDetails.country}
+                        onChange={handleBillingDetailsChange}
                       />
                     </div>
                   </Box>
@@ -119,7 +170,7 @@ const CheckoutCart = () => {
                     <h3>Payment Methods</h3>
                     <div className="body-left-paymentContainer">
                       <div
-                        className="body-left-payMethods"
+                        className={`body-left-payMethods ${!paypal && "sdsd"}`}
                         style={{ marginRight: "5px" }}
                         onClick={() => {
                           if (paypal) {
@@ -146,7 +197,7 @@ const CheckoutCart = () => {
                         </div>
                       </div>
                       <div
-                        className="body-left-payMethods"
+                        className={`body-left-payMethods ${paypal && "sdsd"}`}
                         onClick={() => {
                           setPaypal(true);
                         }}
@@ -192,31 +243,29 @@ const CheckoutCart = () => {
                 <div className="body-right-totals">
                   <div className="body-right-total-container bottom">
                     <span>Sub total</span>
-                    <span>$240</span>
+                    <span>${totalAmount.toFixed(2)}</span>
                   </div>
                   <div className="body-right-total-container bottom">
                     <span>Processing Fee</span>
-                    <span>$40</span>
+                    <span>${((3 / 100) * totalAmount).toFixed(2)}</span>
                   </div>
                   <div className="body-right-total-container last">
                     <span>Total</span>
-                    <span>$280</span>
+                    <span>
+                      ${(totalAmount + (3 / 100) * totalAmount).toFixed(2)}
+                    </span>
                   </div>
                 </div>
                 {paypal ? (
-                  <div className="body-right-total-checkout">
-                    <button className="checkout-paypal">
-                      <img src={paypalIcon} />
-                      Checkout with Paypal
-                    </button>
-                  </div>
+                  <PaypalCheckout
+                    billingDetails={billingDetails}
+                    personalDetails={personalDetails}
+                  />
                 ) : (
-                  <div className="body-right-total-checkout">
-                    <button className="checkout-card">
-                      <img src={cards} />
-                      Checkout with Card
-                    </button>
-                  </div>
+                  <CardCheckout
+                    billingDetails={billingDetails}
+                    personalDetails={personalDetails}
+                  />
                 )}
               </div>
             </div>
