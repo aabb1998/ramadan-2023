@@ -119,3 +119,35 @@
         order: 1;
         flex-grow: 0;
 }
+
+@media screen and (max-width: 755px) {
+    .MainUpsellSection-inner {
+        width: 90%;
+    }
+
+    .MainUpsellSection-header h5 {
+        font-size: 40px !important;
+
+    }
+
+    .MainUpsellSection-header span {
+        font-size: 15px;
+    }
+
+    .UpSellItems {
+        flex-direction: column;
+    }
+
+    .UpSellItem {
+        width: 100% !important;
+        margin-bottom: 20px;
+    }
+
+    .progress-bar-infos span {
+        font-size: 0.7rem !important;
+    }
+
+    .progress-bar-infos p {
+        font-size: 1rem !important;
+    }
+}

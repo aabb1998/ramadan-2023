@@ -377,3 +377,26 @@
 	animation-name: fade;
 	animation-duration: 0.5s;
 }
+
+@media screen and (max-width: 755px) {
+	.MainDonationSection h5 {
+		font-size: 40px;
+	}
+
+	.MainDonationSection span {
+		font-size: 15px;
+	}
+
+	.MainDonationSection-img-desc h1 {
+		font-size: 20px;
+	}
+
+	.MainDonationAddToCart-scheduleInfo span {
+		max-width: 200px;
+		font-size: 13px;
+	}
+
+	.MainDonationSection-inner {
+		width: 90%;
+	}
+}

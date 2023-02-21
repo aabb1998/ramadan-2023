@@ -12,17 +12,17 @@ import UpSells from "../Components/UpSells/UpSells";
 import RecentDonations from "../Components/RecentDonations/RecentDonations";
 import MailingList from "../Components/MailingList/MailingList";
 import CheckoutCart from "../Components/CheckoutCart/CheckoutCart";
-const ID1 = () => {
+const ID1 = ({ mainCampaign, otherCampaigns }) => {
   return (
     <div>
       <div>
-        <MainDonationSection />
+        <MainDonationSection mainCampaign={mainCampaign} />
       </div>
-      <div className="ID1-recentDonations">
+      {/* <div className="ID1-recentDonations">
         <RecentDonations />
-      </div>
+      </div> */}
       <div className="ID1-upsells">
-        <UpSells />
+        <UpSells otherCampaigns={otherCampaigns} />
       </div>
 
       <div>

@@ -1,12 +1,51 @@
 import React, { useEffect, useState } from "react";
 import "./styles.css";
+import {
+  collection,
+  query,
+  where,
+  getFirestore,
+  getDocs,
+  doc,
+  setDoc,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  getDoc,
+  onSnapshot,
+} from "firebase/firestore";
+import { auth } from "../../../firebase";
 
-const MiniProgressBar = ({ goal, raised }) => {
+const MiniProgressBar = ({ goal, raised, item }) => {
   const [progress, setProgress] = useState(0);
+  const [documentData, setDocumentData] = useState(null);
+  const db = getFirestore();
 
   useEffect(() => {
-    setProgress(Math.round((raised / goal) * 100, 0));
-  }, []);
+    let totalProgress = (documentData?.raised / documentData?.goal) * 100;
+
+    if (totalProgress > 100) {
+      setProgress(100);
+    } else {
+      setProgress(Math.round(totalProgress, 2));
+    }
+  }, [documentData]);
+
+  useEffect(() => {
+    if (item) {
+      const unsubscribe = onSnapshot(
+        doc(db, "campaigns", item.campaignId),
+        (doc) => {
+          setDocumentData(doc.data());
+        }
+      );
+      return () => unsubscribe();
+    }
+  }, [item]);
+
+  useEffect(() => {
+    console.log(documentData);
+  }, [documentData]);
 
   return (
     <div className="progress-bar-container">
@@ -19,15 +58,15 @@ const MiniProgressBar = ({ goal, raised }) => {
       <div className="progress-bar-infos">
         <div className="progress-bar-info">
           <span>OUR GOAL</span>
-          <p>${goal.toLocaleString()}</p>
+          <p>${documentData?.goal.toLocaleString()}</p>
         </div>
         <div className="progress-bar-info">
           <span>RAISED</span>
-          <p>${raised.toLocaleString()}</p>
+          <p>${documentData?.raised.toLocaleString()}</p>
         </div>
         <div className="progress-bar-info">
           <span>TO GO</span>
-          <p>${(goal - raised).toLocaleString()}</p>
+          <p>${(documentData?.goal - documentData?.raised).toLocaleString()}</p>
         </div>
       </div>
     </div>

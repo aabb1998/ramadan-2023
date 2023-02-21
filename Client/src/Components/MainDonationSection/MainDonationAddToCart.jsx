@@ -4,7 +4,8 @@ import ellipse from "../../assets/Looper-3.svg";
 import { useDispatch, useSelector } from "react-redux";
 import cart, { addItemToCart } from "../../Redux/cart";
 import { NotificationManager } from "react-notifications";
-const MainDonationAddToCart = ({ targetRef }) => {
+
+const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
   const [schedule, setSchedule] = useState("onetime");
   const [timeframe, setTimeFrame] = useState("");
   const [selectAmount, setSelectAmount] = useState(0);
@@ -57,8 +58,7 @@ const MainDonationAddToCart = ({ targetRef }) => {
     schedule: schedule === "onetime" ? false : true,
     time: timeframe,
     priceId: generateRandomID(),
-    imgUrl:
-      "https://scontent.fmel16-1.fna.fbcdn.net/v/t39.30808-6/312659658_499169832238672_8455937611123451192_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=e3f864&_nc_ohc=DrisrB6BzjIAX-7kttd&_nc_ht=scontent.fmel16-1.fna&oh=00_AfDBPKlQmAQ-Ouf7XBJCbZ1XVMchPvHovl5VTKb7kRJKwg&oe=63F7D3CC",
+    imgUrl: mainCampaign?.imgLink,
   };
 
   return (
@@ -91,19 +91,19 @@ const MainDonationAddToCart = ({ targetRef }) => {
           <div className="MainDonationAddToCart-innerSchedule">
             <div
               className={`innerBtn-schedule left ${
-                timeframe === "r-daily" ? "active" : ""
+                timeframe === "ramadan-daily" ? "active" : ""
               }`}
-              onClick={() => setTimeFrame("r-daily")}
+              onClick={() => setTimeFrame("ramadan-daily")}
             >
               <span>Ramadan Daily</span>
             </div>
             <div
               className={`innerBtn-schedule left ${
-                timeframe === "r-last10" ? "active" : ""
+                timeframe === "ramadan-last-10" ? "active" : ""
               }`}
-              onClick={() => setTimeFrame("r-last10")}
+              onClick={() => setTimeFrame("ramadan-last-10")}
             >
-              <span>Ramadan last 10 days</span>
+              <span>Ramadan last 10</span>
             </div>
             <div
               className={`innerBtn-schedule left ${

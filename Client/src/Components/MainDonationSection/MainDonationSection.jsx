@@ -1,26 +1,38 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import MainProgressBar from "../MainProgressBar/MainProgressBar";
 import MainDonationAddToCart from "./MainDonationAddToCart";
 import "./Styles.css";
 
-const MainDonationSection = () => {
+const MainDonationSection = ({ mainCampaign }) => {
   const [showMore, setShowMore] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [text, setText] = useState(null);
+  const [truncatedText, setTruncatedText] = useState(null);
+  const [fullText, setFullText] = useState(null);
+  const [showMoreContainer, setShowMoreContainer] = useState(true);
   const ref = useRef(null);
-  const text =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent quis neque ac magna scelerisque blandit. Nullam vitae velit nibh. Donec vel quam a libero tempor semper vel vel ex. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Mauris ultricies augue eu enim sagittis, in dictum eros maximus. Duis non bibendum nibh, quis malesuada turpis. Phasellus eu ultrices dolor. Duis dignissim lectus eu massa lacinia ornare.";
 
   const toggleShowMore = () => setShowMore(!showMore);
-  const truncatedText = text.split(" ").slice(0, 13).join(" ");
-  const fullText = text.split(" ").join(" ");
+  // const truncatedText = text.split(" ").slice(0, 13).join(" ");
+  // const fullText = text.split(" ").join(" ");
 
   const handleImageLoad = () => {
     setLoaded(true);
   };
 
-  const firstWords = text.split(" ").slice(0, 20).join(" ");
-  const remainingWords = text.split(" ").slice(20).join(" ");
+  useEffect(() => {
+    console.log(mainCampaign);
+
+    setText(mainCampaign?.longDesc);
+  }, [mainCampaign]);
+
+  useEffect(() => {
+    if (text?.length > 13) {
+      setTruncatedText(text.split(" ").slice(0, 13).join(" "));
+      setFullText(text.split(" ").join(" "));
+    }
+  }, [text]);
 
   const handleReadMoreClick = () => {
     setExpanded(true);
@@ -54,15 +66,16 @@ const MainDonationSection = () => {
               <img
                 onLoad={handleImageLoad}
                 className={`fade-in ${loaded ? "loaded" : ""}`}
-                src="https://scontent.fmel16-1.fna.fbcdn.net/v/t39.30808-6/312659658_499169832238672_8455937611123451192_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=e3f864&_nc_ohc=DrisrB6BzjIAX-7kttd&_nc_ht=scontent.fmel16-1.fna&oh=00_AfDBPKlQmAQ-Ouf7XBJCbZ1XVMchPvHovl5VTKb7kRJKwg&oe=63F7D3CC"
+                src={mainCampaign?.imgLink}
               />
             </div>
             <div className="MainDonationSection-img-desc">
-              <h1>People that needs healthy food.</h1>
+              <h1>{mainCampaign?.desc}</h1>
               {/* <span>
 								Do I have consent to do what I lorem ipsum root
 								and branch review.
 							</span> */}
+
               <div className="container">
                 <span className={`text ${showMore ? "show" : ""}`}>
                   {showMore ? fullText : truncatedText}
@@ -73,10 +86,10 @@ const MainDonationSection = () => {
               </div>
             </div>
             <div>
-              <MainProgressBar />
+              <MainProgressBar mainCampaign={mainCampaign} />
             </div>
             <div>
-              <MainDonationAddToCart />
+              <MainDonationAddToCart mainCampaign={mainCampaign} />
             </div>
           </div>
         </div>

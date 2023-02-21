@@ -27,7 +27,7 @@ const UpsellCart = ({ campaign }) => {
   };
 
   const donation = {
-    name: campaign?.name,
+    name: campaign?.campaignName,
     campaignId: campaign?.campaignId,
     amount: selectAmount,
     schedule: schedule === "onetime" ? false : true,
@@ -69,17 +69,17 @@ const UpsellCart = ({ campaign }) => {
           <div className="MainDonationAddToCart-innerSchedule">
             <div
               className={`innerBtn-schedule left ${
-                timeframe === "r-daily" ? "active" : ""
+                timeframe === "ramadan-daily" ? "active" : ""
               }`}
-              onClick={() => setTimeFrame("r-daily")}
+              onClick={() => setTimeFrame("ramadan-daily")}
             >
               <span>Ramadan Daily</span>
             </div>
             <div
               className={`innerBtn-schedule left ${
-                timeframe === "r-last10" ? "active" : ""
+                timeframe === "ramadan-last-10" ? "active" : ""
               }`}
-              onClick={() => setTimeFrame("r-last10")}
+              onClick={() => setTimeFrame("ramadan-last-10")}
             >
               <span>Ramadan last 10 days</span>
             </div>

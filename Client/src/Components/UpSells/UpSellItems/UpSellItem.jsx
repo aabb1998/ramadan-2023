@@ -11,7 +11,7 @@ const UpSellItem = ({ item, toggleDiv }) => {
         <span>{item?.desc}</span>
       </div>
       <div className="UpSellItem-progress">
-        <MiniProgressBar goal={item?.goal} raised={item?.raised} />
+        <MiniProgressBar item={item} goal={item?.goal} raised={item?.raised} />
       </div>
       <div className="UpSellItem-cart">
         <button onClick={() => toggleDiv(item)}>Donate</button>

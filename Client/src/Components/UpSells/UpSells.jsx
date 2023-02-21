@@ -4,7 +4,7 @@ import looper from "../../assets/Looper-3.svg";
 import UpSellItem from "./UpSellItems/UpSellItem";
 import UpsellCart from "./UpsellCart/UpsellCart";
 
-const UpSells = () => {
+const UpSells = ({ otherCampaigns }) => {
   const targetRef = useRef(null);
   const [showDiv, setShowDiv] = useState(false);
   const [clickedCampaign, setClickedCampaign] = useState();
@@ -12,36 +12,36 @@ const UpSells = () => {
     setShowDiv(true);
     setClickedCampaign(clicked);
   };
-  const upSellItems = [
-    {
-      name: "Cancer",
-      desc: "Breast cancer death rates declined 40% from",
-      goal: 100000,
-      raised: 20932,
-      campaignId: "234jk23lh4j23hl4",
+  // const upSellItems = [
+  //   {
+  //     name: "Cancer",
+  //     desc: "Breast cancer death rates declined 40% from",
+  //     goal: 100000,
+  //     raised: 20932,
+  //     campaignId: "234jk23lh4j23hl4",
 
-      imgLink:
-        "https://alihsan.org.au/wp-content/uploads/bread-givewp-image-600x463.jpg",
-    },
-    {
-      name: "Orphan",
-      desc: "Over the last decade Caridad has provided over ",
-      goal: 123674,
-      raised: 12332,
-      campaignId: "234jk23lh42432ddsa23hl4",
-      imgLink:
-        "https://alihsan.org.au/wp-content/uploads/back-to-school-image-1-givewp-600x463.jpg",
-    },
-    {
-      name: "Poor",
-      desc: "Help poor people give food and Careing african child",
-      goal: 874356,
-      raised: 75656,
-      campaignId: "234jac1212k23lh4j23hl4",
-      imgLink:
-        "https://alihsan.org.au/wp-content/uploads/2021/08/Clothes-appeal-600x463.png",
-    },
-  ];
+  //     imgLink:
+  //       "https://alihsan.org.au/wp-content/uploads/bread-givewp-image-600x463.jpg",
+  //   },
+  //   {
+  //     name: "Orphan",
+  //     desc: "Over the last decade Caridad has provided over ",
+  //     goal: 123674,
+  //     raised: 12332,
+  //     campaignId: "234jk23lh42432ddsa23hl4",
+  //     imgLink:
+  //       "https://alihsan.org.au/wp-content/uploads/back-to-school-image-1-givewp-600x463.jpg",
+  //   },
+  //   {
+  //     name: "Poor",
+  //     desc: "Help poor people give food and Careing african child",
+  //     goal: 874356,
+  //     raised: 75656,
+  //     campaignId: "234jac1212k23lh4j23hl4",
+  //     imgLink:
+  //       "https://alihsan.org.au/wp-content/uploads/2021/08/Clothes-appeal-600x463.png",
+  //   },
+  // ];
 
   return (
     <>
@@ -57,7 +57,7 @@ const UpSells = () => {
               </span>
             </div>
             <div className="UpSellItems">
-              {upSellItems.map((item, index) => (
+              {otherCampaigns?.map((item, index) => (
                 <UpSellItem toggleDiv={toggleDiv} item={item} key={index} />
               ))}
             </div>
