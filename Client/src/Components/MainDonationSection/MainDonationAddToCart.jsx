@@ -14,7 +14,11 @@ const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
     if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
       NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
     } else if (schedule != "onetime" && timeframe === "") {
-      NotificationManager.error("Please enter a schedule.", "Schedule", 2000);
+      NotificationManager.error(
+        `For schedules, please choose a duration.`,
+        "Subscriptions.",
+        3000
+      );
     } else {
       // window.scrollBy({
       //   top: 1300,
@@ -44,16 +48,9 @@ const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
     return id;
   }
 
-  let campaignIds = {
-    campaign1: "maintest123",
-    campaign2: "maintest12345",
-    campaign3: "maintest123234",
-    campaign4: "maintest121233",
-  };
-
   const mainDonation = {
     name: "Main Campaign",
-    campaignId: campaignIds.campaign1,
+    campaignId: mainCampaign?.campaignId,
     amount: parseInt(selectAmount),
     schedule: schedule === "onetime" ? false : true,
     time: timeframe,

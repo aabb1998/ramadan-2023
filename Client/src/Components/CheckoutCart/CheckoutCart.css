@@ -53,6 +53,9 @@
 
 .CheckoutCart-body-left {
     flex: 0.5;
+    display: flex;
+    flex-direction: column;
+
 }
 
 .CheckoutCart-header span {
@@ -191,7 +194,7 @@ label {
         min-height: 330px;
         align-items: center;
         justify-content: flex-start;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
 
 }
@@ -286,6 +289,32 @@ font-family: 'Ubuntu';
     
         color: #FFFFFF;
         transition: background-color 0.3s ease-in-out;
+}
+
+.checkout-card-processing {
+    background: #003F63;
+    border-radius: 16px;
+    width: 100%;
+    height: 60px;
+    border: none;
+    cursor: not-allowed;
+    font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 18px;
+    /* identical to box height, or 90% */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    color: #FFFFFF;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.checkout-card-processing img {
+    width: 30px;
 }
 
 .checkout-card:hover, .checkout-paypal:hover {

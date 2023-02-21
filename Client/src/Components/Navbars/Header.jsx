@@ -31,8 +31,6 @@ const Header = () => {
       </div>
 
       <div className="headerMenu">
-        <button className="HeaderMenu-donate">Donate</button>
-
         <div className="headerMenu-inner">
           <HeaderMenu />
         </div>

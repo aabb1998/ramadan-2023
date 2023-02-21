@@ -9,12 +9,22 @@ import { NotificationManager } from "react-notifications";
 const UpsellCart = ({ campaign }) => {
   const [schedule, setSchedule] = useState("onetime");
   const [timeframe, setTimeFrame] = useState("");
-  const [selectAmount, setSelectAmount] = useState(100);
+  const [selectAmount, setSelectAmount] = useState(0);
 
   const dispatch = useDispatch();
 
   const handleButtonClick = () => {
-    if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
+    if (schedule != "onetime" && timeframe == "") {
+      NotificationManager.error(
+        `For schedules, please choose a duration.`,
+        "Subscriptions.",
+        3000
+      );
+    } else if (
+      selectAmount === 0 ||
+      selectAmount < 0 ||
+      selectAmount === "-0"
+    ) {
       NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
     } else {
       dispatch(addItemToCart(donation));
@@ -23,6 +33,7 @@ const UpsellCart = ({ campaign }) => {
         "Added to cart",
         3000
       );
+      setSelectAmount(0);
     }
   };
 
@@ -160,7 +171,12 @@ const UpsellCart = ({ campaign }) => {
         </div>
         <div className="MainDonationAddToCart-input">
           <span>$</span>
-          <input type={"number"} placeholder={selectAmount} />
+          <input
+            onChange={(e) => setSelectAmount(parseInt(e.target.value))}
+            type={"number"}
+            value={selectAmount}
+            placeholder={selectAmount}
+          />
         </div>
         <div className="MainDonationAddToCart-campaign">
           <div>
