@@ -36,6 +36,9 @@ export const cartSlice = createSlice({
         state.cartItems.push({ ...action.payload });
       }
     },
+    emptyCart: (state, action) => {
+      state.cartItems = [];
+    },
   },
 });
 

@@ -86,7 +86,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
             })
             .then(async (response) => {
               let result = response.paymentIntentResult;
-              console.log(result);
+              console.log(response);
               if (result) {
                 const confirmResponse = await stripe.confirmCardPayment(
                   result.client_secret,
@@ -96,8 +96,23 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 );
                 console.log(confirmResponse);
               }
+              return response.orderNumber;
             })
-            .then(() => {
+            .then((orderNumber) => {
+              elements.getElement(CardElement).clear();
+              updateAmountsInDocuments(cartItems);
+
+              NotificationManager.success(
+                "Payment successful.",
+                "Payment.",
+                3000
+              );
+              navigate(`/paymentSuccess/${orderNumber}`, {
+                state: {
+                  orderNumber,
+                  cartItems,
+                },
+              });
               setProcessing(false);
               setLoading(false);
               setError("");
@@ -108,6 +123,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               setProcessing(false);
               setError("Please enter valid details.");
               setErrorMessage("Please enter valid details.");
+              NotificationManager.error("Payment failed.", "Payment.", 3000);
             });
 
           // const response = await axios

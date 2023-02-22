@@ -70,6 +70,7 @@ app.post("/createCharges", async (req, res) => {
   let { cart } = req.body;
   let { customerId } = req.body;
   let paymentIntentResult;
+  let subscriptionResult = [];
 
   let subscriptions = cart.filter((item) => item.subscription);
   let oneTimePayments = cart.filter((item) => !item.subscription);
@@ -128,40 +129,22 @@ app.post("/createCharges", async (req, res) => {
           ); // April 20th, 2023
 
           if (subscription.time === "ramadan-daily") {
-            // const subscription = await stripe.subscriptions.create({
-            //   customer: customerId,
-            //   items: [
-            //     {
-            //       plan: plan.id,
-            //     },
-            //   ],
-            //   billing_cycle_anchor: new Date("2023-03-01").getTime(), // Start billing on March 1, 2023
-            //   cancel_at: new Date("2023-04-01").getTime(), // Cancel subscription on April 1, 2023
-
-            //   // metadata: {
-            //   //   start_date: startDate,
-            //   //   end_date: endDate,
-            //   // },
-            // });
-
-            const startDate = new Date("2023-03-20");
-            const trialEnd = Math.floor(startDate / 1000);
             const subscription = await stripe.subscriptions.create({
               customer: customerId,
-              items: [{ plan: plan.id }],
-              trial_end: "now",
-            });
+              items: [
+                {
+                  plan: plan.id,
+                },
+              ],
+              billing_cycle_anchor: new Date("2023-03-01").getTime(), // Start billing on March 1, 2023
+              cancel_at: new Date("2023-04-01").getTime(), // Cancel subscription on April 1, 2023
 
-            const billingCycleAnchor = Math.floor(startDate / 1000);
-            await stripe.subscriptions.update(subscription.id, {
-              billing_cycle_anchor: "now",
+              metadata: {
+                start_date: startDate,
+                end_date: endDate,
+              },
             });
-
-            const endDate = new Date("2023-04-20");
-            const cancelAt = Math.floor(endDate / 1000);
-            await stripe.subscriptions.update(subscription.id, {
-              cancel_at: cancelAt,
-            });
+            subscriptionResult.push(subscription);
           } else if (subscription.time === "ramadan-last-10") {
             const subscription = await stripe.subscriptions.create({
               customer: customerId,
@@ -211,7 +194,11 @@ app.post("/createCharges", async (req, res) => {
     paymentIntentResult = paymentIntent;
   }
 
-  res.status(200).send({ paymentIntentResult });
+  let orderNumber = generateOrderNumber();
+
+  res
+    .status(200)
+    .send({ paymentIntentResult, subscriptionResult, orderNumber, cart });
 });
 
 app.post("/createCustomer", async (req, res) => {

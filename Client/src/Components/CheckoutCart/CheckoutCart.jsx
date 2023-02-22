@@ -45,6 +45,8 @@ const CheckoutCart = () => {
     console.log(personalDetails);
   }, [personalDetails]);
 
+  useEffect(() => {}, [cart]);
+
   return (
     <>
       <div className="CheckoutCart">
