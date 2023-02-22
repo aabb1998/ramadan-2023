@@ -37,13 +37,86 @@ const UpsellCart = ({ campaign }) => {
     }
   };
 
+  const getTimeFrameStart = (timeframe) => {
+    let ramadanMonth = 3;
+    let ramadanDay = 22;
+    let ramadanEndMonth = 4;
+    let ramadanEndDay = 20;
+
+    let isoDate;
+
+    if (timeframe === "ramadan-daily") {
+      let ramadanDailyStart = new Date(2023, ramadanMonth - 1, ramadanDay);
+      let ramadanDailyEnd = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+
+      const isoDateStart = ramadanDailyStart.toISOString();
+      const isoDateEnd = ramadanDailyEnd.toISOString();
+      isoDate = isoDateStart;
+    } else if (timeframe === "ramadan-last-10") {
+      let ramadanLast10Start = new Date(2023, ramadanEndMonth - 1, 10);
+      let ramadanLast10End = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+      const isoDateStart = ramadanLast10Start.toISOString();
+      const isoDateEnd = ramadanLast10End.toISOString();
+      isoDate = isoDateStart;
+    }
+    return isoDate;
+  };
+
+  const getTimeFrameEnd = (timeframe) => {
+    let ramadanMonth = 3;
+    let ramadanDay = 22;
+    let ramadanEndMonth = 4;
+    let ramadanEndDay = 20;
+    let isoDate;
+    if (timeframe === "ramadan-daily") {
+      let ramadanDailyStart = new Date(2023, ramadanMonth - 1, ramadanDay);
+      let ramadanDailyEnd = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+
+      const isoDateStart = ramadanDailyStart.toISOString();
+      const isoDateEnd = ramadanDailyEnd.toISOString();
+      isoDate = isoDateEnd;
+    } else if (timeframe === "ramadan-last-10") {
+      let ramadanLast10Start = new Date(2023, ramadanEndMonth - 1, 10);
+      let ramadanLast10End = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+      const isoDateStart = ramadanLast10Start.toISOString();
+      const isoDateEnd = ramadanLast10End.toISOString();
+      isoDate = isoDateEnd;
+    }
+    return isoDate;
+  };
+
+  function generateRandomID() {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+{}|:<>?,./;";
+    const idLength = 10;
+    let id = "";
+    for (let i = 0; i < idLength; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      id += characters[randomIndex];
+    }
+    return id;
+  }
+
   const donation = {
     name: campaign?.campaignName,
     campaignId: campaign?.campaignId,
-    amount: selectAmount,
+    amount: parseInt(selectAmount),
     schedule: schedule === "onetime" ? false : true,
-    time: timeframe,
+    time:
+      (timeframe === "yearly" && "year") ||
+      (timeframe === "monthly" && "month") ||
+      (timeframe === "ramadan-last-10" && "ramadan-last-10") ||
+      (timeframe === "ramadan-daily" && "ramadan-daily"),
+    start: getTimeFrameStart(timeframe),
+    end: getTimeFrameEnd(timeframe),
+    priceId: generateRandomID(),
     imgUrl: campaign?.imgLink,
+    subscription: schedule === "onetime" ? false : true,
+    scheduleDuration:
+      (timeframe === "yearly" && "year") ||
+      (timeframe === "monthly" && "month") ||
+      (timeframe === "ramadan-last-10" && "day") ||
+      (timeframe === "ramadan-daily" && "day"),
   };
 
   useEffect(() => {

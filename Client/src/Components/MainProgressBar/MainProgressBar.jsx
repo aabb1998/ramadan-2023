@@ -58,7 +58,7 @@ const MainProgressBar = ({ mainCampaign }) => {
             </div>
             <div className="progress-info-container">
               <h4>{Math.round(progress, 2)}%</h4>
-              <span>From goal</span>
+              <span>{progress === 100 ? "Goal Achieved" : "Achieved"}</span>
             </div>
             <div className="progress-info-container">
               <h4>${documentData?.goal.toLocaleString()}</h4>

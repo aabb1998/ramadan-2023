@@ -9,6 +9,9 @@ const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
   const [schedule, setSchedule] = useState("onetime");
   const [timeframe, setTimeFrame] = useState("");
   const [selectAmount, setSelectAmount] = useState(0);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [subscription, setSubscription] = useState(false);
   const dispatch = useDispatch();
   const handleButtonClick = () => {
     if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
@@ -48,14 +51,74 @@ const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
     return id;
   }
 
+  const getTimeFrameStart = (timeframe) => {
+    let ramadanMonth = 3;
+    let ramadanDay = 22;
+    let ramadanEndMonth = 4;
+    let ramadanEndDay = 20;
+
+    let isoDate;
+
+    if (timeframe === "ramadan-daily") {
+      let ramadanDailyStart = new Date(2023, ramadanMonth - 1, ramadanDay);
+      let ramadanDailyEnd = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+
+      const isoDateStart = ramadanDailyStart.toISOString();
+      const isoDateEnd = ramadanDailyEnd.toISOString();
+      isoDate = isoDateStart;
+    } else if (timeframe === "ramadan-last-10") {
+      let ramadanLast10Start = new Date(2023, ramadanEndMonth - 1, 10);
+      let ramadanLast10End = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+      const isoDateStart = ramadanLast10Start.toISOString();
+      const isoDateEnd = ramadanLast10End.toISOString();
+      isoDate = isoDateStart;
+    }
+    return isoDate;
+  };
+
+  const getTimeFrameEnd = (timeframe) => {
+    let ramadanMonth = 3;
+    let ramadanDay = 22;
+    let ramadanEndMonth = 4;
+    let ramadanEndDay = 20;
+    let isoDate;
+    if (timeframe === "ramadan-daily") {
+      let ramadanDailyStart = new Date(2023, ramadanMonth - 1, ramadanDay);
+      let ramadanDailyEnd = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+
+      const isoDateStart = ramadanDailyStart.toISOString();
+      const isoDateEnd = ramadanDailyEnd.toISOString();
+      isoDate = isoDateEnd;
+    } else if (timeframe === "ramadan-last-10") {
+      let ramadanLast10Start = new Date(2023, ramadanEndMonth - 1, 10);
+      let ramadanLast10End = new Date(2023, ramadanEndMonth - 1, ramadanEndDay);
+      const isoDateStart = ramadanLast10Start.toISOString();
+      const isoDateEnd = ramadanLast10End.toISOString();
+      isoDate = isoDateEnd;
+    }
+    return isoDate;
+  };
+
   const mainDonation = {
     name: "Main Campaign",
     campaignId: mainCampaign?.campaignId,
     amount: parseInt(selectAmount),
     schedule: schedule === "onetime" ? false : true,
-    time: timeframe,
+    time:
+      (timeframe === "yearly" && "year") ||
+      (timeframe === "monthly" && "month") ||
+      (timeframe === "ramadan-last-10" && "ramadan-last-10") ||
+      (timeframe === "ramadan-daily" && "ramadan-daily"),
+    start: getTimeFrameStart(timeframe),
+    end: getTimeFrameEnd(timeframe),
     priceId: generateRandomID(),
     imgUrl: mainCampaign?.imgLink,
+    subscription: schedule === "onetime" ? false : true,
+    scheduleDuration:
+      (timeframe === "yearly" && "year") ||
+      (timeframe === "monthly" && "month") ||
+      (timeframe === "ramadan-last-10" && "day") ||
+      (timeframe === "ramadan-daily" && "day"),
   };
 
   return (

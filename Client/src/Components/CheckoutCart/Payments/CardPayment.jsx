@@ -61,16 +61,47 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
             .createPaymentMethod({
               type: "card",
               card: elements.getElement(CardElement),
-              //   billing_details: {
-              //     email: personalDetails.email,
-              //     name: personalDetails.fullName,
-              //     address: {
-              //       line1: billingDetails.streetAddress,
-              //       city: billingDetails.city,
-              //       postal_code: billingDetails.zip,
-              //       country: billingDetails.country,
-              //     },
-              //   },
+            })
+            .then(async (paymentMethod) => {
+              const response = await axios.post(
+                "http://localhost:3002/createCustomer",
+                {
+                  billingDetails: billingDetails,
+                  personalDetails: personalDetails,
+                  email: personalDetails.email,
+                  paymentMethodId: paymentMethod.paymentMethod.id,
+                }
+              );
+              return response.data;
+            })
+            .then(async (customer) => {
+              const response = await axios.post(
+                "http://localhost:3002/createCharges",
+                {
+                  customerId: customer.id,
+                  cart: cartItems,
+                }
+              );
+              return response.data;
+            })
+            .then(async (response) => {
+              let result = response.paymentIntentResult;
+              console.log(result);
+              if (result) {
+                const confirmResponse = await stripe.confirmCardPayment(
+                  result.client_secret,
+                  {
+                    payment_method: result.payment_method,
+                  }
+                );
+                console.log(confirmResponse);
+              }
+            })
+            .then(() => {
+              setProcessing(false);
+              setLoading(false);
+              setError("");
+              setErrorMessage("");
             })
             .catch((error) => {
               setLoading(false);
@@ -79,70 +110,69 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               setErrorMessage("Please enter valid details.");
             });
 
-          console.log(paymentMethod);
+          // const response = await axios
+          //   .post("http://localhost:3002/createCustomer", {
+          //     email: personalDetails.email,
+          //     paymentMethodId: paymentMethod.id,
+          //     personalDetails: personalDetails,
+          //     billingDetails: billingDetails,
+          //   })
+          //   .then()
+          //   .catch((error) => {
+          //     setLoading(false);
+          //     setProcessing(false);
+          //     setError("Please enter valid details.");
+          //     setErrorMessage("Please enter valid details.");
+          //   });
 
-          const response = await axios
-            .post("http://localhost:3002/createCustomer", {
-              email: personalDetails.email,
-              paymentMethodId: paymentMethod.id,
-              personalDetails: personalDetails,
-              billingDetails: billingDetails,
-            })
-            .catch((error) => {
-              setLoading(false);
-              setProcessing(false);
-              setError("Please enter valid details.");
-              setErrorMessage("Please enter valid details.");
-            });
+          // const paymentIntentResponse = await axios
+          //   .post("http://localhost:3002/chargeCustomer", {
+          //     customerId: response.data.id,
+          //     cart: cartItems,
+          //   })
+          //   .catch((error) => {
+          //     setLoading(false);
+          //     setProcessing(false);
+          //     setError("Charge failed.");
+          //     setErrorMessage("Charge failed.");
+          //   });
 
-          const paymentIntentResponse = await axios
-            .post("http://localhost:3002/chargeCustomer", {
-              customerId: response.data.id,
-              cart: cartItems,
-            })
-            .catch((error) => {
-              setLoading(false);
-              setProcessing(false);
-              setError("Charge failed.");
-              setErrorMessage("Charge failed.");
-            });
+          // const paymentIntent = paymentIntentResponse.data;
+          // if (paymentIntent) {
+          //   const confirmResponse = await stripe
+          //     .confirmCardPayment(paymentIntent.client_secret, {
+          //       payment_method: paymentMethod.id,
+          //     })
+          //     .then(() => {
+          //       updateAmountsInDocuments(cartItems);
+          //       setProcessing(false);
+          //       setLoading(false);
+          //       setError("");
+          //       setErrorMessage("");
+          //     })
+          //     .catch((error) => {
+          //       setLoading(false);
+          //       setProcessing(false);
+          //       setError("Charge failed.");
+          //       setErrorMessage("Charge failed.");
+          //     });
+          //   if (confirmResponse.error) {
+          //     setLoading(false);
+          //     setErrorMessage(confirmResponse.error.message);
+          //     return;
+          //   }
+          // }
 
-          const paymentIntent = paymentIntentResponse.data;
-          if (paymentIntent) {
-            const confirmResponse = await stripe
-              .confirmCardPayment(paymentIntent.client_secret, {
-                payment_method: paymentMethod.id,
-              })
-              .then(() => {
-                updateAmountsInDocuments(cartItems);
-                setProcessing(false);
-                setLoading(false);
-                setError("");
-                setErrorMessage("");
-              })
-              .catch((error) => {
-                setLoading(false);
-                setProcessing(false);
-                setError("Charge failed.");
-                setErrorMessage("Charge failed.");
-              });
-            if (confirmResponse.error) {
-              setLoading(false);
-              setErrorMessage(confirmResponse.error.message);
-              return;
-            }
-          }
-
-          if (error) {
-            setLoading(false);
-            setErrorMessage(error.message);
-          } else {
-            setLoading(false);
-            setSuccessMessage("Payment successful!");
-            setPaymentSuccess(true);
-            setProcessing(false);
-            setErrorMessage("");
-          }
+          // if (error) {
+          //   setLoading(false);
+          //   setErrorMessage(error.message);
+          // } else {
+          //   setLoading(false);
+          //   setSuccessMessage("Payment successful!");
+          //   setPaymentSuccess(true);
+          //   setProcessing(false);
+          //   setErrorMessage("");
+          // }
         } else {
           setLoading(false);
           setErrorMessage("Please enter your card details.");
@@ -162,11 +192,6 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
       );
     }
   };
-
-  // useEffect(() => {
-  //   console.log("Payment successful");
-  //   updateAmountsInDocuments(cartItems);
-  // }, [paymentSuccess]);
 
   const CARD_ELEMENT_OPTIONS = {
     style: {
