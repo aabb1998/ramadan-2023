@@ -12,6 +12,8 @@ import {
   getDoc,
   onSnapshot,
   runTransaction,
+  orderBy,
+  serverTimestamp,
 } from "firebase/firestore";
 import { auth } from "../firebase";
 import { data } from "autoprefixer";
@@ -51,4 +53,32 @@ const updateAmountsInDocuments = async (cartItems) => {
   }
 };
 
-export { getAllCampaigns, incrementTotal, updateAmountsInDocuments };
+const addDonation = async (collectionName, documentData) => {
+  try {
+    const timeStamp = serverTimestamp();
+    const dataWithTimestamp = { ...documentData, createdAt: timeStamp };
+    const docRef = await addDoc(
+      collection(db, collectionName),
+      dataWithTimestamp
+    );
+    console.log("Document written with ID: ", docRef.id);
+  } catch (error) {
+    console.error("Error adding document: ", error);
+  }
+};
+
+const getDonationsFromCollection = async (collectionName) => {
+  let data = [];
+  const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
+  const querySnapshot = await getDocs(q);
+  const documents = querySnapshot.docs.map((doc) => data.push(doc.data()));
+  return data;
+};
+
+export {
+  getAllCampaigns,
+  incrementTotal,
+  updateAmountsInDocuments,
+  addDonation,
+  getDonationsFromCollection,
+};

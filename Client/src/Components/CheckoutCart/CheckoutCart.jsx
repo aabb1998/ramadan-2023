@@ -5,14 +5,27 @@ import TextField from "@mui/material/TextField";
 import paypalIcon from "../../assets/paypal.svg";
 import cards from "../../assets/cards.svg";
 import CheckoutItems from "./CheckoutItems";
-import cart from "../../Redux/cart";
-import { useSelector } from "react-redux";
+import cart, {
+  addItemToCart,
+  addOneTimeDonation,
+  removeOneTimeDonation,
+} from "../../Redux/cart";
+import { useDispatch, useSelector } from "react-redux";
 import PaypalCheckout from "./PaypalCheckout";
 import CardCheckout from "./CardCheckout";
+import PriceChangeIcon from "@mui/icons-material/PriceChange";
 const CheckoutCart = () => {
   const [paypal, setPaypal] = useState(false);
-  const { cartItems } = useSelector((state) => state.cart);
-  const totalAmount = cartItems.reduce((total, item) => total + item.amount, 0);
+  const [disableCheckout, setDisabledCheckout] = useState(false);
+  const [donation, setDonation] = useState(false);
+  const { cartItems, oneTimeDonation } = useSelector((state) => state.cart);
+  let totalAmount = cartItems.reduce((total, item) => total + item.amount, 0);
+
+  const dispatch = useDispatch();
+
+  const disablePayments = () => {
+    setDisabledCheckout(true);
+  };
 
   const [personalDetails, setPersonalDetails] = useState({
     fullName: "",
@@ -45,7 +58,13 @@ const CheckoutCart = () => {
     console.log(personalDetails);
   }, [personalDetails]);
 
-  useEffect(() => {}, [cart]);
+  useEffect(() => {
+    if (donation) {
+      dispatch(addOneTimeDonation());
+    } else {
+      dispatch(removeOneTimeDonation());
+    }
+  }, [donation]);
 
   return (
     <>
@@ -251,10 +270,37 @@ const CheckoutCart = () => {
                     <span>Processing Fee</span>
                     <span>${((3 / 100) * totalAmount).toFixed(2)}</span>
                   </div>
+                  <div
+                    className={`cart-10-donation ${donation && "checked"}`}
+                    onClick={() => {
+                      setDonation(!donation);
+                    }}
+                  >
+                    <div className="cart-10-donation-container">
+                      <PriceChangeIcon style={{ color: "green" }} />
+                      <span>$10 Donation</span>
+                    </div>
+                    <div>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={donation ? true : false}
+                        />
+                      </label>
+                    </div>
+                  </div>
                   <div className="body-right-total-container last">
                     <span>Total</span>
                     <span>
-                      ${(totalAmount + (3 / 100) * totalAmount).toFixed(2)}
+                      {oneTimeDonation
+                        ? 10 + parseInt(totalAmount + (3 / 100) * totalAmount)
+                        : parseInt(
+                            totalAmount + (3 / 100) * totalAmount
+                          ).toFixed(2)}
+                      {/* $
+                      {parseInt(totalAmount + (3 / 100) * totalAmount).toFixed(
+                        2
+                      )} */}
                     </span>
                   </div>
                 </div>
@@ -262,6 +308,7 @@ const CheckoutCart = () => {
                   <PaypalCheckout
                     billingDetails={billingDetails}
                     personalDetails={personalDetails}
+                    disablePayments={disablePayments}
                   />
                 ) : (
                   <CardCheckout

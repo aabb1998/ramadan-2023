@@ -4,12 +4,17 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 const app = express();
 const path = require("path");
+const axios = require("axios");
 const fs = require("fs");
 const bodyParser = require("body-parser");
-
+const OAuthClient = require("intuit-oauth");
 const handlebars = require("handlebars");
 const paypal = require("@paypal/checkout-server-sdk");
 const { start } = require("repl");
+const quickbooks = require("node-quickbooks");
+const OAuth2Strategy = require("passport-oauth2").Strategy;
+const ngrok = process.env.NGROK_ENABLED === "true" ? require("ngrok") : null;
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
@@ -17,10 +22,10 @@ app.use(express.json());
 app.use(cors());
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const clientId = process.env.PAYPAL_CLIENT_ID;
-const clientSecret = process.env.PAYPAL_SECRET_ID;
-const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
-const client = new paypal.core.PayPalHttpClient(environment);
+// const clientId = process.env.PAYPAL_CLIENT_ID;
+// const clientSecret = process.env.PAYPAL_SECRET_ID;
+// const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
+// const client = new paypal.core.PayPalHttpClient(environment);
 
 function generateOrderNumber() {
   // Generate a random integer between 1 and 9999
@@ -55,8 +60,267 @@ function generatePlanId() {
   return planId;
 }
 
-app.get("/", (req, res) => {
-  res.send("Success");
+let oauth2_token_json = null;
+let redirectUri = "";
+let oauthClient = null;
+
+app.get("/authUri", async (req, res) => {
+  oauthClient = new OAuthClient({
+    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+    environment: "sandbox",
+    redirectUri: "http://localhost:3002/callback",
+  });
+
+  const authUri = await oauthClient.authorizeUri({
+    scope: [OAuthClient.scopes.Accounting],
+    state: "intuit-test",
+  });
+
+  res.send(authUri);
+});
+
+app.get("/callback", function (req, res) {
+  oauthClient
+    .createToken(req.url)
+    .then(function (authResponse) {
+      oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+      console.log(oauth2_token_json);
+    })
+    .catch(function (e) {
+      console.error(e);
+    });
+  res.send("");
+});
+
+app.get("/api", async (req, res) => {
+  const token = JSON.parse(oauth2_token_json);
+
+  // Create a new OAuth2 client using the token
+  oauthClient = new OAuthClient({
+    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+    environment: "sandbox",
+    redirectUri: "http://localhost:3002/callback",
+    token: token,
+  });
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token.access_token}`,
+      Accept: "application/json",
+    };
+    // Make an API call using the OAuth2 token
+    const response = await axios.get(
+      "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+      { headers }
+    );
+    res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error occurred while calling API");
+  }
+});
+
+app.get("/getCustomersQuickbooks", async (req, res) => {
+  const token = JSON.parse(oauth2_token_json);
+  // Set up the QuickBooks API endpoint
+  const endpoint =
+    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+
+  // Set up the query parameters to search for a customer by email
+  const query =
+    "SELECT * FROM Customer WHERE PrimaryEmailAddr = 'polyester@gmail.com'";
+  // Create a new OAuth2 client using the token
+  oauthClient = new OAuthClient({
+    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+    environment: "sandbox",
+    redirectUri: "http://localhost:3002/callback",
+    token: token,
+  });
+
+  let customerId;
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token.access_token}`,
+      Accept: "application/json",
+    };
+    axios
+      .get(endpoint, { params: { query }, headers })
+      .then(async (response) => {
+        const customer = response.data.QueryResponse.Customer;
+        if (customer) {
+          console.log("customer found.");
+          // console.log(customer[0].Id);
+          customerId = customer[0].Id;
+        } else {
+          console.log("Customer not found, creating customer.");
+
+          const customerData = {
+            GivenName: "John",
+            FamilyName: "Doe",
+            PrimaryEmailAddr: {
+              Address: "polyester@gmail.com",
+            },
+            DisplayName: "John Doe",
+            BillAddr: {
+              Line1: "123 Main St",
+              City: "Anytown",
+              CountrySubDivisionCode: "CA",
+              PostalCode: "90210",
+              Lat: "34.148",
+              Long: "-118.383",
+            },
+            Job: false,
+            SalesTermRef: {
+              value: "3",
+            },
+            CurrencyRef: {
+              value: "USD",
+            },
+          };
+          const createCustomerResponse = await axios.post(
+            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/customer?minorversion=65",
+            customerData,
+            { headers }
+          );
+          console.log(
+            "New customer created:",
+            createCustomerResponse.data.Customer
+          );
+          let newCustomerId = createCustomerResponse.data.Customer;
+          console.log("haytch" + newCustomerId);
+        }
+
+        // create sales receipt
+        const salesReceipt = {
+          Line: [
+            {
+              Description: "Pest Control Services",
+              DetailType: "SalesItemLineDetail",
+              SalesItemLineDetail: {
+                TaxCodeRef: {
+                  value: "5",
+                },
+                Qty: 1,
+                UnitPrice: 35,
+                ItemRef: {
+                  name: "42020 FG - Tax Ded Donations (NP)",
+                  value: "26",
+                },
+              },
+              LineNum: 1,
+              Amount: 35.0,
+              Id: "1",
+            },
+          ],
+          CustomerRef: {
+            value: customerId,
+          },
+          ClassRef: {
+            name: "FP - 10d - Ramadan Lebanon Food Packs",
+            value: "5100000000000049935",
+          },
+        };
+
+        const createSalesReceiptResponse = await axios.post(
+          "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
+          salesReceipt,
+          { headers }
+        );
+        // console.log("Sales receipt created:", createSalesReceiptResponse);
+        res.send("Sales receipt created successfully");
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.Fault &&
+          error.response.data.Fault.Error
+        ) {
+          const validationErrors = error.response.data.Fault.Error;
+          console.log(validationErrors);
+          console.error("Validation errors:");
+          validationErrors.forEach((validationError) => {
+            console.error("-", validationError.Message);
+          });
+        } else {
+          console.error("Error searching for customer:", error);
+        }
+      });
+    // Make an API call using the OAuth2 token
+    // const response = await axios.get(
+    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+    //   { headers }
+    // );
+
+    // res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error occurred while calling API");
+  }
+});
+
+app.get("/allQuickbooksClasses", (req, res) => {
+  const token = JSON.parse(oauth2_token_json);
+
+  const endpoint =
+    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+
+  // Set up the query parameters to search for a customer by email
+  const query = "SELECT * FROM Item";
+  // Create a new OAuth2 client using the token
+  oauthClient = new OAuthClient({
+    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+    environment: "sandbox",
+    redirectUri: "http://localhost:3002/callback",
+    token: token,
+  });
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token.access_token}`,
+      Accept: "application/json",
+    };
+    axios
+      .get(endpoint, { params: { query }, headers })
+      .then(async (response) => {
+        console.log(response.data.QueryResponse);
+      });
+
+    // Make an API call using the OAuth2 token
+    // const response = await axios.get(
+    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+    //   { headers }
+    // );
+
+    // res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error occurred while calling API");
+  }
+});
+
+app.get("/retrieveToken", function (req, res) {
+  res.send(oauth2_token_json);
+});
+
+app.get("/refreshAccessToken", function (req, res) {
+  oauthClient
+    .refresh()
+    .then(function (authResponse) {
+      console.log(
+        `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
+      );
+      oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+      res.send(oauth2_token_json);
+    })
+    .catch(function (e) {
+      console.error(e);
+    });
 });
 
 app.get("/config", (req, res) => {
@@ -384,4 +648,6 @@ app.post("/ramadanWebsite", (req, res) => {
   });
 });
 
-app.listen(3002, () => console.log("Example app is listening on port 3002"));
+app.listen(3002, () => {
+  console.log("Example app is listening on port 3002");
+});

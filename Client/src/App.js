@@ -6,6 +6,7 @@ import {
   Switch,
   useParams,
 } from "react-router-dom";
+import TestPage from "./Components/TestPage/TestPage";
 import Homepage from "./Homepage";
 import ID1 from "./ID1/ID1";
 import ID2 from "./ID2/ID2";
@@ -19,6 +20,7 @@ function App() {
         <Route path="/:id" element={<Homepage />} />
         <Route path="/" element={<Homepage />} />
         <Route path="/paymentSuccess/:id" element={<PaymentSuccess />} />
+        <Route path="/testpage" element={<TestPage />} />
       </Routes>
     </Router>
   );

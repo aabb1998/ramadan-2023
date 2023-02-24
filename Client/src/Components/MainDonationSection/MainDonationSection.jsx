@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { getDonationsFromCollection } from "../../FirebaseFunctions/FirebaseFunctions";
 import MainProgressBar from "../MainProgressBar/MainProgressBar";
 import MainDonationAddToCart from "./MainDonationAddToCart";
 import "./Styles.css";
@@ -47,6 +48,15 @@ const MainDonationSection = ({ mainCampaign }) => {
 
   const getHeight = () => {
     return showMore ? ref.current.scrollHeight : getLineHeight() * 2;
+  };
+
+  useEffect(() => {
+    getDonations();
+  }, []);
+
+  const getDonations = async () => {
+    let data = await getDonationsFromCollection("donations");
+    console.log(data);
   };
 
   return (

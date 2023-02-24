@@ -4,6 +4,7 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState: {
     cartItems: [],
+    oneTimeDonation: 0,
   },
   reducers: {
     removeFromCart: (state, action) => {
@@ -39,9 +40,21 @@ export const cartSlice = createSlice({
     emptyCart: (state, action) => {
       state.cartItems = [];
     },
+    addOneTimeDonation: (state, action) => {
+      state.oneTimeDonation = 10;
+    },
+    removeOneTimeDonation: (state, action) => {
+      state.oneTimeDonation = 0;
+    },
   },
 });
 
-export const { removeFromCart, addItemToCart } = cartSlice.actions;
+export const {
+  removeFromCart,
+  addItemToCart,
+  emptyCart,
+  addOneTimeDonation,
+  removeOneTimeDonation,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;
