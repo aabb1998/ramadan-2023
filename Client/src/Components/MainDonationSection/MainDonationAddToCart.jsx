@@ -119,6 +119,8 @@ const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
       (timeframe === "monthly" && "month") ||
       (timeframe === "ramadan-last-10" && "day") ||
       (timeframe === "ramadan-daily" && "day"),
+    quickbooksClassName: mainCampaign?.quickbooksClassName,
+    quickbooksClassId: mainCampaign?.quickbooksClassId,
   };
 
   return (

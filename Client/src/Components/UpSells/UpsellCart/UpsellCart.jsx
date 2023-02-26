@@ -117,6 +117,8 @@ const UpsellCart = ({ campaign }) => {
       (timeframe === "monthly" && "month") ||
       (timeframe === "ramadan-last-10" && "day") ||
       (timeframe === "ramadan-daily" && "day"),
+    quickbooksClassName: campaign?.quickbooksClassName,
+    quickbooksClassId: campaign?.quickbooksClassId,
   };
 
   useEffect(() => {

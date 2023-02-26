@@ -100,6 +100,19 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
             })
             .then((orderNumber) => {
               elements.getElement(CardElement).clear();
+
+              // add sales receipt
+              axios
+                .get("http://localhost:3002/addSalesReceipt", {
+                  cartItems,
+                })
+                .then((response) => {
+                  console.log(response.data);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+
               updateAmountsInDocuments(cartItems);
 
               NotificationManager.success(

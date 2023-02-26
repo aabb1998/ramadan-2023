@@ -123,6 +123,7 @@ app.get("/api", async (req, res) => {
 });
 
 app.get("/getCustomersQuickbooks", async (req, res) => {
+  console.log(req.body);
   const token = JSON.parse(oauth2_token_json);
   // Set up the QuickBooks API endpoint
   const endpoint =
@@ -221,7 +222,7 @@ app.get("/getCustomersQuickbooks", async (req, res) => {
           },
           ClassRef: {
             name: "FP - 10d - Ramadan Lebanon Food Packs",
-            value: "5100000000000049935",
+            value: "5100000000000049934",
           },
         };
 
@@ -270,7 +271,7 @@ app.get("/allQuickbooksClasses", (req, res) => {
     "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
 
   // Set up the query parameters to search for a customer by email
-  const query = "SELECT * FROM Item";
+  const query = "SELECT * FROM Class";
   // Create a new OAuth2 client using the token
   oauthClient = new OAuthClient({
     clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
