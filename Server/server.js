@@ -14,12 +14,52 @@ const { start } = require("repl");
 const quickbooks = require("node-quickbooks");
 const OAuth2Strategy = require("passport-oauth2").Strategy;
 const ngrok = process.env.NGROK_ENABLED === "true" ? require("ngrok") : null;
+const mailchimp = require("@mailchimp/mailchimp_marketing");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.json());
 app.use(cors());
+
+mailchimp.setConfig({
+  apiKey: process.env.MAILCHIMP_CLIENT_KEY,
+  server: "us18",
+});
+
+app.post("/runMailChimp", async (req, res) => {
+  const runMailChimp = async () => {
+    const response = await mailchimp.ping.get();
+    console.log(response);
+  };
+
+  runMailChimp();
+});
+
+app.post("/addSubscriberToMailChimp", async (req, res) => {
+  const listId = "dca51ab98c";
+  const subscribingUser = {
+    email: req.body.email,
+  };
+
+  try {
+    const response = await mailchimp.lists.addListMember(listId, {
+      email_address: subscribingUser.email,
+      status: "subscribed",
+    });
+
+    res.send(response);
+
+    console.log(
+      `Successfully added contact as an audience member. The contact's id is ${response.id}.`
+    );
+  } catch (e) {
+    console.log(e);
+    return res.status(400).send({
+      e,
+    });
+  }
+});
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // const clientId = process.env.PAYPAL_CLIENT_ID;

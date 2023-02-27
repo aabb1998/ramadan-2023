@@ -1,6 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import "./styles.css";
 const MailingList = () => {
+  const [email, setEmail] = useState("");
+
+  const onEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleSubscribe = () => {
+    if (email.length === 0) {
+      NotificationManager.error(
+        "Please input a valid email.",
+        "Mailing List",
+        2000
+      );
+    } else {
+      susbcribeEmail();
+      setEmail("");
+    }
+  };
+
+  const susbcribeEmail = async () => {
+    const response = await axios
+      .post("http://localhost:3002/addSubscriberToMailChimp", {
+        email: email,
+      })
+      .then((response) => {
+        NotificationManager.success(
+          "You have been subscribed to our mailing list.",
+          "Mailing List",
+          2000
+        );
+      })
+      .catch((error) => {
+        NotificationManager.error("Unable to subscribe.", "Mailing List", 2000);
+        console.log(error);
+      });
+  };
+
   return (
     <>
       <div className="MailingListSection">
@@ -13,7 +50,7 @@ const MailingList = () => {
               </span>
             </div>
             <div className="MailingListSection-input">
-              <input></input>
+              <input />
               <button>Subscribe</button>
             </div>
           </div>
