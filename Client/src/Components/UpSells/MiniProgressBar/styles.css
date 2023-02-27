@@ -22,7 +22,7 @@
 
 .progress-circle {
     position: absolute;
-        left: 100px;
+        left: 100%;
     top: -6px;
 right: -100px;    
 width: 20px;

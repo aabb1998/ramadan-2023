@@ -73,6 +73,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                   paymentMethodId: paymentMethod.paymentMethod.id,
                 }
               );
+              console.log(response.data);
               return response.data;
             })
             .then(async (customer) => {
@@ -87,21 +88,28 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               return response.data;
             })
             .then(async (response) => {
-              let result = response.paymentIntentResult;
+              let result = response.paymentIntentResultsArray.length > 0;
               console.log(response);
               if (result) {
-                const confirmResponse = await stripe.confirmCardPayment(
-                  result.client_secret,
-                  {
-                    payment_method: result.payment_method,
-                  }
-                );
-                console.log(confirmResponse);
+                for (
+                  let i = 0;
+                  i < response.paymentIntentResultsArray.length;
+                  i++
+                ) {
+                  const confirmResponse = await stripe.confirmCardPayment(
+                    response.paymentIntentResultsArray[i].client_secret,
+                    {
+                      payment_method:
+                        response.paymentIntentResultsArray[i].payment_method,
+                    }
+                  );
+                  console.log(confirmResponse);
+                }
               }
               return response.orderNumber;
             })
             .then((orderNumber) => {
-              elements.getElement(CardElement).clear();
+              // elements.getElement(CardElement).clear();
 
               // add sales receipt
               axios
@@ -127,12 +135,12 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 "Payment.",
                 3000
               );
-              navigate(`/paymentSuccess/${orderNumber}`, {
-                state: {
-                  orderNumber,
-                  cartItems,
-                },
-              });
+              // navigate(`/paymentSuccess/${orderNumber}`, {
+              //   state: {
+              //     orderNumber,
+              //     cartItems,
+              //   },
+              // });
               setProcessing(false);
               setLoading(false);
               setError("");

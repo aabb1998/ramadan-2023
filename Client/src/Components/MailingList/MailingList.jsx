@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./styles.css";
+import axios from "axios";
+import { NotificationManager } from "react-notifications";
 const MailingList = () => {
   const [email, setEmail] = useState("");
 
@@ -31,6 +33,7 @@ const MailingList = () => {
           "Mailing List",
           2000
         );
+        setEmail("");
       })
       .catch((error) => {
         NotificationManager.error("Unable to subscribe.", "Mailing List", 2000);
@@ -50,8 +53,8 @@ const MailingList = () => {
               </span>
             </div>
             <div className="MailingListSection-input">
-              <input />
-              <button>Subscribe</button>
+              <input value={email} onChange={(e) => onEmailChange(e)} />
+              <button onClick={handleSubscribe}>Subscribe</button>
             </div>
           </div>
         </div>

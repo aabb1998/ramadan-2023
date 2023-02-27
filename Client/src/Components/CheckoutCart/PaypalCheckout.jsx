@@ -11,6 +11,7 @@ import {
   getDonationsFromCollection,
   updateAmountsInDocuments,
 } from "../../FirebaseFunctions/FirebaseFunctions";
+import axios from "axios";
 
 // const PayPalButton = window.paypal.Buttons.driver("react", { React, ReactDOM });
 
@@ -101,6 +102,23 @@ const PaypalCheckout = ({
                 const order = await actions.order.capture();
                 updateAmountsInDocuments(cartItems);
                 dispatch(emptyCart());
+
+                axios
+                  .post("http://localhost:3002/getCustomersQuickbooks", {
+                    cartItems,
+                    paymentMethod: "Paypal",
+                    paymentId: 5,
+                    userEmail: billingDetails.email,
+                    billingDetails,
+                    personalDetails,
+                  })
+                  .then((response) => {
+                    console.log(response.data);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
+
                 await addDonation("donations", {
                   name: "Haytch Sax",
                   amount: 9998,

@@ -415,6 +415,78 @@ app.get("/retrieveToken", function (req, res) {
   res.send(oauth2_token_json);
 });
 
+const countdown = 3600000; // 1 hour in milliseconds
+let startTime = Date.now();
+let timer = setInterval(() => {
+  const elapsedTime = Date.now() - startTime;
+
+  if (elapsedTime >= countdown - 5000) {
+    // if there are 5 seconds or less left on the timer, run your code here
+    console.log("Time's almost up!");
+    resetTimer();
+    console.log("GENERATING NEW ACCESS TOKEN");
+    oauthClient
+      .refresh()
+      .then(function (authResponse) {
+        console.log(
+          `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
+        );
+        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+      })
+      .catch(function (e) {
+        console.error(e);
+      });
+  }
+
+  if (elapsedTime >= countdown) {
+    clearInterval(timer); // stop the timer when the countdown reaches zero
+    console.log("Time's up!");
+    resetTimer();
+    // run your code here when the timer ends
+    console.log("GENERATING NEW ACCESS TOKEN");
+
+    oauthClient
+      .refresh()
+      .then(function (authResponse) {
+        console.log(
+          `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
+        );
+        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+      })
+      .catch(function (e) {
+        console.error(e);
+      });
+  }
+}, 1000); // call the function every 1 second (1000 milliseconds)
+
+// reset the timer
+function resetTimer() {
+  console.log("Timer reset");
+  startTime = Date.now();
+}
+
+setInterval(() => {
+  const now = new Date().getTime() / 1000;
+  const expirationTime = oauth2_token_json.expires_in;
+  const timeUntilExpiration = expirationTime - now;
+
+  if (timeUntilExpiration < 300) {
+    console.log("GENERATING NEW ACCESS TOKEN");
+    oauthClient
+      .refresh()
+      .then(function (authResponse) {
+        console.log(
+          `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
+        );
+        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+        res.send(oauth2_token_json);
+      })
+      .catch(function (e) {
+        console.error(e);
+      });
+  }
+}, 3600000);
+
 app.get("/refreshAccessToken", function (req, res) {
   oauthClient
     .refresh()
@@ -443,6 +515,7 @@ app.post("/createCharges", async (req, res) => {
   let { oneTimeDonation } = req.body;
   let paymentIntentResult;
   let subscriptionResult = [];
+  let paymentIntentResultsArray = [];
 
   let subscriptions = cart.filter((item) => item.subscription);
   let oneTimePayments = cart.filter((item) => !item.subscription);
@@ -452,8 +525,23 @@ app.post("/createCharges", async (req, res) => {
     0
   );
 
+  const endDate = new Date("2023-04-20");
+
+  const Last10startDate = new Date("2023-04-10");
+  const currentDate = Date.now();
+
+  const ramadanDailyDate = new Date("2023-03-22");
+
+  if (currentDate >= ramadanDailyDate.getTime()) {
+    ramadanDailyDate.setTime(currentDate);
+  }
+
+  if (currentDate >= Last10startDate.getTime()) {
+    Last10startDate.setTime(currentDate);
+  }
+
   if (subscriptions.length > 0) {
-    Promise.all(
+    await Promise.all(
       subscriptions.map(async (subscription) => {
         console.log(subscription);
         const plan = await stripe.plans.create({
@@ -467,38 +555,20 @@ app.post("/createCharges", async (req, res) => {
         });
 
         if (subscription.start && subscription.end) {
-          // const startDate = Math.floor(Date.parse(subscription.start) / 1000);
-          // const endDate = Math.floor(Date.parse(subscription.end) / 1000);
-
-          // let ramadanStartDate = new Date("2023-03-22");
-          // let ramadanStartDateTimestamp = Math.floor(
-          //   ramadanStartDate.getTime() / 1000
-          // );
-
-          // let ramadanEndDate = new Date("2023-04-20");
-          // let ramadanEndDateTimestamp = Math.floor(
-          //   ramadanEndDate.getTime() / 1000
-          // );
-
-          // let ramadanLast10Start = new Date("2023-04-10");
-          // let ramadanLast10StartTimestamp = Math.floor(
-          //   ramadanLast10Start.getTime() / 1000
-          // );
-
           let todaysDateTimestamp = Math.floor(Date.now() / 1000);
-          const startDate = Math.floor(
-            (Date.now() + 30 * 24 * 60 * 60 * 1000) / 1000
-          ); // Current timestamp
-          const endDate = Math.floor(
-            (Date.now() + 60 * 24 * 60 * 60 * 1000) / 1000
-          ); // 30 days from now\
+          // const startDate = Math.floor(
+          //   (Date.now() + 30 * 24 * 60 * 60 * 1000) / 1000
+          // ); // Current timestamp
+          // const endDate = Math.floor(
+          //   (Date.now() + 60 * 24 * 60 * 60 * 1000) / 1000
+          // ); // 30 days from now\
 
-          const ramadanStartDate = Math.floor(
-            new Date("2023-03-22").getTime() / 1000
-          ); // March 20th, 2023
-          const ramadanEndDate = Math.floor(
-            new Date("2023-04-20").getTime() / 1000
-          ); // April 20th, 2023
+          // const ramadanStartDate = Math.floor(
+          //   new Date("2023-03-22").getTime() / 1000
+          // ); // March 20th, 2023
+          // const ramadanEndDate = Math.floor(
+          //   new Date("2023-04-20").getTime() / 1000
+          // ); // April 20th, 2023
 
           if (subscription.time === "ramadan-daily") {
             const subscription = await stripe.subscriptions.create({
@@ -508,14 +578,33 @@ app.post("/createCharges", async (req, res) => {
                   plan: plan.id,
                 },
               ],
-              billing_cycle_anchor: new Date("2023-03-01").getTime(), // Start billing on March 1, 2023
-              cancel_at: new Date("2023-04-01").getTime(), // Cancel subscription on April 1, 2023
-
+              billing_cycle_anchor: Math.floor(
+                ramadanDailyDate.getTime() / 1000
+              ),
+              billing_cycle_anchor: Math.floor(
+                ramadanDailyDate.getTime() / 1000
+              ),
+              trial_end: Math.floor(ramadanDailyDate.getTime() / 1000),
+              cancel_at: Math.floor(endDate.getTime() / 1000),
               metadata: {
-                start_date: startDate,
+                start_date: ramadanDailyDate,
                 end_date: endDate,
               },
             });
+            const customer = await stripe.customers.retrieve(customerId);
+            const defaultPaymentMethod =
+              customer.invoice_settings.default_payment_method;
+            const paymentIntent = await stripe.paymentIntents.create({
+              amount: 100 * 100,
+              currency: "AUD",
+              customer: customerId,
+              payment_method: defaultPaymentMethod,
+              description: `Ramadan 2023 - Order #${generateOrderNumber()} - (first charge)`,
+            });
+            paymentIntentResult = paymentIntent;
+            console.log("paument intent created");
+            paymentIntentResultsArray.push(paymentIntent);
+
             subscriptionResult.push(subscription);
           } else if (subscription.time === "ramadan-last-10") {
             const subscription = await stripe.subscriptions.create({
@@ -525,9 +614,26 @@ app.post("/createCharges", async (req, res) => {
                   plan: plan.id,
                 },
               ],
-              billing_cycle_anchor: ramadanLast10StartTimestamp,
-              cancel_at: ramadanEndDateTimestamp,
+              billing_cycle_anchor: Math.floor(
+                Last10startDate.getTime() / 1000
+              ),
+              trial_end: Math.floor(Last10startDate.getTime() / 1000),
+              cancel_at: Math.floor(endDate.getTime() / 1000),
             });
+            const customer = await stripe.customers.retrieve(customerId);
+            const defaultPaymentMethod =
+              customer.invoice_settings.default_payment_method;
+            const paymentIntent = await stripe.paymentIntents.create({
+              amount: 100 * 100,
+              currency: "AUD",
+              customer: customerId,
+              payment_method: defaultPaymentMethod,
+              description: `Ramadan 2023 - Order #${generateOrderNumber()} - (first charge)`,
+            });
+            paymentIntentResultsArray.push(paymentIntent);
+            console.log(paymentIntent);
+
+            paymentIntentResult = paymentIntent;
           } else {
             const subscription = await stripe.subscriptions.create({
               customer: customerId,
@@ -575,13 +681,19 @@ app.post("/createCharges", async (req, res) => {
       description: `Ramadan 2023 - Order #${generateOrderNumber()}`,
     });
     paymentIntentResult = paymentIntent;
+    console.log(paymentIntent);
+    paymentIntentResultsArray.push(paymentIntent);
   }
 
   let orderNumber = generateOrderNumber();
 
-  res
-    .status(200)
-    .send({ paymentIntentResult, subscriptionResult, orderNumber, cart });
+  res.status(200).send({
+    paymentIntentResult,
+    subscriptionResult,
+    orderNumber,
+    cart,
+    paymentIntentResultsArray,
+  });
 });
 
 app.post("/createCustomer", async (req, res) => {
