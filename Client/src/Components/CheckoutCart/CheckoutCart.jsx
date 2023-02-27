@@ -264,7 +264,12 @@ const CheckoutCart = () => {
                 <div className="body-right-totals">
                   <div className="body-right-total-container bottom">
                     <span>Sub total</span>
-                    <span>${totalAmount.toFixed(2)}</span>
+                    <span>
+                      $
+                      {donation
+                        ? parseInt(totalAmount.toFixed(2)) + 10
+                        : parseInt(totalAmount.toFixed(2))}
+                    </span>
                   </div>
                   <div className="body-right-total-container bottom">
                     <span>Processing Fee</span>
@@ -292,15 +297,18 @@ const CheckoutCart = () => {
                   <div className="body-right-total-container last">
                     <span>Total</span>
                     <span>
-                      {oneTimeDonation
+                      $
+                      {/* {oneTimeDonation
                         ? 10 + parseInt(totalAmount + (3 / 100) * totalAmount)
                         : parseInt(
                             totalAmount + (3 / 100) * totalAmount
-                          ).toFixed(2)}
-                      {/* $
-                      {parseInt(totalAmount + (3 / 100) * totalAmount).toFixed(
-                        2
-                      )} */}
+                          ).toFixed(2)} */}
+                      {donation
+                        ? parseInt(totalAmount.toFixed(2)) +
+                          10 +
+                          (3 / 100) * totalAmount
+                        : parseInt(totalAmount.toFixed(2)) +
+                          (3 / 100) * totalAmount}
                     </span>
                   </div>
                 </div>

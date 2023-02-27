@@ -185,63 +185,127 @@ const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
             </div>
           </div>
         )}
-
-        <div className="MainDonationAddToCart-amounts">
-          <div className="MainDonationAddToCart-amounts-row">
-            <div
-              onClick={() => {
-                setSelectAmount(10);
-              }}
-              className={`MainDonationAddToCart-amount left ${
-                selectAmount === 10 ? "amount-active" : ""
-              }`}
-            >
-              <span>$10</span>
+        {!mainCampaign?.foodPack ? (
+          <>
+            <div className="UpSellAddToCart-campaignName">
+              <span>{mainCampaign?.desc}</span>
             </div>
-            <div
-              onClick={() => setSelectAmount(25)}
-              className={`MainDonationAddToCart-amount ${
-                selectAmount === 25 ? "amount-active" : ""
-              }`}
-            >
-              <span>$25</span>
+            <div className="MainDonationAddToCart-amounts">
+              <div className="MainDonationAddToCart-amounts-row">
+                <div
+                  onClick={() => setSelectAmount(10)}
+                  className={`MainDonationAddToCart-amount left ${
+                    selectAmount === 10 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>$10</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(25)}
+                  className={`MainDonationAddToCart-amount ${
+                    selectAmount === 25 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>$25</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(50)}
+                  className={`MainDonationAddToCart-amount right ${
+                    selectAmount === 50 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>$50</span>
+                </div>
+              </div>
+              <div className="MainDonationAddToCart-amounts-row">
+                <div
+                  onClick={() => setSelectAmount(60)}
+                  className={`MainDonationAddToCart-amount left ${
+                    selectAmount === 60 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>$60</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(75)}
+                  className={`MainDonationAddToCart-amount ${
+                    selectAmount === 75 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>$75</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(100)}
+                  className={`MainDonationAddToCart-amount right ${
+                    selectAmount === 100 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>$100</span>
+                </div>
+              </div>
             </div>
-            <div
-              onClick={() => setSelectAmount(50)}
-              className={`MainDonationAddToCart-amount right ${
-                selectAmount === 50 ? "amount-active" : ""
-              }`}
-            >
-              <span>$50</span>
+          </>
+        ) : (
+          <>
+            <div className="UpSellAddToCart-campaignName">
+              <span>{mainCampaign?.desc}</span>
             </div>
-          </div>
-          <div className="MainDonationAddToCart-amounts-row">
-            <div
-              onClick={() => setSelectAmount(60)}
-              className={`MainDonationAddToCart-amount left ${
-                selectAmount === 60 ? "amount-active" : ""
-              }`}
-            >
-              <span>$60</span>
+            <div className="MainDonationAddToCart-amounts">
+              <div className="MainDonationAddToCart-amounts-row">
+                <div
+                  onClick={() => setSelectAmount(50)}
+                  className={`MainDonationAddToCart-amount left ${
+                    selectAmount === 50 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>1 Pack</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(100)}
+                  className={`MainDonationAddToCart-amount ${
+                    selectAmount === 100 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>2 Packs</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(150)}
+                  className={`MainDonationAddToCart-amount right ${
+                    selectAmount === 150 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>3 Packs</span>
+                </div>
+              </div>
+              <div className="MainDonationAddToCart-amounts-row">
+                <div
+                  onClick={() => setSelectAmount(250)}
+                  className={`MainDonationAddToCart-amount left ${
+                    selectAmount === 250 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>5 Packs</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(500)}
+                  className={`MainDonationAddToCart-amount ${
+                    selectAmount === 500 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>10 Packs</span>
+                </div>
+                <div
+                  onClick={() => setSelectAmount(1000)}
+                  className={`MainDonationAddToCart-amount right ${
+                    selectAmount === 1000 ? "amount-active" : ""
+                  }`}
+                >
+                  <span>20 Packs</span>
+                </div>
+              </div>
             </div>
-            <div
-              onClick={() => setSelectAmount(75)}
-              className={`MainDonationAddToCart-amount ${
-                selectAmount === 75 ? "amount-active" : ""
-              }`}
-            >
-              <span>$75</span>
-            </div>
-            <div
-              onClick={() => setSelectAmount(100)}
-              className={`MainDonationAddToCart-amount right ${
-                selectAmount === 100 ? "amount-active" : ""
-              }`}
-            >
-              <span>$100</span>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
         <div className="MainDonationAddToCart-input">
           <span>$</span>
           <input

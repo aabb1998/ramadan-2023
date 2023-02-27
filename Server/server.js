@@ -122,17 +122,20 @@ app.get("/api", async (req, res) => {
   }
 });
 
-app.get("/getCustomersQuickbooks", async (req, res) => {
+app.post("/getCustomersQuickbooks", async (req, res) => {
   console.log(req.body);
+  const nameArray = req.body.personalDetails.fullName.split(" ");
+  const firstName = nameArray[0]; // "Aniss"
+  const lastName = nameArray[1]; // "Abbou"
   const token = JSON.parse(oauth2_token_json);
   // Set up the QuickBooks API endpoint
   const endpoint =
     "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
 
   // Set up the query parameters to search for a customer by email
-  const query =
-    "SELECT * FROM Customer WHERE PrimaryEmailAddr = 'polyester@gmail.com'";
+  const query = `SELECT * FROM Customer WHERE DisplayName = '${req.body.personalDetails.fullName}'`;
   // Create a new OAuth2 client using the token
+  console.log(req.body);
   oauthClient = new OAuthClient({
     clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
     clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
@@ -160,26 +163,23 @@ app.get("/getCustomersQuickbooks", async (req, res) => {
           console.log("Customer not found, creating customer.");
 
           const customerData = {
-            GivenName: "John",
-            FamilyName: "Doe",
+            GivenName: firstName,
+            FamilyName: lastName,
             PrimaryEmailAddr: {
-              Address: "polyester@gmail.com",
+              Address: req.body.email,
             },
-            DisplayName: "John Doe",
+            DisplayName: req.body.personalDetails.fullName,
             BillAddr: {
-              Line1: "123 Main St",
-              City: "Anytown",
-              CountrySubDivisionCode: "CA",
-              PostalCode: "90210",
-              Lat: "34.148",
-              Long: "-118.383",
+              Line1: req.body.billingDetails.streetAddress,
+              City: req.body.billingDetails.city,
+              PostalCode: req.body.billingDetails.zip,
             },
             Job: false,
             SalesTermRef: {
               value: "3",
             },
             CurrencyRef: {
-              value: "USD",
+              value: "AUD",
             },
           };
           const createCustomerResponse = await axios.post(
@@ -191,46 +191,112 @@ app.get("/getCustomersQuickbooks", async (req, res) => {
             "New customer created:",
             createCustomerResponse.data.Customer
           );
-          let newCustomerId = createCustomerResponse.data.Customer;
-          console.log("haytch" + newCustomerId);
+          customerId = createCustomerResponse.data.Customer.Id;
+          console.log("haytch" + customerId);
+        }
+
+        for (let i = 0; i < req.body.cartItems.length; i++) {
+          let processingFee = (3 / 100) * req.body.cartItems[i].amount;
+
+          const salesReceipt = {
+            Line: [
+              {
+                Description: `Donation ${req.body.cartItems[i].name}`,
+                DetailType: "SalesItemLineDetail",
+                SalesItemLineDetail: {
+                  TaxCodeRef: {
+                    value: "5",
+                  },
+
+                  Qty: 1,
+                  UnitPrice: req.body.cartItems[i].amount,
+                  ItemRef: {
+                    name: "42020 FG - Tax Ded Donations (NP)",
+                    value: "26",
+                  },
+                  ClassRef: {
+                    name: req.body.cartItems[i].quickbooksClassName,
+                    value: req.body.cartItems[i].quickbooksClassId,
+                  },
+                },
+                LineNum: 1,
+                Amount: req.body.cartItems[i].amount,
+                Id: "1",
+              },
+              {
+                Description: `Merchant Fees`,
+                DetailType: "SalesItemLineDetail",
+                SalesItemLineDetail: {
+                  TaxCodeRef: {
+                    value: "5",
+                  },
+                  Qty: 1,
+                  UnitPrice: processingFee,
+                  ItemRef: {
+                    name: "42020 FG - Tax Ded Donations (NP)",
+                    value: "26",
+                  },
+                  ClassRef: {
+                    name: "General",
+                    value: "5100000000000049941",
+                  },
+                },
+                LineNum: 1,
+                Amount: processingFee,
+                Id: "1",
+              },
+            ],
+            CustomerRef: {
+              value: customerId,
+            },
+            PaymentMethodRef: {
+              name: req.body.paymentMethod,
+              value: req.body.paymentId,
+            },
+          };
+          const createSalesReceiptResponse = await axios.post(
+            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
+            salesReceipt,
+            { headers }
+          );
         }
 
         // create sales receipt
-        const salesReceipt = {
-          Line: [
-            {
-              Description: "Pest Control Services",
-              DetailType: "SalesItemLineDetail",
-              SalesItemLineDetail: {
-                TaxCodeRef: {
-                  value: "5",
-                },
-                Qty: 1,
-                UnitPrice: 35,
-                ItemRef: {
-                  name: "42020 FG - Tax Ded Donations (NP)",
-                  value: "26",
-                },
-              },
-              LineNum: 1,
-              Amount: 35.0,
-              Id: "1",
-            },
-          ],
-          CustomerRef: {
-            value: customerId,
-          },
-          ClassRef: {
-            name: "FP - 10d - Ramadan Lebanon Food Packs",
-            value: "5100000000000049934",
-          },
-        };
+        // const salesReceipt = {
+        //   Line: [
+        //     {
+        //       Description: "Pest Control Services",
+        //       DetailType: "SalesItemLineDetail",
+        //       SalesItemLineDetail: {
+        //         TaxCodeRef: {
+        //           value: "5",
+        //         },
+        //         Qty: 1,
+        //         UnitPrice: 35,
+        //         ItemRef: {
+        //           name: "42020 FG - Tax Ded Donations (NP)",
+        //           value: "26",
+        //         },
+        //       },
+        //       LineNum: 1,
+        //       Amount: 35.0,
+        //       Id: "1",
+        //     },
+        //   ],
+        //   CustomerRef: {
+        //     value: customerId,
+        //   },
+        //   ClassRef: {
+        //     name: "FP - 10d - Ramadan Lebanon Food Packs",
+        //     value: "5100000000000049934",
+        //   },
+        // };
 
-        const createSalesReceiptResponse = await axios.post(
-          "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
-          salesReceipt,
-          { headers }
-        );
+        // const createSalesReceiptResponse = await axios.post(
+        //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
+        //   salesReceipt,
+        //   { headers }
+        // );
         // console.log("Sales receipt created:", createSalesReceiptResponse);
         res.send("Sales receipt created successfully");
       })
@@ -334,6 +400,7 @@ app.post("/createCharges", async (req, res) => {
   // const subscriptions = req.body.cartItems.filter(item => item.)
   let { cart } = req.body;
   let { customerId } = req.body;
+  let { oneTimeDonation } = req.body;
   let paymentIntentResult;
   let subscriptionResult = [];
 
@@ -446,11 +513,22 @@ app.post("/createCharges", async (req, res) => {
   }
 
   if (oneTimePaymentsTotal > 0) {
+    let totalWithProcessing;
+    if (oneTimeDonation > 0) {
+      let totalAmountCalc = oneTimePaymentsTotal + 10;
+      let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
+      totalWithProcessing = totalAmountCalc + totalAmountCalcProcessingFee;
+    } else {
+      let totalAmountCalc = oneTimePaymentsTotal;
+      let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
+      totalWithProcessing = totalAmountCalc + totalAmountCalcProcessingFee;
+    }
+
     const customer = await stripe.customers.retrieve(customerId);
     const defaultPaymentMethod =
       customer.invoice_settings.default_payment_method;
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: oneTimePaymentsTotal * 100,
+      amount: totalWithProcessing * 100,
       currency: "AUD",
       customer: customerId,
       payment_method: defaultPaymentMethod,

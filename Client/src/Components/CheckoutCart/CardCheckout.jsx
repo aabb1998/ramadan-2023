@@ -15,6 +15,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
 const CardCheckout = ({ billingDetails, personalDetails }) => {
   const { cartItems } = useSelector((state) => state.cart);
+  const { oneTimeDonation } = useSelector((state) => state.cart);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 

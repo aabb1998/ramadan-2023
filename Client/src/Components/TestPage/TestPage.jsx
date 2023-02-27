@@ -69,7 +69,7 @@ const TestPage = () => {
 
   const apiTest = async () => {
     axios
-      .get("http://localhost:3002/getCustomersQuickbooks")
+      .get("http://localhost:3002/allQuickbooksClasses")
       .then((response) => {
         console.log(response.data);
       })

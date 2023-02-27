@@ -19,6 +19,7 @@ import loader from "./gid.gif";
 
 const CardPayment = ({ billingDetails, personalDetails }) => {
   const { cartItems } = useSelector((state) => state.cart);
+  const { oneTimeDonation } = useSelector((state) => state.cart);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const stripe = useStripe();
@@ -80,6 +81,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 {
                   customerId: customer.id,
                   cart: cartItems,
+                  oneTimeDonation,
                 }
               );
               return response.data;
@@ -103,8 +105,13 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
 
               // add sales receipt
               axios
-                .get("http://localhost:3002/addSalesReceipt", {
+                .post("http://localhost:3002/getCustomersQuickbooks", {
                   cartItems,
+                  paymentMethod: "Stripe",
+                  paymentId: 6,
+                  userEmail: billingDetails.email,
+                  billingDetails,
+                  personalDetails,
                 })
                 .then((response) => {
                   console.log(response.data);
