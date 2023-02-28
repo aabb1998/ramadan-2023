@@ -5,6 +5,7 @@ export const cartSlice = createSlice({
   initialState: {
     cartItems: [],
     oneTimeDonation: 0,
+    anonymous: false,
   },
   reducers: {
     removeFromCart: (state, action) => {
@@ -12,6 +13,9 @@ export const cartSlice = createSlice({
         (item) => item.campaignId !== action.payload
       );
       state.cartItems = removeItem;
+    },
+    setAnon: (state, action) => {
+      state.anonymous = !state.anonymous;
     },
     addItemToCart: (state, action) => {
       if (
@@ -55,6 +59,7 @@ export const {
   emptyCart,
   addOneTimeDonation,
   removeOneTimeDonation,
+  setAnon,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

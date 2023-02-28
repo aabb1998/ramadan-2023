@@ -13,7 +13,7 @@ import {
 import CardPayment from "./Payments/CardPayment";
 import { loadStripe } from "@stripe/stripe-js";
 
-const CardCheckout = ({ billingDetails, personalDetails }) => {
+const CardCheckout = ({ billingDetails, personalDetails, anonymous }) => {
   const { cartItems } = useSelector((state) => state.cart);
   const { oneTimeDonation } = useSelector((state) => state.cart);
   const [error, setError] = useState(null);
@@ -62,6 +62,7 @@ const CardCheckout = ({ billingDetails, personalDetails }) => {
         <CardPayment
           billingDetails={billingDetails}
           personalDetails={personalDetails}
+          anonymous
         />
       </Elements>
     </>

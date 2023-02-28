@@ -12,6 +12,11 @@
     justify-content: space-between;
 }
 
+.cart-10-section {
+    display: flex;
+    flex-direction: row;
+}
+
 .CheckoutCart-inner {
     display: flex;
     flex-direction: column;

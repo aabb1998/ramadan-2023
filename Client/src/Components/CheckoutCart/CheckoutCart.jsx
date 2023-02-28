@@ -9,6 +9,7 @@ import cart, {
   addItemToCart,
   addOneTimeDonation,
   removeOneTimeDonation,
+  setAnon,
 } from "../../Redux/cart";
 import { useDispatch, useSelector } from "react-redux";
 import PaypalCheckout from "./PaypalCheckout";
@@ -18,6 +19,7 @@ const CheckoutCart = () => {
   const [paypal, setPaypal] = useState(false);
   const [disableCheckout, setDisabledCheckout] = useState(false);
   const [donation, setDonation] = useState(false);
+  const [anonymous, setAnonymous] = useState(false);
   const { cartItems, oneTimeDonation } = useSelector((state) => state.cart);
   let totalAmount = cartItems.reduce((total, item) => total + item.amount, 0);
 
@@ -275,25 +277,47 @@ const CheckoutCart = () => {
                     <span>Processing Fee</span>
                     <span>${((3 / 100) * totalAmount).toFixed(2)}</span>
                   </div>
-                  <div
-                    className={`cart-10-donation ${donation && "checked"}`}
-                    onClick={() => {
-                      setDonation(!donation);
-                    }}
-                  >
-                    <div className="cart-10-donation-container">
-                      <PriceChangeIcon style={{ color: "green" }} />
-                      <span>$10 Donation</span>
+                  <div className="cart-10-section">
+                    <div
+                      className={`cart-10-donation ${donation && "checked"}`}
+                      onClick={() => {
+                        setDonation(!donation);
+                      }}
+                    >
+                      <div className="cart-10-donation-container">
+                        <PriceChangeIcon style={{ color: "green" }} />
+                        <span>$10 Donation</span>
+                      </div>
+                      <div>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={donation ? true : false}
+                          />
+                        </label>
+                      </div>
                     </div>
-                    <div>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={donation ? true : false}
-                        />
-                      </label>
+                    <div
+                      className={`cart-10-donation ${anonymous && "checked"}`}
+                      onClick={() => {
+                        dispatch(setAnon());
+                        setAnonymous(!anonymous);
+                      }}
+                    >
+                      <div className="cart-10-donation-container">
+                        <span>Anonymous Donation</span>
+                      </div>
+                      <div>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={anonymous ? true : false}
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
+
                   <div className="body-right-total-container last">
                     <span>Total</span>
                     <span>

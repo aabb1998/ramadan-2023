@@ -4,6 +4,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import "./styles.css";
 import { TypeAnimation } from "react-type-animation";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const HeaderMenu = () => {
   const texts = [
@@ -15,6 +16,9 @@ const HeaderMenu = () => {
   const [currentTextCounter, setCurrentTextCounter] = useState(0);
   return (
     <>
+      <div>
+        <MenuIcon />
+      </div>
       <div>
         <div className="HeaderMenu">
           <div>
@@ -32,44 +36,24 @@ const HeaderMenu = () => {
                   </a>
                   <ul className="mega-sub-menu">
                     <li className="mega-sub-menu-li">
-                      <a className="mega-sub-menu-a">
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/about-al-ihsan-foundation/"
+                      >
                         About Al-Ihsan Foundation
                       </a>
                     </li>
                     <li>
-                      <a className="mega-sub-menu-a">Reports</a>
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/annual-report/"
+                      >
+                        Reports
+                      </a>
                     </li>
                   </ul>
                 </li>
-                <li>
-                  <a className="headerMenu-nav-a">
-                    ABOUT OUR PROJECTS
-                    <span>
-                      <ArrowDropDownIcon />
-                    </span>
-                  </a>
-                  <ul className="mega-sub-menu">
-                    <li className="mega-menu-row">
-                      <ul>
-                        <li>
-                          <ul>
-                            <li className="mega-menu-item">
-                              <a>AQEEQAH AND GENERAL SACRIFICE</a>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <a className="headerMenu-nav-a">
-                    DONATE
-                    <span>
-                      <ArrowDropDownIcon />
-                    </span>
-                  </a>
-                </li>
+
                 <li>
                   <a className="headerMenu-nav-a">
                     GET INVOLVED
@@ -79,13 +63,28 @@ const HeaderMenu = () => {
                   </a>
                   <ul className="mega-sub-menu">
                     <li className="mega-sub-menu-li">
-                      <a className="mega-sub-menu-a">Fundraise with Us</a>
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/fundraise-with-us/"
+                      >
+                        Fundraise with Us
+                      </a>
                     </li>
                     <li>
-                      <a className="mega-sub-menu-a">Become a Sponsor</a>
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/become-a-sponsor/"
+                      >
+                        Become a Sponsor
+                      </a>
                     </li>
                     <li>
-                      <a className="mega-sub-menu-a">Volunteer</a>
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/volunteer-positions/"
+                      >
+                        Volunteer
+                      </a>
                     </li>
                   </ul>
                 </li>
@@ -98,20 +97,42 @@ const HeaderMenu = () => {
                   </a>
                   <ul className="mega-sub-menu">
                     <li className="mega-sub-menu-li">
-                      <a className="mega-sub-menu-a">Contact Us</a>
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/contact/"
+                      >
+                        Contact Us
+                      </a>
                     </li>
                     <li>
-                      <a className="mega-sub-menu-a">Subscribe</a>
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/subscribe/"
+                      >
+                        Subscribe
+                      </a>
                     </li>
                     <li>
-                      <a className="mega-sub-menu-a">Technical Support</a>
+                      <a
+                        className="mega-sub-menu-a"
+                        href="https://alihsan.org.au/technical-support/"
+                      >
+                        Technical Support
+                      </a>
                     </li>
                   </ul>
                 </li>
                 <li>
-                  <a className="headerMenu-nav-a">
+                  <a
+                    onClick={() => {
+                      window.scrollBy({
+                        top: 4000,
+                        behavior: "smooth", // This line is optional and makes the scrolling smooth
+                      });
+                    }}
+                    className="headerMenu-nav-a"
+                  >
                     <ShoppingCartIcon />
-                    <span>0</span>
                   </a>
                 </li>
               </ul>

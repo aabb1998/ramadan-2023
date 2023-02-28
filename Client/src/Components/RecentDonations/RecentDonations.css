@@ -8,31 +8,147 @@
     align-items: center;
     text-align: center;
     justify-content: center;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    flex: 0.9;
     height: 90%;
-    margin: auto;
-
+    width: 100%;
+        margin: auto;
+    margin-bottom: 20px;
     
 }
 
-.RecentDonations-donation {
-    background-color: #D9D9D9;
+.UpSellAddToCart-button-recents {
+    height: 50px;
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 9.13188px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Anton';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20.6461px;
+    line-height: 120%;
     padding: 10px;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    color: #ffffff;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease-in-out,
+    background-color 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+}
+
+.donations-divider {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+        color: var(--light-gray);
+}
+
+.donations-divider-horizontal {
+    width: 100%;
+    height: 1px;
+    background-color: var(--light-gray);
+    margin: 10px;
+}
+
+.RecentDonations-donation img {
+    width: 100px;
+    height: 90px;
+}
+
+.recentDonation-amount {
+    font-family: 'Poppins';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 26.568px;
+        line-height: 140%;
+        /* or 58px */
+    
+    
+        color: #478277;
+}
+
+.recentDonation-name {
+
+font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 29px;
+    text-align: center;
+    align-items: center;
+    /* or 181% */
+
+
+    /* Black */
+
+    color: #191B1E;
+}
+
+.recentDonation-campaign {
+    font-family: 'Playfair Display';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20.3013px;
+        line-height: 28px;
+        /* identical to box height, or 117% */
+    
+    
+        color: #000000;
+}
+
+.RecentDonations-donation {
     margin-bottom: 10px;
     margin-top: 10px;
     width: 90%;
-    border-radius: 5px;
     font-size: 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     text-align: center;
     align-items: center;
+    border: 1px solid var(--secondary-color);
+    padding: 10px;
 }
 
 .RecentDonations-donation span {
     width: 60px;
     text-align: center;
     align-items: center;
+}
+
+.RecentDonations-inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+@media screen and (max-width: 658px) {
+    .RecentDonations-donation {
+        width: 100%;
+    }
+
+    .recentDonation-campaign {
+        font-size: 14px;
+    }
+
+    .recentDonation-amount {
+        font-size: 15px;
+    }
+
+    .RecentDonations-donation img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .recentDonation-name {
+        font-size: 10px;
+        line-height: normal;
+    }
 }

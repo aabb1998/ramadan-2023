@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Footer from "../Components/Navbars/Footer";
 import Header from "../Components/Navbars/Header";
+import RecentDonations from "../Components/RecentDonations/RecentDonations";
+import RecentDonationsPostCheckout from "../Components/RecentDonations/RecentDonationsPostCheckout";
 import "./PaymentSuccess.css";
 
 const PaymentSuccess = () => {
@@ -17,6 +19,10 @@ const PaymentSuccess = () => {
     if (lastDigits != state?.orderNumber) {
       setUrlFound(false);
     }
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
   }, []);
 
   return (
@@ -40,6 +46,7 @@ const PaymentSuccess = () => {
         )}
         {!urlFound && navigate("/P0Vz0&C&m4Ozq^2d")}
       </div>
+      <RecentDonationsPostCheckout />
       {/* <Footer /> */}
     </>
   );

@@ -14,6 +14,7 @@ import {
   runTransaction,
   orderBy,
   serverTimestamp,
+  limit,
 } from "firebase/firestore";
 import { auth } from "../firebase";
 import { data } from "autoprefixer";
@@ -54,6 +55,7 @@ const updateAmountsInDocuments = async (cartItems) => {
 };
 
 const addDonation = async (collectionName, documentData) => {
+  console.log(documentData);
   try {
     const timeStamp = serverTimestamp();
     const dataWithTimestamp = { ...documentData, createdAt: timeStamp };
@@ -75,10 +77,24 @@ const getDonationsFromCollection = async (collectionName) => {
   return data;
 };
 
+const getLastestDonations = async () => {
+  const docs = [];
+
+  const collectionRef = collection(db, "donations");
+  const q = query(collectionRef, orderBy("createdAt", "desc"), limit(5));
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      docs.push({ id: doc.id }, ...doc.data());
+    });
+  });
+  return docs;
+};
+
 export {
   getAllCampaigns,
   incrementTotal,
   updateAmountsInDocuments,
   addDonation,
   getDonationsFromCollection,
+  getLastestDonations,
 };

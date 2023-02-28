@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./RecentDonations.css";
 import {
   collection,
@@ -19,19 +19,12 @@ import {
   limit,
 } from "firebase/firestore";
 import icon from "../../assets/Icon.svg";
-import {
-  BrowserView,
-  MobileView,
-  isBrowser,
-  isMobile,
-} from "react-device-detect";
 
 import { getLastestDonations } from "../../FirebaseFunctions/FirebaseFunctions";
 const db = getFirestore();
 
-const RecentDonations = (checkout) => {
+const RecentDonationsPostCheckout = (checkout) => {
   const [docs, setDocs] = useState([]);
-  const recentDonationsRef = useRef(null);
   useEffect(() => {
     // Create a reference to the collection
     const collectionRef = collection(db, "donations");
@@ -72,23 +65,11 @@ const RecentDonations = (checkout) => {
     }
   };
 
-  const handleButtonClickCampaigns = () => {
-    window.scrollBy({
-      top: isMobile ? 800 : 500,
-      behavior: "smooth", // This line is optional and makes the scrolling smooth
-    });
-  };
-
-  const handleButtonClick = () => {
-    window.scrollBy({
-      top: isMobile ? 3200 : 500,
-      behavior: "smooth", // This line is optional and makes the scrolling smooth
-    });
-  };
+  const handleButtonClick = () => {};
 
   return (
     <>
-      <div ref={recentDonationsRef} className="MainUpsellSection">
+      <div className="MainUpsellSection">
         <div className="MainDonationSection-inner">
           <div className="MainDonationSection-container">
             <div className="RecentDonations-inner">
@@ -115,28 +96,6 @@ const RecentDonations = (checkout) => {
                   </div>
                 ))}
               </div>
-              {checkout && (
-                <>
-                  <div
-                    onClick={handleButtonClickCampaigns}
-                    className="UpSellAddToCart-button-recents"
-                  >
-                    <span>View our other campaigns</span>
-                  </div>
-                  <div className="donations-divider">
-                    <div className="donations-divider-horizontal" />
-                    <span>OR</span>
-                    <div className="donations-divider-horizontal" />
-                  </div>
-                  <div
-                    onClick={handleButtonClick}
-                    className="UpSellAddToCart-button"
-                  >
-                    <span>Go To Cart</span>
-                    <img src={icon} />
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -145,4 +104,4 @@ const RecentDonations = (checkout) => {
   );
 };
 
-export default RecentDonations;
+export default RecentDonationsPostCheckout;

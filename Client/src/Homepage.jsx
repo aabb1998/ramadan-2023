@@ -74,7 +74,7 @@ const Homepage = () => {
             <ID1 mainCampaign={mainCampaign} otherCampaigns={otherCampaigns} />
           )}
 
-        {/* <Footer /> */}
+        <Footer />
       </div>
 
       {/* <Footer /> */}

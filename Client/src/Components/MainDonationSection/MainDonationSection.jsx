@@ -4,7 +4,7 @@ import MainProgressBar from "../MainProgressBar/MainProgressBar";
 import MainDonationAddToCart from "./MainDonationAddToCart";
 import "./Styles.css";
 
-const MainDonationSection = ({ mainCampaign }) => {
+const MainDonationSection = ({ mainCampaign, recentDonationsRef }) => {
   const [showMore, setShowMore] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -99,7 +99,10 @@ const MainDonationSection = ({ mainCampaign }) => {
               <MainProgressBar mainCampaign={mainCampaign} />
             </div>
             <div>
-              <MainDonationAddToCart mainCampaign={mainCampaign} />
+              <MainDonationAddToCart
+                recentDonationsRef={recentDonationsRef}
+                mainCampaign={mainCampaign}
+              />
             </div>
           </div>
         </div>

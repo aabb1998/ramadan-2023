@@ -22,7 +22,9 @@ const PaypalCheckout = ({
 }) => {
   const dispatch = useDispatch();
   const [hideButton, setHideButton] = useState(false);
-  const { cartItems } = useSelector((state) => state.cart);
+  const { cartItems, anonymous, oneTimeDonation } = useSelector(
+    (state) => state.cart
+  );
   const [allowPaypal, setAllowPaypal] = useState(false);
   const [paypalEnabled, setPaypalEnabled] = useState(true);
   const navigate = useNavigate();
@@ -92,13 +94,17 @@ const PaypalCheckout = ({
                       description: `Al-Ihsan Order ${orderNumber} - Ramadan 2023`,
                       amount: {
                         currency_code: "AUD",
-                        value: totalAmount + processingFee,
+                        value:
+                          oneTimeDonation > 0
+                            ? totalAmount + oneTimeDonation + processingFee
+                            : totalAmount + processingFee,
                       },
                     },
                   ],
                 });
               },
               onApprove: async (data, actions) => {
+                console.log(cartItems[0].name);
                 const order = await actions.order.capture();
                 updateAmountsInDocuments(cartItems);
                 dispatch(emptyCart());
@@ -120,20 +126,22 @@ const PaypalCheckout = ({
                   });
 
                 await addDonation("donations", {
-                  name: "Haytch Sax",
-                  amount: 9998,
-                  anonymous: true,
-                  campaignName: "Cancer",
-                  location: "Sydney, Australia",
+                  name: anonymous ? "Anonymous" : personalDetails.fullName,
+                  amount: totalAmount,
+                  anonymous: anonymous,
+                  campaignName: cartItems[0].name,
+                  location: `${billingDetails.city}, ${billingDetails.country}`,
+                  imgLink: cartItems[0].imgUrl,
                 });
                 navigate(`/paymentSuccess/${orderNumber}`, {
                   state: {
                     cartItems,
                     total: totalAmount + processingFee,
                     orderNumber,
+                    hideCart: true,
                   },
                 });
-                console.log("Successful order:" + order);
+                console.log("Successful order:" + cartItems);
               },
               onError: (err) => {
                 console.log(err);

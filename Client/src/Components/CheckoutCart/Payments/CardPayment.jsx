@@ -13,12 +13,15 @@ import cards from "../../../assets/cards.svg";
 import { useSelector } from "react-redux";
 import { NotificationManager } from "react-notifications";
 import axios from "axios";
-import { updateAmountsInDocuments } from "../../../FirebaseFunctions/FirebaseFunctions";
+import {
+  addDonation,
+  updateAmountsInDocuments,
+} from "../../../FirebaseFunctions/FirebaseFunctions";
 import { useNavigate } from "react-router-dom";
 import loader from "./gid.gif";
 
 const CardPayment = ({ billingDetails, personalDetails }) => {
-  const { cartItems } = useSelector((state) => state.cart);
+  const { cartItems, anonymous } = useSelector((state) => state.cart);
   const { oneTimeDonation } = useSelector((state) => state.cart);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -44,6 +47,8 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
     event.preventDefault();
 
     if (cartItems[0] != null) {
+      const total = cartItems.reduce((acc, obj) => acc + obj.amount, 0);
+
       if (
         personalDetails.fullName &&
         personalDetails.email &&
@@ -108,7 +113,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               }
               return response.orderNumber;
             })
-            .then((orderNumber) => {
+            .then(async (orderNumber) => {
               // elements.getElement(CardElement).clear();
 
               // add sales receipt
@@ -127,6 +132,18 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 .catch((error) => {
                   console.log(error);
                 });
+              console.log(cartItems[0]);
+
+              await addDonation("donations", {
+                name: anonymous ? "Anonymous" : personalDetails.fullName,
+                amount: total,
+                anonymous: anonymous,
+                campaignName: cartItems[0].name,
+                location: `${billingDetails.city}, ${billingDetails.country}`,
+                imgLink: cartItems[0].imgUrl,
+              }).then((response) => {
+                console.log("Donation added to firebase.");
+              });
 
               updateAmountsInDocuments(cartItems);
 
@@ -135,12 +152,13 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 "Payment.",
                 3000
               );
-              // navigate(`/paymentSuccess/${orderNumber}`, {
-              //   state: {
-              //     orderNumber,
-              //     cartItems,
-              //   },
-              // });
+              navigate(`/paymentSuccess/${orderNumber}`, {
+                state: {
+                  orderNumber,
+                  cartItems,
+                  hideCart: true,
+                },
+              });
               setProcessing(false);
               setLoading(false);
               setError("");

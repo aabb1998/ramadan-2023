@@ -5,13 +5,19 @@ import { useDispatch, useSelector } from "react-redux";
 import cart, { addItemToCart } from "../../Redux/cart";
 import { NotificationManager } from "react-notifications";
 
-const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
+const MainDonationAddToCart = ({
+  targetRef,
+  mainCampaign,
+  recentDonationsRef,
+}) => {
   const [schedule, setSchedule] = useState("onetime");
   const [timeframe, setTimeFrame] = useState("");
   const [selectAmount, setSelectAmount] = useState(0);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [subscription, setSubscription] = useState(false);
+  const componentRef = useRef(null);
+
   const dispatch = useDispatch();
   const handleButtonClick = () => {
     if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
@@ -23,10 +29,12 @@ const MainDonationAddToCart = ({ targetRef, mainCampaign }) => {
         3000
       );
     } else {
-      // window.scrollBy({
-      //   top: 1300,
-      //   behavior: "smooth", // This line is optional and makes the scrolling smooth
-      // });
+      window.scrollBy({
+        top: 500,
+        behavior: "smooth", // This line is optional and makes the scrolling smooth
+      });
+      console.log(recentDonationsRef);
+      recentDonationsRef.current.scrollIntoView({ behaviour: "smooth" });
       dispatch(addItemToCart(mainDonation));
       NotificationManager.success(
         `$${mainDonation.amount.toLocaleString()} donation - ${

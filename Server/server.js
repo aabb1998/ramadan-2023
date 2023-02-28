@@ -301,43 +301,6 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
           );
         }
 
-        // create sales receipt
-        // const salesReceipt = {
-        //   Line: [
-        //     {
-        //       Description: "Pest Control Services",
-        //       DetailType: "SalesItemLineDetail",
-        //       SalesItemLineDetail: {
-        //         TaxCodeRef: {
-        //           value: "5",
-        //         },
-        //         Qty: 1,
-        //         UnitPrice: 35,
-        //         ItemRef: {
-        //           name: "42020 FG - Tax Ded Donations (NP)",
-        //           value: "26",
-        //         },
-        //       },
-        //       LineNum: 1,
-        //       Amount: 35.0,
-        //       Id: "1",
-        //     },
-        //   ],
-        //   CustomerRef: {
-        //     value: customerId,
-        //   },
-        //   ClassRef: {
-        //     name: "FP - 10d - Ramadan Lebanon Food Packs",
-        //     value: "5100000000000049934",
-        //   },
-        // };
-
-        // const createSalesReceiptResponse = await axios.post(
-        //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
-        //   salesReceipt,
-        //   { headers }
-        // );
-        // console.log("Sales receipt created:", createSalesReceiptResponse);
         res.send("Sales receipt created successfully");
       })
       .catch((error) => {
@@ -369,6 +332,55 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
     res.status(500).send("Error occurred while calling API");
   }
 });
+
+setInterval(() => {
+  console.log("CHECKING");
+  const token = JSON.parse(oauth2_token_json);
+  const endpoint =
+    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+  const query = "SELECT * FROM Class";
+  oauthClient = new OAuthClient({
+    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+    environment: "sandbox",
+    redirectUri: "http://localhost:3002/callback",
+    token: token,
+  });
+  try {
+    const headers = {
+      Authorization: `Bearer ${token.access_token}`,
+      Accept: "application/json",
+    };
+    axios
+      .get(endpoint, { params: { query }, headers })
+      .then(async (response) => {
+        console.log(response.data.QueryResponse);
+      });
+
+    // Make an API call using the OAuth2 token
+    // const response = await axios.get(
+    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+    //   { headers }
+    // );
+
+    // res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    console.log("TOKEN ERROR");
+    oauthClient
+      .refresh()
+      .then(function (authResponse) {
+        console.log(
+          `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
+        );
+        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+        res.send(oauth2_token_json);
+      })
+      .catch(function (e) {
+        console.error(e);
+      });
+  }
+}, 10000);
 
 app.get("/allQuickbooksClasses", (req, res) => {
   const token = JSON.parse(oauth2_token_json);

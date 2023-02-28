@@ -9,10 +9,81 @@ const Footer = () => {
       <div className="Footer">
         <div className="Footer-inner">
           <div className="Footer-inner-left">
-            <button>Subscribe to email</button>
+            <div className="Footer-inner-left-nav">
+              <h1>About Us</h1>
+              <div>
+                <ul className="left-nav-ul">
+                  <li>
+                    <a href="https://alihsan.org.au/who-we-are/">Who We are?</a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/our-vision-mission/">
+                      Our Vision & Mission
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/objectives-strategies/">
+                      Objectives & Strategies
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/case-studies/">
+                      Case Studies
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="Footer-inner-left-nav">
+              <h1>News</h1>
+              <div>
+                <ul className="left-nav-ul">
+                  <li>
+                    <a href="https://alihsan.org.au/category/news/campaign-updates/">
+                      Post Campaign Updates
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/on-the-ground-videos/">
+                      On the Ground Videos
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="Footer-inner-left-nav">
+              <h1>Policies & Procedures</h1>
+              <div>
+                <ul className="left-nav-ul">
+                  <li>
+                    <a href="https://alihsan.org.au/terms-conditions/">
+                      Terms and Conditions
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/privacy/">Privacy Policy</a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/child-protection-policy/">
+                      Child Protection Policies & Procedures
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/data-deletion-policy/">
+                      Data Deletion Policy
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://alihsan.org.au/safeguarding-policy/">
+                      Safeguarding Policy
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
           <div className="Footer-inner-right">
-            <h5>Donation Details</h5>
+            <h1>Donation Details</h1>
             <span>You can donate via:</span>
             <p>
               <strong>St George Bank</strong>
