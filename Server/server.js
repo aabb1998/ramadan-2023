@@ -15,6 +15,7 @@ const quickbooks = require("node-quickbooks");
 const OAuth2Strategy = require("passport-oauth2").Strategy;
 const ngrok = process.env.NGROK_ENABLED === "true" ? require("ngrok") : null;
 const mailchimp = require("@mailchimp/mailchimp_marketing");
+const easyinvoice = require("easyinvoice");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -373,6 +374,101 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error occurred while calling API");
+  }
+});
+
+app.post("/generateInvoice", async (req, res) => {
+  console.log(req.body.data);
+
+  let saleItem = {
+    quantity: 1,
+    description: `Donation - Main Campaign`,
+    "tax-rate": 3,
+    price: 10,
+  };
+  var data = {
+    // Customize enables you to provide your own templates
+    // Please review the documentation for instructions and examples
+    customize: {
+      //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
+    },
+    images: {
+      // The logo on top of your invoice
+      // The invoice background
+      background:
+        "https://firebasestorage.googleapis.com/v0/b/orphansaroundtheworld-110e1.appspot.com/o/This%20donation%20was%20made%20as%20a%20gift..png?alt=media&token=bb4be58a-2588-42db-849f-710d42906ea0",
+    },
+    // Your own data
+    sender: {
+      company: "AlIhsan Foundation",
+      address: "176 Waldron Road",
+      zip: "2162",
+      city: "Chester Hill",
+      country: "Australia",
+      "Payment Date": "23/23/23",
+
+      //"custom1": "custom value 1",
+      //"custom2": "custom value 2",
+      //"custom3": "custom value 3"
+    },
+    // Your recipient
+    client: {
+      company: "haytch",
+      address: "haytch",
+      zip: "231",
+      city: "Sydney",
+      country: "Australia",
+      "Payment Date": "23/23/23",
+      // "custom3": "custom value 3"
+    },
+    information: {
+      number: 232323,
+      date: "12-12-2021",
+      "due-date": "N/A",
+    },
+    // The products you would like to see on your invoice
+    // Total values are being calculated automatically
+    products: [saleItem],
+    // The message you would like to display on the bottom of your invoice
+    "bottom-notice":
+      "Thank you for sponsoring the orphans with Orphans Around The World.",
+    // Settings to customize your invoice
+    settings: {
+      currency: "AUD", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
+      // "locale": "nl-NL", // Defaults to en-US, used for number formatting (See documentation 'Locales and Currency')
+      "tax-notation": "Processing Fee", // Defaults to 'vat'
+      // "margin-top": 25, // Defaults to '25'
+      // "margin-right": 25, // Defaults to '25'
+      // "margin-left": 25, // Defaults to '25'
+      // "margin-bottom": 25, // Defaults to '25'
+      // "format": "A4", // Defaults to A4, options: A3, A4, A5, Legal, Letter, Tabloid
+      // "height": "1000px", // allowed units: mm, cm, in, px
+      // "width": "500px", // allowed units: mm, cm, in, px
+      // "orientation": "landscape", // portrait or landscape, defaults to portrait
+    },
+    // Translate your invoice to your preferred language
+    translate: {
+      invoice: "ORDER RECEIPT", // Default to 'INVOICE'
+      number: "Reference no.", // Defaults to 'Number'
+      date: "-", // Default to 'Date'
+      // "subtotal": "Subtotaal", // Defaults to 'Subtotal'
+      products: "Sponsorships", // Defaults to 'Products'
+      // "quantity": "Aantal", // Default to 'Quantity'
+      // "price": "Prijs", // Defaults to 'Price'
+      // "product-total": "Totaal", // Defaults to 'Total'
+      // "total": "Totaal" // Defaults to 'Total'
+    },
+  };
+  try {
+    const result = await easyinvoice.createInvoice(data);
+    return res.send({
+      status: true,
+      invoice: result,
+    });
+  } catch {
+    return res.send({
+      status: false,
+    });
   }
 });
 

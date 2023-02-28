@@ -153,13 +153,15 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 "Payment.",
                 3000
               );
-              // navigate(`/paymentSuccess/${orderNumber}`, {
-              //   state: {
-              //     orderNumber,
-              //     cartItems,
-              //     hideCart: true,
-              //   },
-              // });
+              navigate(`/paymentSuccess/${orderNumber}`, {
+                state: {
+                  orderNumber,
+                  cartItems,
+                  hideCart: true,
+                  billingDetails: billingDetails,
+                  personalDetails: personalDetails,
+                },
+              });
               setProcessing(false);
               setLoading(false);
               setError("");

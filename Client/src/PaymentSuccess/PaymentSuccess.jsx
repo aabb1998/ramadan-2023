@@ -9,7 +9,27 @@ import "./PaymentSuccess.css";
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
+
+  const [uploadProgress, setUploadProgress] = useState(false);
   const [urlFound, setUrlFound] = useState(true);
+
+  const generateInvoice = async () => {
+    setUploadProgress(false);
+    const data = {
+      items: state.cartItems,
+      orderNumber: state.orderNumber,
+      billingDetails: state.billingDetails,
+      personalDetails: state.personalDetails,
+    };
+
+    const invoiceGenerator = await axios
+      .post("http://localhost:3002/generateInvoice", {
+        data,
+      })
+      .then((response) => {
+        console.log(response);
+      });
+  };
 
   useEffect(() => {
     const url = window.location.href;
