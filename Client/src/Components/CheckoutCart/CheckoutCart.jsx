@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PaypalCheckout from "./PaypalCheckout";
 import CardCheckout from "./CardCheckout";
 import PriceChangeIcon from "@mui/icons-material/PriceChange";
+import { NotificationManager } from "react-notifications";
 const CheckoutCart = () => {
   const [paypal, setPaypal] = useState(false);
   const [disableCheckout, setDisabledCheckout] = useState(false);
@@ -22,6 +23,11 @@ const CheckoutCart = () => {
   const [anonymous, setAnonymous] = useState(false);
   const { cartItems, oneTimeDonation } = useSelector((state) => state.cart);
   let totalAmount = cartItems.reduce((total, item) => total + item.amount, 0);
+
+  const toggle = () => {
+    setPaypal(false);
+    setDonation(false);
+  };
 
   const dispatch = useDispatch();
 
@@ -67,6 +73,19 @@ const CheckoutCart = () => {
       dispatch(removeOneTimeDonation());
     }
   }, [donation]);
+
+  useEffect(() => {
+    if (paypal) {
+      const hasScheduledItem = cartItems.some((item) => item.schedule === true);
+      if (hasScheduledItem) {
+        NotificationManager.error(
+          "Please note, subscriptions are unavailable with Paypal.",
+          "Paypal",
+          3000
+        );
+      }
+    }
+  }, [paypal]);
 
   return (
     <>
@@ -341,6 +360,7 @@ const CheckoutCart = () => {
                     billingDetails={billingDetails}
                     personalDetails={personalDetails}
                     disablePayments={disablePayments}
+                    toggle={toggle}
                   />
                 ) : (
                   <CardCheckout

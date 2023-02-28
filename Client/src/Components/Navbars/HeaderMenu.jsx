@@ -16,9 +16,9 @@ const HeaderMenu = () => {
   const [currentTextCounter, setCurrentTextCounter] = useState(0);
   return (
     <>
-      <div>
+      {/* <div>
         <MenuIcon />
-      </div>
+      </div> */}
       <div>
         <div className="HeaderMenu">
           <div>

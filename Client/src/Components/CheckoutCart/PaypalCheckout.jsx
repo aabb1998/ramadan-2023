@@ -19,7 +19,10 @@ const PaypalCheckout = ({
   billingDetails,
   personalDetails,
   disablePayments,
+  toggle,
 }) => {
+  const [isPaymentComplete, setIsPaymentComplete] = useState(false);
+
   const dispatch = useDispatch();
   const [hideButton, setHideButton] = useState(false);
   const { cartItems, anonymous, oneTimeDonation } = useSelector(
@@ -96,7 +99,7 @@ const PaypalCheckout = ({
                         currency_code: "AUD",
                         value:
                           oneTimeDonation > 0
-                            ? totalAmount + oneTimeDonation + processingFee
+                            ? totalAmount + 10 + processingFee
                             : totalAmount + processingFee,
                       },
                     },
@@ -117,6 +120,7 @@ const PaypalCheckout = ({
                     userEmail: billingDetails.email,
                     billingDetails,
                     personalDetails,
+                    oneTimeDonation,
                   })
                   .then((response) => {
                     console.log(response.data);
@@ -133,18 +137,22 @@ const PaypalCheckout = ({
                   location: `${billingDetails.city}, ${billingDetails.country}`,
                   imgLink: cartItems[0].imgUrl,
                 });
-                navigate(`/paymentSuccess/${orderNumber}`, {
-                  state: {
-                    cartItems,
-                    total: totalAmount + processingFee,
-                    orderNumber,
-                    hideCart: true,
-                  },
-                });
+                setIsPaymentComplete(true);
+                toggle();
+                // navigate(`/paymentSuccess/${orderNumber}`, {
+                //   state: {
+                //     cartItems,
+                //     total: totalAmount + processingFee,
+                //     orderNumber,
+                //     hideCart: true,
+                //   },
+                // });
                 console.log("Successful order:" + cartItems);
+                order = null;
               },
               onError: (err) => {
                 console.log(err);
+                setIsPaymentComplete(false);
               },
             })
             .render(paypal.current);
@@ -207,7 +215,7 @@ const PaypalCheckout = ({
 
   return (
     <div ref={paypal} className="body-right-total-checkout">
-      {!hideButton && allowPaypal ? (
+      {!hideButton && allowPaypal && !isPaymentComplete ? (
         <button
           onClick={(e) => handlePaypalPayment(e)}
           className="checkout-paypal"

@@ -33,8 +33,7 @@ const MainDonationAddToCart = ({
         top: 500,
         behavior: "smooth", // This line is optional and makes the scrolling smooth
       });
-      console.log(recentDonationsRef);
-      recentDonationsRef.current.scrollIntoView({ behaviour: "smooth" });
+
       dispatch(addItemToCart(mainDonation));
       NotificationManager.success(
         `$${mainDonation.amount.toLocaleString()} donation - ${
