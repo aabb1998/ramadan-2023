@@ -80,7 +80,7 @@ const RecentDonationsPostCheckout = (checkout) => {
               </div>
               <div className="RecentDonations-donations">
                 {docs.map((donation, index) => (
-                  <div className="RecentDonations-donation">
+                  <div key={index} className="RecentDonations-donation">
                     <img src={donation.imgLink} />
                     <span className="recentDonation-campaign">
                       {donation.campaignName}

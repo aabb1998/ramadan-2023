@@ -16,12 +16,50 @@ const OAuth2Strategy = require("passport-oauth2").Strategy;
 const ngrok = process.env.NGROK_ENABLED === "true" ? require("ngrok") : null;
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 const easyinvoice = require("easyinvoice");
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.raw({ type: "*/*" }));
+// // const rawBodyParser = bodyParser.raw({ type: "*/*" });
+// app.use(bodyParser.json());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 app.use(cors());
+
+// STRIPE WEBHOOKS
+const endpointSecret =
+  "whsec_79ecdb9f07ca450c8426328a114b65d68e80b8bfd2058f19b9bf81dc30c29e26";
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  (request, response) => {
+    const sig = request.headers["stripe-signature"];
+    let event;
+    try {
+      const rawBody = request.body;
+      console.log(rawBody);
+      event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
+    } catch (err) {
+      response.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        const paymentIntentSucceeded = event.data.object;
+        // console.log("Payment successed");
+        console.log([paymentIntentSucceeded]);
+        // Then define and call a function to handle the event payment_intent.succeeded
+        break;
+      // ... handle other event types
+      default:
+      // console.log(`Unhandled event type ${event.type}`);
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    response.send();
+  }
+);
 
 mailchimp.setConfig({
   apiKey: process.env.MAILCHIMP_CLIENT_KEY,
@@ -379,13 +417,29 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
 
 app.post("/generateInvoice", async (req, res) => {
   console.log(req.body.data);
+  let items = [];
+  for (let i = 0; i < req.body.data.items.length; i++) {
+    let item = {
+      quantity: 1,
+      description: `Donation - ${req.body.data.items[i].name}`,
+      "tax-rate": 3,
+      price: req.body.data.items[i].amount,
+    };
+    items.push(item);
+  }
 
-  let saleItem = {
-    quantity: 1,
-    description: `Donation - Main Campaign`,
-    "tax-rate": 3,
-    price: 10,
-  };
+  if (req.body.data.oneTimeDonation > 0) {
+    let newItem = {
+      quantity: 1,
+      description: "One time donation",
+      "tax-rate": 3,
+      price: 10,
+    };
+    items.push(newItem);
+  }
+
+  console.log(items);
+
   var data = {
     // Customize enables you to provide your own templates
     // Please review the documentation for instructions and examples
@@ -396,7 +450,7 @@ app.post("/generateInvoice", async (req, res) => {
       // The logo on top of your invoice
       // The invoice background
       background:
-        "https://firebasestorage.googleapis.com/v0/b/orphansaroundtheworld-110e1.appspot.com/o/This%20donation%20was%20made%20as%20a%20gift..png?alt=media&token=bb4be58a-2588-42db-849f-710d42906ea0",
+        "https://firebasestorage.googleapis.com/v0/b/ramadan2023-703d7.appspot.com/o/invoices%2FbackgroundInvoice.png?alt=media&token=449950f7-c937-426e-8e35-6543de5e7aed",
     },
     // Your own data
     sender: {
@@ -413,25 +467,24 @@ app.post("/generateInvoice", async (req, res) => {
     },
     // Your recipient
     client: {
-      company: "haytch",
-      address: "haytch",
-      zip: "231",
-      city: "Sydney",
-      country: "Australia",
-      "Payment Date": "23/23/23",
+      company: req.body.data.personalDetails.fullName,
+      address: req.body.data.billingDetails.streetAddress,
+      zip: req.body.data.billingDetails.zip,
+      city: req.body.data.billingDetails.city,
+      country: req.body.data.billingDetails.country,
+      // "Payment Date": "23/23/23",
       // "custom3": "custom value 3"
     },
     information: {
-      number: 232323,
+      number: req.body.data.orderNumber,
       date: "12-12-2021",
       "due-date": "N/A",
     },
     // The products you would like to see on your invoice
     // Total values are being calculated automatically
-    products: [saleItem],
+    products: items,
     // The message you would like to display on the bottom of your invoice
-    "bottom-notice":
-      "Thank you for sponsoring the orphans with Orphans Around The World.",
+    "bottom-notice": "Thank you for your donations.",
     // Settings to customize your invoice
     settings: {
       currency: "AUD", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
@@ -449,10 +502,10 @@ app.post("/generateInvoice", async (req, res) => {
     // Translate your invoice to your preferred language
     translate: {
       invoice: "ORDER RECEIPT", // Default to 'INVOICE'
-      number: "Reference no.", // Defaults to 'Number'
+      number: "Order no.", // Defaults to 'Number'
       date: "-", // Default to 'Date'
       // "subtotal": "Subtotaal", // Defaults to 'Subtotal'
-      products: "Sponsorships", // Defaults to 'Products'
+      products: "Campaign Donations", // Defaults to 'Products'
       // "quantity": "Aantal", // Default to 'Quantity'
       // "price": "Prijs", // Defaults to 'Price'
       // "product-total": "Totaal", // Defaults to 'Total'
@@ -465,7 +518,8 @@ app.post("/generateInvoice", async (req, res) => {
       status: true,
       invoice: result,
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
     return res.send({
       status: false,
     });
@@ -513,9 +567,7 @@ setInterval(() => {
         oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
         res.send(oauth2_token_json);
       })
-      .catch(function (e) {
-        console.error(e);
-      });
+      .catch(function (e) {});
   }
 }, 10000);
 

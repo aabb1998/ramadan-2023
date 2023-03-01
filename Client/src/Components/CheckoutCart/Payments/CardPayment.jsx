@@ -69,6 +69,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               card: elements.getElement(CardElement),
             })
             .then(async (paymentMethod) => {
+              console.log(paymentMethod);
               const response = await axios.post(
                 "http://localhost:3002/createCustomer",
                 {
@@ -160,6 +161,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                   hideCart: true,
                   billingDetails: billingDetails,
                   personalDetails: personalDetails,
+                  oneTimeDonation: oneTimeDonation,
                 },
               });
               setProcessing(false);

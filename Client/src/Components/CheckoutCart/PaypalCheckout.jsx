@@ -13,7 +13,7 @@ import {
 } from "../../FirebaseFunctions/FirebaseFunctions";
 import axios from "axios";
 
-// const PayPalButton = window.paypal.Buttons.driver("react", { React, ReactDOM });
+const PayPalButton = window.paypal.Buttons.driver("react", { React, ReactDOM });
 
 const PaypalCheckout = ({
   billingDetails,
@@ -139,14 +139,19 @@ const PaypalCheckout = ({
                 });
                 setIsPaymentComplete(true);
                 toggle();
-                // navigate(`/paymentSuccess/${orderNumber}`, {
-                //   state: {
-                //     cartItems,
-                //     total: totalAmount + processingFee,
-                //     orderNumber,
-                //     hideCart: true,
-                //   },
-                // });
+                console.log(oneTimeDonation);
+                navigate(`/paymentSuccess/${orderNumber}`, {
+                  state: {
+                    cartItems,
+                    total: totalAmount + processingFee,
+                    orderNumber,
+                    hideCart: true,
+                    cartItems,
+                    billingDetails,
+                    personalDetails,
+                    oneTimeDonation,
+                  },
+                });
                 console.log("Successful order:" + cartItems);
                 order = null;
               },

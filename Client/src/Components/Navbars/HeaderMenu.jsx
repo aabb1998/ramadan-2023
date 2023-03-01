@@ -22,7 +22,9 @@ const HeaderMenu = () => {
       <div>
         <div className="HeaderMenu">
           <div>
-            <img className="lazyloaded" src={logo} />
+            <a href="/">
+              <img className="lazyloaded" src={logo} />
+            </a>
           </div>
           <div className="HeaderMenu-navbar">
             <nav className="headerMenu-nav">
