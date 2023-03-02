@@ -21,6 +21,10 @@
     padding: 10px 0px;
 }
 
+.packs {
+    font-size: 13px;
+}
+
 .MainDonationAddToCart-campaign span {
     width: 100%;
     font-weight: bold;
