@@ -89,6 +89,8 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                   customerId: customer.id,
                   cart: cartItems,
                   oneTimeDonation,
+                  personalDetails,
+                  billingDetails,
                 }
               );
               return response.data;
@@ -154,16 +156,16 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 "Payment.",
                 3000
               );
-              navigate(`/paymentSuccess/${orderNumber}`, {
-                state: {
-                  orderNumber,
-                  cartItems,
-                  hideCart: true,
-                  billingDetails: billingDetails,
-                  personalDetails: personalDetails,
-                  oneTimeDonation: oneTimeDonation,
-                },
-              });
+              // navigate(`/paymentSuccess/${orderNumber}`, {
+              //   state: {
+              //     orderNumber,
+              //     cartItems,
+              //     hideCart: true,
+              //     billingDetails: billingDetails,
+              //     personalDetails: personalDetails,
+              //     oneTimeDonation: oneTimeDonation,
+              //   },
+              // });
               setProcessing(false);
               setLoading(false);
               setError("");

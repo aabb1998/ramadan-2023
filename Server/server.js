@@ -36,7 +36,7 @@ app.post(
     let event;
     try {
       const rawBody = request.body;
-      console.log(rawBody);
+      console.log(rawBody.data.object.metadata);
       event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
     } catch (err) {
       response.status(400).send(`Webhook Error: ${err.message}`);
@@ -48,8 +48,113 @@ app.post(
       case "payment_intent.succeeded":
         const paymentIntentSucceeded = event.data.object;
         // console.log("Payment successed");
-        console.log([paymentIntentSucceeded]);
+        console.log("SUCCESS" + paymentIntentSucceeded);
         // Then define and call a function to handle the event payment_intent.succeeded
+
+        const addReceiptToQuickbooks = () => {
+          const nameArray =
+            paymentIntentSucceeded.data.object.metadata.fullName.split(" ");
+          const firstName = nameArray[0]; // "Aniss"
+          const lastName = nameArray[1]; // "Abbou"
+
+          const token = JSON.parse(oauth2_token_json);
+          const endpoint =
+            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+
+          // Set up the query parameters to search for a customer by email
+          const query = `SELECT * FROM Customer WHERE DisplayName = '${paymentIntentSucceeded.data.object.metadata.fullName}'`;
+          let customerId;
+          try {
+            const headers = {
+              Authorization: `Bearer ${token.access_token}`,
+              Accept: "application/json",
+            };
+
+            axios
+              .get(endpoint, { params: { query }, headers })
+              .then(async (response) => {
+                const customer = response.data.QueryResponse.Customer;
+                if (customer) {
+                  customerId = customer[0].Id;
+
+                  let totalAmount =
+                    paymentIntentSucceeded.data.object.amount / 100;
+                  let processingFee = 0.03 * totalAmount;
+                  let totalMinusFee = totalAmount - processingFee;
+                  let salesReceiptLines = [];
+
+                  const salesReceiptLine = {
+                    Description: `Donation ${paymentIntentSucceeded.data.object.metadata.name}`,
+                    DetailType: "SalesItemLineDetail",
+                    SalesItemLineDetail: {
+                      TaxCodeRef: {
+                        value: "5",
+                      },
+
+                      Qty: 1,
+                      UnitPrice: totalMinusFee,
+                      ItemRef: {
+                        name: "42020 FG - Tax Ded Donations (NP)",
+                        value: "26",
+                      },
+                      ClassRef: {
+                        name: paymentIntentSucceeded.data.object.metadata
+                          .quickbooksName,
+                        value:
+                          paymentIntentSucceeded.data.object.metadata
+                            .quickbooksId,
+                      },
+                    },
+                    LineNum: 1,
+                    Amount: totalMinusFee,
+                    Id: `1`,
+                  };
+                  salesReceiptLines.push(salesReceiptLine);
+                  const processingFeeLine = {
+                    Description: `Merchant Fees`,
+                    DetailType: "SalesItemLineDetail",
+                    SalesItemLineDetail: {
+                      TaxCodeRef: {
+                        value: "5",
+                      },
+                      Qty: 1,
+                      UnitPrice: processingFee,
+                      ItemRef: {
+                        name: "42020 FG - Tax Ded Donations (NP)",
+                        value: "26",
+                      },
+                      ClassRef: {
+                        name: "General",
+                        value: "5100000000000049941",
+                      },
+                    },
+                    LineNum: 2,
+                    Amount: processingFee,
+                    Id: `2`,
+                  };
+
+                  salesReceiptLines.push(processingFeeLine);
+                  console.log(salesReceiptLines);
+
+                  const salesReceipt = {
+                    Line: salesReceiptLines,
+                    CustomerRef: {
+                      value: customerId,
+                    },
+                    PaymentMethodRef: {
+                      name: paymentIntentSucceeded.data.object.metadata
+                        .paymentMethodRefName,
+                      value: paymentIntentSucceeded.data.object.metadata.value,
+                    },
+                    TotalAmt: totalAmount,
+                  };
+                }
+              });
+          } catch (error) {
+            console.log(error);
+          }
+        };
+
         break;
       // ... handle other event types
       default:
@@ -278,7 +383,7 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
         let salesReceiptLines = [];
 
         for (let i = 0; i < req.body.cartItems.length; i++) {
-          const processingFee = (3 / 100) * req.body.cartItems[i].amount;
+          const processingFee = 0.03 * req.body.cartItems[i].amount;
 
           const salesReceiptLine = {
             Description: `Donation ${req.body.cartItems[i].name}`,
@@ -305,7 +410,8 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
           };
 
           salesReceiptLines.push(salesReceiptLine);
-          totalAmount += req.body.cartItems[i].amount + processingFee;
+          totalAmount += req.body.cartItems[i].amount;
+          console.log(totalAmount);
         }
 
         if (req.body.oneTimeDonation > 0) {
@@ -345,7 +451,7 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
               value: "5",
             },
             Qty: 1,
-            UnitPrice: (3 / 100) * totalAmount,
+            UnitPrice: 0.03 * totalAmount,
             ItemRef: {
               name: "42020 FG - Tax Ded Donations (NP)",
               value: "26",
@@ -363,7 +469,7 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
         salesReceiptLines.push(processingFeeLine);
 
         console.log(salesReceiptLines);
-        console.log(totalAmount);
+        console.log(totalAmount + 0.03 * totalAmount);
 
         const salesReceipt = {
           Line: salesReceiptLines,
@@ -714,6 +820,8 @@ app.post("/createCharges", async (req, res) => {
   let { cart } = req.body;
   let { customerId } = req.body;
   let { oneTimeDonation } = req.body;
+  let { billingDetails } = req.body;
+  let { personalDetails } = req.body;
   let paymentIntentResult;
   let subscriptionResult = [];
   let paymentIntentResultsArray = [];
@@ -773,7 +881,9 @@ app.post("/createCharges", async (req, res) => {
           // ); // April 20th, 2023
 
           if (subscription.time === "ramadan-daily") {
-            const subscription = await stripe.subscriptions.create({
+            console.log("SUBNSC");
+            console.log(subscription);
+            const userSubscription = await stripe.subscriptions.create({
               customer: customerId,
               items: [
                 {
@@ -791,13 +901,19 @@ app.post("/createCharges", async (req, res) => {
               metadata: {
                 start_date: ramadanDailyDate,
                 end_date: endDate,
+                paymentMethodRefName: "Stripe",
+                value: 6,
+                fullName: personalDetails.fullName,
+                quickbooksName: subscription.quickbooksClassName,
+                quickbooksId: subscription.quickbooksClassId,
+                campaignName: subscription.name,
               },
             });
             const customer = await stripe.customers.retrieve(customerId);
             const defaultPaymentMethod =
               customer.invoice_settings.default_payment_method;
             const paymentIntent = await stripe.paymentIntents.create({
-              amount: 100 * 100,
+              amount: (subscription.amount + 0.03 * subscription.amount) * 100,
               currency: "AUD",
               customer: customerId,
               payment_method: defaultPaymentMethod,
@@ -809,7 +925,9 @@ app.post("/createCharges", async (req, res) => {
 
             subscriptionResult.push(subscription);
           } else if (subscription.time === "ramadan-last-10") {
-            const subscription = await stripe.subscriptions.create({
+            console.log("SUBNSC");
+            console.log(subscription);
+            const userSubscription = await stripe.subscriptions.create({
               customer: customerId,
               items: [
                 {
@@ -821,12 +939,22 @@ app.post("/createCharges", async (req, res) => {
               ),
               trial_end: Math.floor(Last10startDate.getTime() / 1000),
               cancel_at: Math.floor(endDate.getTime() / 1000),
+              metadata: {
+                start_date: ramadanDailyDate,
+                end_date: endDate,
+                paymentMethodRefName: "Stripe",
+                value: 6,
+                fullName: personalDetails.fullName,
+                quickbooksName: subscription.quickbooksClassName,
+                quickbooksId: subscription.quickbooksClassId,
+                campaignName: subscription.name,
+              },
             });
             const customer = await stripe.customers.retrieve(customerId);
             const defaultPaymentMethod =
               customer.invoice_settings.default_payment_method;
             const paymentIntent = await stripe.paymentIntents.create({
-              amount: 100 * 100,
+              amount: (subscription.amount + 0.03 * subscription.amount) * 100,
               currency: "AUD",
               customer: customerId,
               payment_method: defaultPaymentMethod,
@@ -837,13 +965,23 @@ app.post("/createCharges", async (req, res) => {
 
             paymentIntentResult = paymentIntent;
           } else {
-            const subscription = await stripe.subscriptions.create({
+            const userSubscription = await stripe.subscriptions.create({
               customer: customerId,
               items: [
                 {
                   plan: plan.id,
                 },
               ],
+              metadata: {
+                start_date: ramadanDailyDate,
+                end_date: endDate,
+                paymentMethodRefName: "Stripe",
+                value: 6,
+                fullName: personalDetails.fullName,
+                quickbooksName: subscription.quickbooksClassName,
+                quickbooksId: subscription.quickbooksClassId,
+                campaignName: subscription.name,
+              },
             });
           }
         } else {
