@@ -65,3 +65,30 @@
     cursor: pointer;
     min-width: 200px;
 }
+
+@media screen and (max-width: 650px) {
+    .MainDonationSection-header h5 {
+        font-size: 30px; 
+        line-height: 0px;
+    }
+
+    .MainDonationSection-header span {
+        font-size: 15px;
+    }
+
+    .payment-container-inner-order {
+        width: 60%;
+    }
+
+    .payment-container-inner {
+        width: 90%;
+    }
+
+    .payment-container-inner-order span {
+        font-size: 12px;
+    }
+
+    .payment-container-buttons button {
+        width: 80%;
+    }
+}

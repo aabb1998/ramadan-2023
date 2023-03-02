@@ -106,14 +106,15 @@ const RecentDonations = (checkout) => {
                         {donation.campaignName}
                       </span>
                     </div>
+                    <div className="recentDonation-nameInfo">
+                      <span className="recentDonation-name">
+                        {getShorterName(donation.name)}
+                      </span>
+                      <span className="recentDonation-amount">
+                        ${donation.amount}
+                      </span>
+                    </div>
 
-                    <span className="recentDonation-name">
-                      {getShorterName(donation.name)}
-                    </span>
-
-                    <span className="recentDonation-amount">
-                      ${donation.amount}
-                    </span>
                     <span>{donation.location}</span>
                   </div>
                 ))}

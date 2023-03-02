@@ -262,7 +262,7 @@ const UpsellCart = ({ campaign }) => {
               <div className="MainDonationAddToCart-amounts-row">
                 <div
                   onClick={() => setSelectAmount(50)}
-                  className={`MainDonationAddToCart-amount left ${
+                  className={`MainDonationAddToCart-amount packs left ${
                     selectAmount === 50 ? "amount-active" : ""
                   }`}
                 >
@@ -270,7 +270,7 @@ const UpsellCart = ({ campaign }) => {
                 </div>
                 <div
                   onClick={() => setSelectAmount(100)}
-                  className={`MainDonationAddToCart-amount ${
+                  className={`MainDonationAddToCart-amount packs ${
                     selectAmount === 100 ? "amount-active" : ""
                   }`}
                 >
@@ -278,7 +278,7 @@ const UpsellCart = ({ campaign }) => {
                 </div>
                 <div
                   onClick={() => setSelectAmount(150)}
-                  className={`MainDonationAddToCart-amount right ${
+                  className={`MainDonationAddToCart-amount packs right ${
                     selectAmount === 150 ? "amount-active" : ""
                   }`}
                 >
@@ -288,7 +288,7 @@ const UpsellCart = ({ campaign }) => {
               <div className="MainDonationAddToCart-amounts-row">
                 <div
                   onClick={() => setSelectAmount(250)}
-                  className={`MainDonationAddToCart-amount left ${
+                  className={`MainDonationAddToCart-amount packs left ${
                     selectAmount === 250 ? "amount-active" : ""
                   }`}
                 >
@@ -296,7 +296,7 @@ const UpsellCart = ({ campaign }) => {
                 </div>
                 <div
                   onClick={() => setSelectAmount(500)}
-                  className={`MainDonationAddToCart-amount ${
+                  className={`MainDonationAddToCart-amount packs ${
                     selectAmount === 500 ? "amount-active" : ""
                   }`}
                 >
@@ -304,7 +304,7 @@ const UpsellCart = ({ campaign }) => {
                 </div>
                 <div
                   onClick={() => setSelectAmount(1000)}
-                  className={`MainDonationAddToCart-amount right ${
+                  className={`MainDonationAddToCart-amount packs right ${
                     selectAmount === 1000 ? "amount-active" : ""
                   }`}
                 >
@@ -329,7 +329,7 @@ const UpsellCart = ({ campaign }) => {
             <span>Campaign you are donating to:</span>
           </div>
           <div>
-            <span>{campaign?.name}</span>
+            <span>{campaign?.campaignName}</span>
           </div>
         </div>
         <div onClick={handleButtonClick} className="UpSellAddToCart-button">
