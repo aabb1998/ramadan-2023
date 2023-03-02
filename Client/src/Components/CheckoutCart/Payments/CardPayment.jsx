@@ -117,7 +117,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               return response.orderNumber;
             })
             .then(async (orderNumber) => {
-              // elements.getElement(CardElement).clear();
+              elements.getElement(CardElement).clear();
 
               // add sales receipt
               axios
@@ -156,16 +156,16 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 "Payment.",
                 3000
               );
-              // navigate(`/paymentSuccess/${orderNumber}`, {
-              //   state: {
-              //     orderNumber,
-              //     cartItems,
-              //     hideCart: true,
-              //     billingDetails: billingDetails,
-              //     personalDetails: personalDetails,
-              //     oneTimeDonation: oneTimeDonation,
-              //   },
-              // });
+              navigate(`/paymentSuccess/${orderNumber}`, {
+                state: {
+                  orderNumber,
+                  cartItems,
+                  hideCart: true,
+                  billingDetails: billingDetails,
+                  personalDetails: personalDetails,
+                  oneTimeDonation: oneTimeDonation,
+                },
+              });
               setProcessing(false);
               setLoading(false);
               setError("");

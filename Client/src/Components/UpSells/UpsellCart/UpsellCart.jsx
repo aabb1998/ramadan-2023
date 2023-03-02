@@ -14,26 +14,32 @@ const UpsellCart = ({ campaign }) => {
   const dispatch = useDispatch();
 
   const handleButtonClick = () => {
-    if (schedule != "onetime" && timeframe == "") {
-      NotificationManager.error(
-        `For schedules, please choose a duration.`,
-        "Subscriptions.",
-        3000
-      );
-    } else if (
-      selectAmount === 0 ||
-      selectAmount < 0 ||
-      selectAmount === "-0"
-    ) {
-      NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
+    if (isNaN(selectAmount)) {
+      NotificationManager.error(`Please enter a valid number.`, "Cart.", 3000);
+    } else if (selectAmount < 2) {
+      NotificationManager.error(`Please enter a minimum of $2.`, "Cart.", 3000);
     } else {
-      dispatch(addItemToCart(donation));
-      NotificationManager.success(
-        `$${donation.amount.toLocaleString()} donation - ${donation.name}`,
-        "Added to cart",
-        3000
-      );
-      setSelectAmount(0);
+      if (schedule != "onetime" && timeframe == "") {
+        NotificationManager.error(
+          `For schedules, please choose a duration.`,
+          "Subscriptions.",
+          3000
+        );
+      } else if (
+        selectAmount === 0 ||
+        selectAmount < 0 ||
+        selectAmount === "-0"
+      ) {
+        NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
+      } else {
+        dispatch(addItemToCart(donation));
+        NotificationManager.success(
+          `$${donation.amount.toLocaleString()} donation - ${donation.name}`,
+          "Added to cart",
+          3000
+        );
+        setSelectAmount(0);
+      }
     }
   };
 

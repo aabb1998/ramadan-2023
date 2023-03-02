@@ -15,6 +15,16 @@
     
 }
 
+.RecentDonations-img {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.RecentDonations-img img {
+    margin-right: 10px;
+}
+
 .UpSellAddToCart-button-recents {
     height: 50px;
     background-color: var(--secondary-color);
@@ -75,28 +85,27 @@
 }
 
 .recentDonation-name {
-
+    display: inline-block;
 font-family: 'Barlow';
     font-style: normal;
     font-weight: 600;
     font-size: 16px;
-    line-height: 29px;
     text-align: center;
     align-items: center;
     /* or 181% */
 
-
     /* Black */
-
-    color: #191B1E;
+display: inline-block;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;    color: #191B1E;
 }
 
 .recentDonation-campaign {
     font-family: 'Playfair Display';
-        font-style: normal;
         font-weight: 700;
         font-size: 20.3013px;
-        line-height: 28px;
         /* identical to box height, or 117% */
     
     
@@ -118,7 +127,6 @@ font-family: 'Barlow';
 }
 
 .RecentDonations-donation span {
-    width: 60px;
     text-align: center;
     align-items: center;
 }
@@ -152,3 +160,9 @@ font-family: 'Barlow';
         line-height: normal;
     }
 }
+
+@media screen and (max-width: 1558px) {
+    .recentDonation-name {
+        font-size: 10px;
+    }
+}   
