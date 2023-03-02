@@ -99,7 +99,7 @@ const PaypalCheckout = ({
                         currency_code: "AUD",
                         value:
                           oneTimeDonation > 0
-                            ? totalAmount + 10 + processingFee
+                            ? totalAmount + 10 + processingFee + 0.3
                             : totalAmount + processingFee,
                       },
                     },

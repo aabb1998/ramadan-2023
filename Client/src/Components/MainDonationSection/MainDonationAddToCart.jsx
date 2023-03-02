@@ -20,29 +20,35 @@ const MainDonationAddToCart = ({
 
   const dispatch = useDispatch();
   const handleButtonClick = () => {
-    if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
-      NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
-    } else if (schedule != "onetime" && timeframe === "") {
-      NotificationManager.error(
-        `For schedules, please choose a duration.`,
-        "Subscriptions.",
-        3000
-      );
+    if (isNaN(selectAmount)) {
+      NotificationManager.error(`Please enter a valid number.`, "Cart.", 3000);
+    } else if (selectAmount < 2) {
+      NotificationManager.error(`Please enter a minimum of $2.`, "Cart.", 3000);
     } else {
-      window.scrollBy({
-        top: 500,
-        behavior: "smooth", // This line is optional and makes the scrolling smooth
-      });
+      if (selectAmount === 0 || selectAmount < 0 || selectAmount === "-0") {
+        NotificationManager.error("Please enter a valid amount.", "Cart", 2000);
+      } else if (schedule != "onetime" && timeframe === "") {
+        NotificationManager.error(
+          `For schedules, please choose a duration.`,
+          "Subscriptions.",
+          3000
+        );
+      } else {
+        window.scrollBy({
+          top: 500,
+          behavior: "smooth", // This line is optional and makes the scrolling smooth
+        });
 
-      dispatch(addItemToCart(mainDonation));
-      NotificationManager.success(
-        `$${mainDonation.amount.toLocaleString()} donation - ${
-          mainDonation.name
-        }`,
-        "Added to cart",
-        3000
-      );
-      setSelectAmount(0);
+        dispatch(addItemToCart(mainDonation));
+        NotificationManager.success(
+          `$${mainDonation.amount.toLocaleString()} donation - ${
+            mainDonation.name
+          }`,
+          "Added to cart",
+          3000
+        );
+        setSelectAmount(0);
+      }
     }
   };
 

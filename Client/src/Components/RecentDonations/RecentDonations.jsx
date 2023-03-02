@@ -100,10 +100,13 @@ const RecentDonations = (checkout) => {
               <div className="RecentDonations-donations">
                 {docs.map((donation, index) => (
                   <div className="RecentDonations-donation">
-                    <img src={donation.imgLink} />
-                    <span className="recentDonation-campaign">
-                      {donation.campaignName}
-                    </span>
+                    <div className="RecentDonations-img">
+                      <img src={donation.imgLink} />
+                      <span className="recentDonation-campaign">
+                        {donation.campaignName}
+                      </span>
+                    </div>
+
                     <span className="recentDonation-name">
                       {getShorterName(donation.name)}
                     </span>
