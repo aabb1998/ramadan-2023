@@ -80,18 +80,22 @@ const RecentDonationsPostCheckout = (checkout) => {
               </div>
               <div className="RecentDonations-donations">
                 {docs.map((donation, index) => (
-                  <div key={index} className="RecentDonations-donation">
-                    <img src={donation.imgLink} />
-                    <span className="recentDonation-campaign">
-                      {donation.campaignName}
-                    </span>
-                    <span className="recentDonation-name">
-                      {getShorterName(donation.name)}
-                    </span>
+                  <div className="RecentDonations-donation">
+                    <div className="RecentDonations-img">
+                      <img src={donation.imgLink} />
+                      <span className="recentDonation-campaign">
+                        {donation.campaignName}
+                      </span>
+                    </div>
+                    <div className="recentDonation-nameInfo">
+                      <span className="recentDonation-name">
+                        {getShorterName(donation.name)}
+                      </span>
+                      <span className="recentDonation-amount">
+                        ${donation.amount}
+                      </span>
+                    </div>
 
-                    <span className="recentDonation-amount">
-                      ${donation.amount}
-                    </span>
                     <span>{donation.location}</span>
                   </div>
                 ))}

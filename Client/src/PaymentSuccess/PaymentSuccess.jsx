@@ -110,13 +110,16 @@ const PaymentSuccess = () => {
               <span>Order #{state?.orderNumber}</span>
               <div className="payment-container-buttons">
                 {generating && !downloadLink ? (
-                  <button style={{ cursor: "default" }}>
+                  <button style={{ cursor: "default", opacity: 0.5 }}>
                     <img style={{ width: "20px" }} src={loader} />
                   </button>
                 ) : (
-                  <button onClick={() => window.open(downloadLink, "_blank")}>
-                    Download Invoice
-                  </button>
+                  downloadLink &&
+                  downloadLink.length > 0 && (
+                    <button onClick={() => window.open(downloadLink, "_blank")}>
+                      Download Invoice
+                    </button>
+                  )
                 )}
               </div>
             </div>
@@ -125,7 +128,7 @@ const PaymentSuccess = () => {
         {!urlFound && navigate("/P0Vz0&C&m4Ozq^2d")}
       </div>
       <RecentDonationsPostCheckout />
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 };
