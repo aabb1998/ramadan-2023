@@ -3,7 +3,6 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 const app = express();
-const path = require("path");
 const axios = require("axios");
 const fs = require("fs");
 const bodyParser = require("body-parser");
@@ -16,6 +15,15 @@ const OAuth2Strategy = require("passport-oauth2").Strategy;
 const ngrok = process.env.NGROK_ENABLED === "true" ? require("ngrok") : null;
 const mailchimp = require("@mailchimp/mailchimp_marketing");
 const easyinvoice = require("easyinvoice");
+const admin = require("firebase-admin");
+const path = require("path");
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.raw({ type: "*/*" }));
 // // const rawBodyParser = bodyParser.raw({ type: "*/*" });
@@ -24,6 +32,30 @@ const easyinvoice = require("easyinvoice");
 // app.use(cors());
 app.use(express.json());
 app.use(cors());
+
+const updateAccessToken = (body) => {
+  console.log(body);
+
+  const quickbooksRef = db.collection("quickbooks");
+  const accessTokenRef = quickbooksRef.doc("access_token");
+  let newBody = JSON.parse(body);
+  console.log(newBody.token_type);
+  accessTokenRef
+    .set({
+      // Add the properties you want to update here
+      access_token: newBody.access_token,
+      token_type: newBody.token_type,
+      refresh_token: newBody.refresh_token,
+      x_refresh_token_expires_in: newBody.x_refresh_token_expires_in,
+      expires_in: newBody.expires_in,
+    })
+    .then(() => {
+      console.log("Document successfully updated!");
+    })
+    .catch((error) => {
+      console.error("Error updating document: ", error);
+    });
+};
 
 // STRIPE WEBHOOKS
 const endpointSecret =
@@ -270,6 +302,8 @@ app.get("/callback", function (req, res) {
     .then(function (authResponse) {
       oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
       console.log(oauth2_token_json);
+
+      updateAccessToken(oauth2_token_json);
     })
     .catch(function (e) {
       console.error(e);
@@ -306,7 +340,50 @@ app.get("/api", async (req, res) => {
   }
 });
 
+const getTokenFromFirebase = async () => {
+  const quickbooksRef = db.collection("quickbooks");
+  const accessTokenRef = quickbooksRef.doc("access_token");
+  let tokenFromFb;
+  accessTokenRef
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        console.log("Document data:", doc.data().token);
+        tokenFromFb = doc.data();
+      } else {
+        console.log("No such document!");
+      }
+    })
+    .catch((error) => {
+      console.log("Error getting document:", error);
+    });
+};
+
+app.get("/retreiveAccessToken", async (req, res) => {
+  const quickbooksRef = db.collection("quickbooks");
+  const accessTokenRef = quickbooksRef.doc("access_token");
+  accessTokenRef
+    .set({
+      // Add your object properties here
+      expires_in: 3600,
+      access_token: "your_access_token_value_here",
+      refresh_token: "your_refresh_token_value_here",
+    })
+    .then(() => {
+      console.log("Document successfully written!");
+    })
+    .catch((error) => {
+      console.error("Error writing document: ", error);
+    });
+});
+
+app.get("/updateAccessToken", async (req, res) => {
+  await getTokenFromFirebase();
+});
+
 app.post("/getCustomersQuickbooks", async (req, res) => {
+  // GET TOKEN FROM FIREBASE
+
   console.log(req.body);
   const nameArray = req.body.personalDetails.fullName.split(" ");
   const firstName = nameArray[0]; // "Aniss"
