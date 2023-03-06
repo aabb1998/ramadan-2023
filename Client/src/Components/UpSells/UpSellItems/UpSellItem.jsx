@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MiniProgressBar from "../MiniProgressBar/MiniProgressBar";
 import UpsellCart from "../UpsellCart/UpsellCart";
 import "./UpSellItem.css";
 const UpSellItem = ({ item, toggleDiv }) => {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    console.log(windowWidth);
+
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
       <div className="UpSellItem">
@@ -20,10 +32,17 @@ const UpSellItem = ({ item, toggleDiv }) => {
           />
         </div>
         <div className="UpSellItem-cart">
-          <button onClick={() => toggleDiv(item)}>Donate</button>
+          <button
+            onClick={() => {
+              toggleDiv(item);
+              setShowModal(!showModal);
+            }}
+          >
+            Donate
+          </button>
         </div>
       </div>
-      {/* <UpsellCart campaign={item} /> */}
+      {showModal && windowWidth <= 755 && <UpsellCart campaign={item} />}
     </>
   );
 };

@@ -33,30 +33,6 @@ const db = admin.firestore();
 app.use(express.json());
 app.use(cors());
 
-const updateAccessToken = (body) => {
-  console.log(body);
-
-  const quickbooksRef = db.collection("quickbooks");
-  const accessTokenRef = quickbooksRef.doc("access_token");
-  let newBody = JSON.parse(body);
-  console.log(newBody.token_type);
-  accessTokenRef
-    .set({
-      // Add the properties you want to update here
-      access_token: newBody.access_token,
-      token_type: newBody.token_type,
-      refresh_token: newBody.refresh_token,
-      x_refresh_token_expires_in: newBody.x_refresh_token_expires_in,
-      expires_in: newBody.expires_in,
-    })
-    .then(() => {
-      console.log("Document successfully updated!");
-    })
-    .catch((error) => {
-      console.error("Error updating document: ", error);
-    });
-};
-
 // STRIPE WEBHOOKS
 const endpointSecret =
   "whsec_79ecdb9f07ca450c8426328a114b65d68e80b8bfd2058f19b9bf81dc30c29e26";
@@ -276,328 +252,6 @@ function generatePlanId() {
   return planId;
 }
 
-let oauth2_token_json = null;
-let redirectUri = "";
-let oauthClient = null;
-
-app.get("/authUri", async (req, res) => {
-  oauthClient = new OAuthClient({
-    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-    environment: "sandbox",
-    redirectUri: "http://localhost:3002/callback",
-  });
-
-  const authUri = await oauthClient.authorizeUri({
-    scope: [OAuthClient.scopes.Accounting],
-    state: "intuit-test",
-  });
-
-  res.send(authUri);
-});
-
-app.get("/callback", function (req, res) {
-  oauthClient
-    .createToken(req.url)
-    .then(function (authResponse) {
-      oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
-      console.log(oauth2_token_json);
-
-      updateAccessToken(oauth2_token_json);
-    })
-    .catch(function (e) {
-      console.error(e);
-    });
-  res.send("");
-});
-
-app.get("/api", async (req, res) => {
-  const token = JSON.parse(oauth2_token_json);
-
-  // Create a new OAuth2 client using the token
-  oauthClient = new OAuthClient({
-    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-    environment: "sandbox",
-    redirectUri: "http://localhost:3002/callback",
-    token: token,
-  });
-
-  try {
-    const headers = {
-      Authorization: `Bearer ${token.access_token}`,
-      Accept: "application/json",
-    };
-    // Make an API call using the OAuth2 token
-    const response = await axios.get(
-      "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
-      { headers }
-    );
-    res.send(response.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error occurred while calling API");
-  }
-});
-
-const getTokenFromFirebase = async () => {
-  const quickbooksRef = db.collection("quickbooks");
-  const accessTokenRef = quickbooksRef.doc("access_token");
-  let tokenFromFb;
-  accessTokenRef
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        console.log("Document data:", doc.data().token);
-        tokenFromFb = doc.data();
-      } else {
-        console.log("No such document!");
-      }
-    })
-    .catch((error) => {
-      console.log("Error getting document:", error);
-    });
-};
-
-app.get("/retreiveAccessToken", async (req, res) => {
-  const quickbooksRef = db.collection("quickbooks");
-  const accessTokenRef = quickbooksRef.doc("access_token");
-  accessTokenRef
-    .set({
-      // Add your object properties here
-      expires_in: 3600,
-      access_token: "your_access_token_value_here",
-      refresh_token: "your_refresh_token_value_here",
-    })
-    .then(() => {
-      console.log("Document successfully written!");
-    })
-    .catch((error) => {
-      console.error("Error writing document: ", error);
-    });
-});
-
-app.get("/updateAccessToken", async (req, res) => {
-  await getTokenFromFirebase();
-});
-
-app.post("/getCustomersQuickbooks", async (req, res) => {
-  // GET TOKEN FROM FIREBASE
-
-  console.log(req.body);
-  const nameArray = req.body.personalDetails.fullName.split(" ");
-  const firstName = nameArray[0]; // "Aniss"
-  const lastName = nameArray[1]; // "Abbou"
-  const token = JSON.parse(oauth2_token_json);
-  // Set up the QuickBooks API endpoint
-  const endpoint =
-    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
-
-  // Set up the query parameters to search for a customer by email
-  const query = `SELECT * FROM Customer WHERE DisplayName = '${req.body.personalDetails.fullName}'`;
-  // Create a new OAuth2 client using the token
-  console.log(req.body);
-  oauthClient = new OAuthClient({
-    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-    environment: "sandbox",
-    redirectUri: "http://localhost:3002/callback",
-    token: token,
-  });
-
-  let customerId;
-
-  try {
-    const headers = {
-      Authorization: `Bearer ${token.access_token}`,
-      Accept: "application/json",
-    };
-    axios
-      .get(endpoint, { params: { query }, headers })
-      .then(async (response) => {
-        const customer = response.data.QueryResponse.Customer;
-        if (customer) {
-          console.log("customer found.");
-          // console.log(customer[0].Id);
-          customerId = customer[0].Id;
-        } else {
-          console.log("Customer not found, creating customer.");
-
-          const customerData = {
-            GivenName: firstName,
-            FamilyName: lastName,
-            PrimaryEmailAddr: {
-              Address: req.body.email,
-            },
-            DisplayName: req.body.personalDetails.fullName,
-            BillAddr: {
-              Line1: req.body.billingDetails.streetAddress,
-              City: req.body.billingDetails.city,
-              PostalCode: req.body.billingDetails.zip,
-            },
-            Job: false,
-            SalesTermRef: {
-              value: "3",
-            },
-            CurrencyRef: {
-              value: "AUD",
-            },
-          };
-          const createCustomerResponse = await axios.post(
-            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/customer?minorversion=65",
-            customerData,
-            { headers }
-          );
-          console.log(
-            "New customer created:",
-            createCustomerResponse.data.Customer
-          );
-          customerId = createCustomerResponse.data.Customer.Id;
-          console.log("haytch" + customerId);
-        }
-
-        let totalAmount = 0;
-        let salesReceiptLines = [];
-
-        for (let i = 0; i < req.body.cartItems.length; i++) {
-          const processingFee = 0.03 * req.body.cartItems[i].amount;
-
-          const salesReceiptLine = {
-            Description: `Donation ${req.body.cartItems[i].name}`,
-            DetailType: "SalesItemLineDetail",
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: "5",
-              },
-
-              Qty: 1,
-              UnitPrice: req.body.cartItems[i].amount,
-              ItemRef: {
-                name: "42020 FG - Tax Ded Donations (NP)",
-                value: "26",
-              },
-              ClassRef: {
-                name: req.body.cartItems[i].quickbooksClassName,
-                value: req.body.cartItems[i].quickbooksClassId,
-              },
-            },
-            LineNum: i + 1,
-            Amount: req.body.cartItems[i].amount,
-            Id: `${i + 1}`,
-          };
-
-          salesReceiptLines.push(salesReceiptLine);
-          totalAmount += req.body.cartItems[i].amount;
-          console.log(totalAmount);
-        }
-
-        if (req.body.oneTimeDonation > 0) {
-          console.log("ONE TIME DONATION FOUND");
-          const salesReceiptLine = {
-            Description: `Donation One Time`,
-            DetailType: "SalesItemLineDetail",
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: "5",
-              },
-
-              Qty: 1,
-              UnitPrice: 10,
-              ItemRef: {
-                name: "42020 FG - Tax Ded Donations (NP)",
-                value: "26",
-              },
-              ClassRef: {
-                name: "General",
-                value: "5100000000000049941",
-              },
-            },
-            LineNum: salesReceiptLines.length + 1,
-            Amount: 10,
-            Id: `${salesReceiptLines.length + 1}`,
-          };
-          salesReceiptLines.push(salesReceiptLine);
-          totalAmount += 10;
-        }
-
-        const processingFeeLine = {
-          Description: `Merchant Fees`,
-          DetailType: "SalesItemLineDetail",
-          SalesItemLineDetail: {
-            TaxCodeRef: {
-              value: "5",
-            },
-            Qty: 1,
-            UnitPrice: 0.03 * totalAmount,
-            ItemRef: {
-              name: "42020 FG - Tax Ded Donations (NP)",
-              value: "26",
-            },
-            ClassRef: {
-              name: "General",
-              value: "5100000000000049941",
-            },
-          },
-          LineNum: salesReceiptLines.length + 1,
-          Amount: (3 / 100) * totalAmount,
-          Id: `${salesReceiptLines.length + 1}`,
-        };
-
-        salesReceiptLines.push(processingFeeLine);
-
-        console.log(salesReceiptLines);
-        console.log(totalAmount + 0.03 * totalAmount);
-
-        const salesReceipt = {
-          Line: salesReceiptLines,
-          CustomerRef: {
-            value: customerId,
-          },
-          PaymentMethodRef: {
-            name: req.body.paymentMethod,
-            value: req.body.paymentId,
-          },
-          TotalAmt: totalAmount,
-        };
-
-        const createSalesReceiptResponse = await axios.post(
-          "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
-          salesReceipt,
-          { headers }
-        );
-
-        res.send("Sales receipt created successfully");
-      })
-      .catch((error) => {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.Fault &&
-          error.response.data.Fault.Error
-        ) {
-          const validationErrors = error.response.data.Fault.Error;
-          console.log(validationErrors);
-          console.error("Validation errors:");
-          validationErrors.forEach((validationError) => {
-            console.error("-", validationError.Message);
-          });
-        } else {
-          console.error("Error searching for customer:", error);
-        }
-      });
-    // Make an API call using the OAuth2 token
-    // const response = await axios.get(
-    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
-    //   { headers }
-    // );
-
-    // res.send(response.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error occurred while calling API");
-  }
-});
-
 app.post("/generateInvoice", async (req, res) => {
   console.log(req.body.data);
   let items = [];
@@ -709,54 +363,8 @@ app.post("/generateInvoice", async (req, res) => {
   }
 });
 
-setInterval(() => {
-  console.log("CHECKING");
-  const token = JSON.parse(oauth2_token_json);
-  const endpoint =
-    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
-  const query = "SELECT * FROM Class";
-  oauthClient = new OAuthClient({
-    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-    environment: "sandbox",
-    redirectUri: "http://localhost:3002/callback",
-    token: token,
-  });
-  try {
-    const headers = {
-      Authorization: `Bearer ${token.access_token}`,
-      Accept: "application/json",
-    };
-    axios
-      .get(endpoint, { params: { query }, headers })
-      .then(async (response) => {});
-
-    // Make an API call using the OAuth2 token
-    // const response = await axios.get(
-    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
-    //   { headers }
-    // );
-
-    // res.send(response.data);
-  } catch (error) {
-    console.error(error);
-    console.log("TOKEN ERROR");
-    oauthClient
-      .refresh()
-      .then(function (authResponse) {
-        console.log(
-          `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
-        );
-        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
-        res.send(oauth2_token_json);
-      })
-      .catch(function (e) {});
-  }
-}, 10000);
-
 app.get("/allQuickbooksClasses", (req, res) => {
   const token = JSON.parse(oauth2_token_json);
-
   const endpoint =
     "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
 
@@ -1316,6 +924,404 @@ app.post("/ramadanWebsite", (req, res) => {
     }
   });
 });
+
+/* *****************************************************************************
+ ********************************************************************************
+ ********************************************************************************
+ ********************************************************************************
+ *********************************FIREBASE/QUICKBOOKS****************************
+ ********************************************************************************
+ ********************************************************************************
+ ********************************************************************************
+ ********************************************************************************
+ ******************************************************************************** */
+let oauth2_token_json = null;
+let redirectUri = "";
+let oauthClient = null;
+
+app.get("/authUri", async (req, res) => {
+  oauthClient = new OAuthClient({
+    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+    environment: "sandbox",
+    redirectUri: "http://localhost:3002/callback",
+  });
+
+  const authUri = await oauthClient.authorizeUri({
+    scope: [OAuthClient.scopes.Accounting],
+    state: "intuit-test",
+  });
+
+  res.send(authUri);
+});
+
+app.get("/callback", function (req, res) {
+  oauthClient
+    .createToken(req.url)
+    .then(function (authResponse) {
+      console.log("TOKEN");
+      console.log(authResponse.getJson());
+      oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+      console.log(oauth2_token_json);
+
+      updateAccessToken(oauth2_token_json);
+    })
+    .catch(function (e) {
+      console.error(e);
+    });
+  res.send(oauth2_token_json);
+});
+
+app.get("/api", async (req, res) => {
+  console.log("Fetching");
+  const token = JSON.parse(oauth2_token_json);
+  let data = await getTokenFromFirebase();
+  console.log(JSON.stringify(data));
+  // Create a new OAuth2 client using the token
+  // oauthClient = new OAuthClient({
+  //   clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+  //   clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+  //   environment: "sandbox",
+  //   redirectUri: "http://localhost:3002/callback",
+  //   token: token,
+  // });
+
+  // try {
+  //   const headers = {
+  //     Authorization: `Bearer ${token.access_token}`,
+  //     Accept: "application/json",
+  //   };
+  //   // Make an API call using the OAuth2 token
+  //   const response = await axios.get(
+  //     "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+  //     { headers }
+  //   );
+  //   res.send(response.data);
+  // } catch (error) {
+  //   console.error(error);
+  //   res.status(500).send("Error occurred while calling API");
+  // }
+});
+
+const updateAccessToken = (body) => {
+  console.log(body);
+
+  const quickbooksRef = db.collection("quickbooks");
+  const accessTokenRef = quickbooksRef.doc("access_token");
+  let newBody = JSON.parse(body);
+  console.log(newBody.token_type);
+  accessTokenRef
+    .set({
+      // Add the properties you want to update here
+      access_token: newBody.access_token,
+      token_type: newBody.token_type,
+      refresh_token: newBody.refresh_token,
+      x_refresh_token_expires_in: newBody.x_refresh_token_expires_in,
+      expires_in: newBody.expires_in,
+    })
+    .then(() => {
+      console.log("Document successfully updated!");
+    })
+    .catch((error) => {
+      console.error("Error updating document: ", error);
+    });
+};
+
+const getTokenFromFirebase = () => {
+  const quickbooksRef = db.collection("quickbooks");
+  const accessTokenRef = quickbooksRef.doc("access_token");
+  let tokenFromFb;
+  accessTokenRef
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        console.log("Document data:", doc.data());
+        tokenFromFb = doc.data();
+      } else {
+        console.log("No such document!");
+      }
+    })
+    .catch((error) => {
+      console.log("Error getting document:", error);
+    });
+  return tokenFromFb;
+};
+
+app.get("/retreiveAccessToken", async (req, res) => {
+  const quickbooksRef = db.collection("quickbooks");
+  const accessTokenRef = quickbooksRef.doc("access_token");
+  accessTokenRef
+    .set({
+      // Add your object properties here
+      expires_in: 3600,
+      access_token: "your_access_token_value_here",
+      refresh_token: "your_refresh_token_value_here",
+    })
+    .then(() => {
+      console.log("Document successfully written!");
+    })
+    .catch((error) => {
+      console.error("Error writing document: ", error);
+    });
+});
+
+app.get("/updateAccessToken", async (req, res) => {
+  await getTokenFromFirebase();
+});
+
+app.post("/getCustomersQuickbooks", async (req, res) => {
+  // GET TOKEN FROM FIREBASE
+
+  console.log(req.body);
+  const nameArray = req.body.personalDetails.fullName.split(" ");
+  const firstName = nameArray[0]; // "Aniss"
+  const lastName = nameArray[1]; // "Abbou"
+  const token = JSON.parse(oauth2_token_json);
+  // Set up the QuickBooks API endpoint
+  const endpoint =
+    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+
+  // Set up the query parameters to search for a customer by email
+  const query = `SELECT * FROM Customer WHERE DisplayName = '${req.body.personalDetails.fullName}'`;
+  // Create a new OAuth2 client using the token
+
+  let customerId;
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${token.access_token}`,
+      Accept: "application/json",
+    };
+    axios
+      .get(endpoint, { params: { query }, headers })
+      .then(async (response) => {
+        const customer = response.data.QueryResponse.Customer;
+        if (customer) {
+          console.log("customer found.");
+          // console.log(customer[0].Id);
+          customerId = customer[0].Id;
+        } else {
+          console.log("Customer not found, creating customer.");
+
+          const customerData = {
+            GivenName: firstName,
+            FamilyName: lastName,
+            PrimaryEmailAddr: {
+              Address: req.body.email,
+            },
+            DisplayName: req.body.personalDetails.fullName,
+            BillAddr: {
+              Line1: req.body.billingDetails.streetAddress,
+              City: req.body.billingDetails.city,
+              PostalCode: req.body.billingDetails.zip,
+            },
+            Job: false,
+            SalesTermRef: {
+              value: "3",
+            },
+            CurrencyRef: {
+              value: "AUD",
+            },
+          };
+          const createCustomerResponse = await axios.post(
+            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/customer?minorversion=65",
+            customerData,
+            { headers }
+          );
+          console.log(
+            "New customer created:",
+            createCustomerResponse.data.Customer
+          );
+          customerId = createCustomerResponse.data.Customer.Id;
+          console.log("haytch" + customerId);
+        }
+
+        let totalAmount = 0;
+        let salesReceiptLines = [];
+
+        for (let i = 0; i < req.body.cartItems.length; i++) {
+          const processingFee = 0.03 * req.body.cartItems[i].amount;
+
+          const salesReceiptLine = {
+            Description: `Donation ${req.body.cartItems[i].name}`,
+            DetailType: "SalesItemLineDetail",
+            SalesItemLineDetail: {
+              TaxCodeRef: {
+                value: "5",
+              },
+
+              Qty: 1,
+              UnitPrice: req.body.cartItems[i].amount,
+              ItemRef: {
+                name: "42020 FG - Tax Ded Donations (NP)",
+                value: "26",
+              },
+              ClassRef: {
+                name: req.body.cartItems[i].quickbooksClassName,
+                value: req.body.cartItems[i].quickbooksClassId,
+              },
+            },
+            LineNum: i + 1,
+            Amount: req.body.cartItems[i].amount,
+            Id: `${i + 1}`,
+          };
+
+          salesReceiptLines.push(salesReceiptLine);
+          totalAmount += req.body.cartItems[i].amount;
+          console.log(totalAmount);
+        }
+
+        if (req.body.oneTimeDonation > 0) {
+          console.log("ONE TIME DONATION FOUND");
+          const salesReceiptLine = {
+            Description: `Donation One Time`,
+            DetailType: "SalesItemLineDetail",
+            SalesItemLineDetail: {
+              TaxCodeRef: {
+                value: "5",
+              },
+
+              Qty: 1,
+              UnitPrice: 10,
+              ItemRef: {
+                name: "42020 FG - Tax Ded Donations (NP)",
+                value: "26",
+              },
+              ClassRef: {
+                name: "General",
+                value: "5100000000000049941",
+              },
+            },
+            LineNum: salesReceiptLines.length + 1,
+            Amount: 10,
+            Id: `${salesReceiptLines.length + 1}`,
+          };
+          salesReceiptLines.push(salesReceiptLine);
+          totalAmount += 10;
+        }
+
+        const processingFeeLine = {
+          Description: `Merchant Fees`,
+          DetailType: "SalesItemLineDetail",
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: "5",
+            },
+            Qty: 1,
+            UnitPrice: 0.03 * totalAmount,
+            ItemRef: {
+              name: "42020 FG - Tax Ded Donations (NP)",
+              value: "26",
+            },
+            ClassRef: {
+              name: "General",
+              value: "5100000000000049941",
+            },
+          },
+          LineNum: salesReceiptLines.length + 1,
+          Amount: (3 / 100) * totalAmount,
+          Id: `${salesReceiptLines.length + 1}`,
+        };
+
+        salesReceiptLines.push(processingFeeLine);
+
+        console.log(salesReceiptLines);
+        console.log(totalAmount + 0.03 * totalAmount);
+
+        const salesReceipt = {
+          Line: salesReceiptLines,
+          CustomerRef: {
+            value: customerId,
+          },
+          PaymentMethodRef: {
+            name: req.body.paymentMethod,
+            value: req.body.paymentId,
+          },
+          TotalAmt: totalAmount,
+        };
+
+        const createSalesReceiptResponse = await axios.post(
+          "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
+          salesReceipt,
+          { headers }
+        );
+
+        res.send("Sales receipt created successfully");
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.Fault &&
+          error.response.data.Fault.Error
+        ) {
+          const validationErrors = error.response.data.Fault.Error;
+          console.log(validationErrors);
+          console.error("Validation errors:");
+          validationErrors.forEach((validationError) => {
+            console.error("-", validationError.Message);
+          });
+        } else {
+          console.error("Error searching for customer:", error);
+        }
+      });
+    // Make an API call using the OAuth2 token
+    // const response = await axios.get(
+    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+    //   { headers }
+    // );
+
+    // res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error occurred while calling API");
+  }
+});
+
+setInterval(() => {
+  console.log("CHECKING");
+  const token = JSON.parse(oauth2_token_json);
+  const endpoint =
+    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+  const query = "SELECT * FROM Class";
+  oauthClient = new OAuthClient({
+    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
+    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
+    environment: "sandbox",
+    redirectUri: "http://localhost:3002/callback",
+    token: token,
+  });
+  try {
+    const headers = {
+      Authorization: `Bearer ${token.access_token}`,
+      Accept: "application/json",
+    };
+    axios
+      .get(endpoint, { params: { query }, headers })
+      .then(async (response) => {});
+
+    // Make an API call using the OAuth2 token
+    // const response = await axios.get(
+    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+    //   { headers }
+    // );
+
+    // res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    console.log("TOKEN ERROR");
+    oauthClient
+      .refresh()
+      .then(function (authResponse) {
+        console.log(
+          `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
+        );
+        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+        res.send(oauth2_token_json);
+      })
+      .catch(function (e) {});
+  }
+}, 10000);
 
 app.listen(3002, () => {
   console.log("Example app is listening on port 3002");

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./styles.css";
 import looper from "../../assets/Looper-3.svg";
 import UpSellItem from "./UpSellItems/UpSellItem";
@@ -7,11 +7,21 @@ import UpsellCart from "./UpsellCart/UpsellCart";
 const UpSells = ({ otherCampaigns }) => {
   const targetRef = useRef(null);
   const [showDiv, setShowDiv] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   const [clickedCampaign, setClickedCampaign] = useState();
   const toggleDiv = (clicked) => {
     setShowDiv(true);
     setClickedCampaign(clicked);
   };
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    console.log(windowWidth);
+
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <>
       {/* <img className="bg-looper-left" src={looper} /> */}
@@ -30,10 +40,13 @@ const UpSells = ({ otherCampaigns }) => {
                 <UpSellItem toggleDiv={toggleDiv} item={item} key={index} />
               ))}
             </div>
-
-            <div className={`MainUpsellSection-cart ${showDiv ? "show" : ""}`}>
-              <UpsellCart campaign={clickedCampaign} />
-            </div>
+            {windowWidth > 755 && (
+              <div
+                className={`MainUpsellSection-cart ${showDiv ? "show" : ""}`}
+              >
+                <UpsellCart campaign={clickedCampaign} />
+              </div>
+            )}
           </div>
         </div>
       </div>

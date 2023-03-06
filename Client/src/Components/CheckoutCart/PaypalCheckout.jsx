@@ -107,7 +107,6 @@ const PaypalCheckout = ({
                 });
               },
               onApprove: async (data, actions) => {
-                console.log(cartItems[0].name);
                 const order = await actions.order.capture();
                 updateAmountsInDocuments(cartItems);
                 dispatch(emptyCart());
@@ -139,19 +138,18 @@ const PaypalCheckout = ({
                 });
                 setIsPaymentComplete(true);
                 toggle();
-                console.log(oneTimeDonation);
-                navigate(`/paymentSuccess/${orderNumber}`, {
-                  state: {
-                    cartItems,
-                    total: totalAmount + processingFee,
-                    orderNumber,
-                    hideCart: true,
-                    cartItems,
-                    billingDetails,
-                    personalDetails,
-                    oneTimeDonation,
-                  },
-                });
+                // navigate(`/paymentSuccess/${orderNumber}`, {
+                //   state: {
+                //     cartItems,
+                //     total: totalAmount + processingFee,
+                //     orderNumber,
+                //     hideCart: true,
+                //     cartItems,
+                //     billingDetails,
+                //     personalDetails,
+                //     oneTimeDonation,
+                //   },
+                // });
                 console.log("Successful order:" + cartItems);
                 order = null;
               },
