@@ -196,7 +196,7 @@ const UpsellCart = ({ campaign }) => {
         {!campaign?.foodPack ? (
           <>
             <div className="UpSellAddToCart-campaignName">
-              <span>{campaign?.desc}</span>
+              <span>{campaign?.longDesc}</span>
             </div>
             <div className="MainDonationAddToCart-amounts">
               <div className="MainDonationAddToCart-amounts-row">
@@ -256,7 +256,7 @@ const UpsellCart = ({ campaign }) => {
         ) : (
           <>
             <div className="UpSellAddToCart-campaignName">
-              <span>{campaign?.desc}</span>
+              <span>{campaign?.longDesc}</span>
             </div>
             <div className="MainDonationAddToCart-amounts">
               <div className="MainDonationAddToCart-amounts-row">

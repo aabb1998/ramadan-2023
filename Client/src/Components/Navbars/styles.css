@@ -19,6 +19,11 @@
     transform: translate(0px, 0px);
 }
 
+.header-inner-right a {
+    text-decoration: none;
+    color: #A1A5A6;
+}
+
 .Footer-inner-left-nav {
     display: flex;
     flex-direction: column;

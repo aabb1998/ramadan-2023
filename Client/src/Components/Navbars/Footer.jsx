@@ -108,15 +108,15 @@ const Footer = () => {
           </span>
         </div>
         <div className="Footer-bottom-socials">
-          <a>
+          <a href="https://twitter.com/Alihsan_AU?_ga=2.98009243.548689017.1678140701-1326894390.1666650603">
             <Twitter />
             TWITTER
           </a>
-          <a>
+          <a href="https://www.instagram.com/alihsan_foundation/?hl=en">
             <Instagram />
             INSTAGRAM
           </a>
-          <a>
+          <a href="https://www.facebook.com/alihsanfoundation/?_ga=2.98009243.548689017.1678140701-1326894390.1666650603">
             <Facebook />
             FACEBOOK
           </a>

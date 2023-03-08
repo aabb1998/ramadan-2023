@@ -222,7 +222,7 @@ const CheckoutCart = () => {
                       >
                         <div>
                           <img src={cards} />
-                          <span>Credit Card</span>
+                          <span>Card</span>
                         </div>
                         <div>
                           <label>

@@ -21,6 +21,11 @@
     padding: 10px 0px;
 }
 
+.UpSellAddToCart-campaignName span {
+    font-size: 13px;
+    line-height: 0px;
+}
+
 .packs {
     font-size: 13px;
 }

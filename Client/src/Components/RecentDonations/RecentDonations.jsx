@@ -98,26 +98,30 @@ const RecentDonations = (checkout) => {
                 </div>
               </div>
               <div className="RecentDonations-donations">
-                {docs.map((donation, index) => (
-                  <div className="RecentDonations-donation">
-                    <div className="RecentDonations-img">
-                      <img src={donation.imgLink} />
-                      <span className="recentDonation-campaign">
-                        {donation.campaignName}
-                      </span>
-                    </div>
-                    <div className="recentDonation-nameInfo">
-                      <span className="recentDonation-name">
-                        {getShorterName(donation.name)}
-                      </span>
-                      <span className="recentDonation-amount">
-                        ${donation.amount}
-                      </span>
-                    </div>
+                <div>
+                  {docs.map((donation, index) => (
+                    <div className="RecentDonations-donation">
+                      <div className="RecentDonations-img">
+                        <img src={donation.imgLink} />
+                        <span className="recentDonation-campaign">
+                          {donation.campaignName}
+                        </span>
+                      </div>
+                      <div className="recentDonation-nameInfo">
+                        <span className="recentDonation-name">
+                          {getShorterName(donation.name)}
+                        </span>
+                        <span className="recentDonation-amount">
+                          ${donation.amount.toLocaleString()}
+                        </span>
+                      </div>
 
-                    <span>{donation.location}</span>
-                  </div>
-                ))}
+                      <span className="RecentDonation-location">
+                        {donation.location}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
               {checkout && (
                 <>

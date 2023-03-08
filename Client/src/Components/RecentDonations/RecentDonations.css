@@ -3,15 +3,18 @@
 }
 
 .RecentDonations-donations {
-    display: flex;
+    /* display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     justify-content: center;
     height: 90%;
     width: 100%;
-        margin: auto;
-    margin-bottom: 20px;
+    margin: auto;
+    margin-bottom: 20px; */
+    width: 100%;
+    margin: auto;
+    margin-top: 50px;
     
 }
 
@@ -20,6 +23,12 @@
     flex-direction: column-reverse;
     align-items: center;
     
+}
+
+.RecentDonation-location {
+    margin-right: 20px;
+    font-size: 10px;
+    font-weight: bold;
 }
 
 .RecentDonations-img {
@@ -126,7 +135,7 @@ display: inline-block;
 }
 
 .RecentDonations-donation {
-    margin-bottom: 10px;
+    /* margin-bottom: 10px;
     margin-top: 10px;
     width: 90%;
     font-size: 10px;
@@ -136,7 +145,15 @@ display: inline-block;
     text-align: center;
     align-items: center;
     border: 1px solid var(--secondary-color);
-    padding: 10px;
+    padding: 10px; */
+    width: 100%;
+        margin-top: 20px !important;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--primary-color);
+            text-align: center;
 }
 
 .RecentDonations-donation span {
