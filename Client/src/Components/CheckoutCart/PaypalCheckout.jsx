@@ -120,6 +120,7 @@ const PaypalCheckout = ({
                     billingDetails,
                     personalDetails,
                     oneTimeDonation,
+                    orderNumber,
                   })
                   .then((response) => {
                     console.log(response.data);

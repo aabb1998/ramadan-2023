@@ -43,6 +43,28 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
     console.log(personalDetails);
   }, [personalDetails]);
 
+  function generateOrderNumber() {
+    // Generate a random integer between 1 and 9999
+    const randomNumber = Math.floor(Math.random() * 9999) + 1;
+
+    // Get the current date and time
+    const now = new Date();
+
+    // Format the date and time as a string in the format YYYYMMDDHHmmss
+    const dateString =
+      now.getFullYear().toString() +
+      (now.getMonth() + 1).toString().padStart(2, "0") +
+      now.getDate().toString().padStart(2, "0") +
+      now.getHours().toString().padStart(2, "0") +
+      now.getMinutes().toString().padStart(2, "0") +
+      now.getSeconds().toString().padStart(2, "0");
+
+    // Concatenate the date and time string with the random number to create the order number
+    const orderNumber = dateString + randomNumber.toString().padStart(4, "0");
+
+    return orderNumber;
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -117,7 +139,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               return response.orderNumber;
             })
             .then(async (orderNumber) => {
-              elements.getElement(CardElement).clear();
+              // elements.getElement(CardElement).clear();
 
               // add sales receipt
               axios
@@ -129,6 +151,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                   billingDetails,
                   personalDetails,
                   oneTimeDonation,
+                  orderNumber: generateOrderNumber(),
                 })
                 .then((response) => {
                   console.log(response.data);
@@ -156,16 +179,16 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 "Payment.",
                 3000
               );
-              navigate(`/paymentSuccess/${orderNumber}`, {
-                state: {
-                  orderNumber,
-                  cartItems,
-                  hideCart: true,
-                  billingDetails: billingDetails,
-                  personalDetails: personalDetails,
-                  oneTimeDonation: oneTimeDonation,
-                },
-              });
+              // navigate(`/paymentSuccess/${orderNumber}`, {
+              //   state: {
+              //     orderNumber,
+              //     cartItems,
+              //     hideCart: true,
+              //     billingDetails: billingDetails,
+              //     personalDetails: personalDetails,
+              //     oneTimeDonation: oneTimeDonation,
+              //   },
+              // });
               setProcessing(false);
               setLoading(false);
               setError("");
