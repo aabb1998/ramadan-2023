@@ -189,7 +189,7 @@ app.post("/runMailChimp", async (req, res) => {
 });
 
 app.post("/addSubscriberToMailChimp", async (req, res) => {
-  const listId = "dca51ab98c";
+  const listId = process.env.MAILCHIMP_LIST_ID;
   const subscribingUser = {
     email: req.body.email,
   };
