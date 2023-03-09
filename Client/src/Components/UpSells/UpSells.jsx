@@ -31,8 +31,16 @@ const UpSells = ({ otherCampaigns }) => {
             <div className="MainUpsellSection-header">
               <h5>Our Other Running campaigns</h5>
               <span>
-                This holiday season, your gift will be matched to provide double
-                the lifesaving assistance.
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    fontStyle: "italic",
+                  }}
+                >
+                  "Charity does not decrease wealth" - Sahih Muslim 2588. <br />
+                </span>
+                Explore our related campaigns and multiply your rewards in this
+                life and the hereafter. Donate with Alihsan Foundation today.
               </span>
             </div>
             <div className="UpSellItems">

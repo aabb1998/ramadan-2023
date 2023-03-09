@@ -7,6 +7,8 @@ import ID1 from "./ID1/ID1";
 import ID2 from "./ID2/ID2";
 import ID3 from "./ID3/ID3";
 import { getAllCampaigns } from "./FirebaseFunctions/FirebaseFunctions";
+import ReactPixel from "react-facebook-pixel";
+
 const Homepage = () => {
   const [userData, setUserData] = useState();
   const [mainCampaign, setMainCampaign] = useState();
@@ -14,6 +16,12 @@ const Homepage = () => {
   const [placeholderParam, setPlaceholderParam] = useState("P0Vz0&C&m4Ozq^2d");
   const [mainPlaceholder, setMainPlaceholder] = useState(null);
   const [secondaryPlaceholder, setSecondaryPlaceholder] = useState(null);
+
+  const options = {
+    autoConfig: true, // set pixel's autoConfig. More info: https://developers.facebook.com/docs/facebook-pixel/advanced/
+    debug: false, // enable logs
+  };
+  ReactPixel.init("yourPixelIdGoesHere", options);
 
   let params = useParams();
   console.log(params);

@@ -95,8 +95,8 @@ const CheckoutCart = () => {
             <div className="CheckoutCart-header">
               <h5>CHECKOUT CART</h5>
               <span>
-                This holiday season, your gift will be matched to provide double
-                the lifesaving assistance.
+                Complete your donation with ease and make a difference with
+                Alihsan Foundation.
               </span>
             </div>
             <div className="CheckoutCart-body">

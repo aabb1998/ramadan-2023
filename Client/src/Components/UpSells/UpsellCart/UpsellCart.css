@@ -79,3 +79,21 @@ font-family: 'Anton';
 .UpSellAddToCart-button img {
     width: 40px;
 }
+
+@media screen and (max-width: 500px) {
+
+    .MainDonationAddToCart-campaign {
+        flex-direction: column;
+    }
+
+    .campaign-header{
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+    .campaign-name {
+        font-size: 20px;
+
+    }
+
+}

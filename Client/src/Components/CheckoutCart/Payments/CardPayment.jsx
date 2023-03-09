@@ -81,6 +81,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
         billingDetails.country
       ) {
         const cardElement = elements.getElement(CardElement);
+        let orderNumber = generateOrderNumber();
         if (isCardNumberComplete) {
           setLoading(true);
           setProcessing(true);
@@ -113,6 +114,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                   oneTimeDonation,
                   personalDetails,
                   billingDetails,
+                  orderNumber,
                 }
               );
               return response.data;
@@ -151,7 +153,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                   billingDetails,
                   personalDetails,
                   oneTimeDonation,
-                  orderNumber: generateOrderNumber(),
+                  orderNumber: orderNumber,
                 })
                 .then((response) => {
                   console.log(response.data);
@@ -179,16 +181,16 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 "Payment.",
                 3000
               );
-              // navigate(`/paymentSuccess/${orderNumber}`, {
-              //   state: {
-              //     orderNumber,
-              //     cartItems,
-              //     hideCart: true,
-              //     billingDetails: billingDetails,
-              //     personalDetails: personalDetails,
-              //     oneTimeDonation: oneTimeDonation,
-              //   },
-              // });
+              navigate(`/paymentSuccess/${orderNumber}`, {
+                state: {
+                  orderNumber,
+                  cartItems,
+                  hideCart: true,
+                  billingDetails: billingDetails,
+                  personalDetails: personalDetails,
+                  oneTimeDonation: oneTimeDonation,
+                },
+              });
               setProcessing(false);
               setLoading(false);
               setError("");

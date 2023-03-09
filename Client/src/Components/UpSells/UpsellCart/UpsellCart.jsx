@@ -326,10 +326,12 @@ const UpsellCart = ({ campaign }) => {
         </div>
         <div className="MainDonationAddToCart-campaign">
           <div>
-            <span>Campaign you are donating to:</span>
+            <span className="campaign-header">
+              Campaign you're donating to:
+            </span>
           </div>
           <div>
-            <span>{campaign?.campaignName}</span>
+            <span className="campaign-name">{campaign?.campaignName}</span>
           </div>
         </div>
         <div onClick={handleButtonClick} className="UpSellAddToCart-button">

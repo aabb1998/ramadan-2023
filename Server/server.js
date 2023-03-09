@@ -18,7 +18,15 @@ const easyinvoice = require("easyinvoice");
 const admin = require("firebase-admin");
 const path = require("path");
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-
+const {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  query,
+  deleteDoc,
+} = require("firebase/firestore");
+const { sale } = require("paypal-rest-sdk");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -459,23 +467,25 @@ function resetTimer() {
 
 setInterval(() => {
   const now = new Date().getTime() / 1000;
-  const expirationTime = oauth2_token_json.expires_in;
-  const timeUntilExpiration = expirationTime - now;
+  if (oauth2_token_json) {
+    const expirationTime = oauth2_token_json.expires_in;
+    const timeUntilExpiration = expirationTime - now;
 
-  if (timeUntilExpiration < 300) {
-    console.log("GENERATING NEW ACCESS TOKEN");
-    oauthClient
-      .refresh()
-      .then(function (authResponse) {
-        console.log(
-          `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
-        );
-        oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
-        res.send(oauth2_token_json);
-      })
-      .catch(function (e) {
-        console.error(e);
-      });
+    if (timeUntilExpiration < 300) {
+      console.log("GENERATING NEW ACCESS TOKEN");
+      oauthClient
+        .refresh()
+        .then(function (authResponse) {
+          console.log(
+            `The Refresh Token is  ${JSON.stringify(authResponse.getJson())}`
+          );
+          oauth2_token_json = JSON.stringify(authResponse.getJson(), null, 2);
+          res.send(oauth2_token_json);
+        })
+        .catch(function (e) {
+          console.error(e);
+        });
+    }
   }
 }, 3600000);
 
@@ -507,6 +517,7 @@ app.post("/createCharges", async (req, res) => {
   let { oneTimeDonation } = req.body;
   let { billingDetails } = req.body;
   let { personalDetails } = req.body;
+  let { orderNumber } = req.body;
   let paymentIntentResult;
   let subscriptionResult = [];
   let paymentIntentResultsArray = [];
@@ -566,7 +577,6 @@ app.post("/createCharges", async (req, res) => {
           // ); // April 20th, 2023
 
           if (subscription.time === "ramadan-daily") {
-            console.log("SUBNSC");
             console.log(subscription);
             const userSubscription = await stripe.subscriptions.create({
               customer: customerId,
@@ -602,7 +612,7 @@ app.post("/createCharges", async (req, res) => {
               currency: "AUD",
               customer: customerId,
               payment_method: defaultPaymentMethod,
-              description: `Ramadan 2023 - Order #${generateOrderNumber()} - (first charge)`,
+              description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
             });
             paymentIntentResult = paymentIntent;
             console.log("paument intent created");
@@ -610,7 +620,6 @@ app.post("/createCharges", async (req, res) => {
 
             subscriptionResult.push(subscription);
           } else if (subscription.time === "ramadan-last-10") {
-            console.log("SUBNSC");
             console.log(subscription);
             const userSubscription = await stripe.subscriptions.create({
               customer: customerId,
@@ -643,7 +652,7 @@ app.post("/createCharges", async (req, res) => {
               currency: "AUD",
               customer: customerId,
               payment_method: defaultPaymentMethod,
-              description: `Ramadan 2023 - Order #${generateOrderNumber()} - (first charge)`,
+              description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
             });
             paymentIntentResultsArray.push(paymentIntent);
             console.log(paymentIntent);
@@ -652,6 +661,8 @@ app.post("/createCharges", async (req, res) => {
           } else {
             const userSubscription = await stripe.subscriptions.create({
               customer: customerId,
+              description: `Ramadan 2023 - Order #${orderNumber} - Subscription`,
+
               items: [
                 {
                   plan: plan.id,
@@ -672,11 +683,23 @@ app.post("/createCharges", async (req, res) => {
         } else {
           await stripe.subscriptions.create({
             customer: customerId,
+            description: `Ramadan 2023 - Order #${orderNumber} - Subscription`,
+
             items: [
               {
                 plan: plan.id,
               },
             ],
+            metadata: {
+              start_date: ramadanDailyDate,
+              end_date: endDate,
+              paymentMethodRefName: "Stripe",
+              value: 6,
+              fullName: personalDetails.fullName,
+              quickbooksName: subscription.quickbooksClassName,
+              quickbooksId: subscription.quickbooksClassId,
+              campaignName: subscription.name,
+            },
           });
         }
       })
@@ -703,7 +726,7 @@ app.post("/createCharges", async (req, res) => {
       currency: "AUD",
       customer: customerId,
       payment_method: defaultPaymentMethod,
-      description: `Ramadan 2023 - Order #${generateOrderNumber()}`,
+      description: `Ramadan 2023 - Order #${orderNumber}`,
     });
     paymentIntentResult = paymentIntent;
     console.log(paymentIntent);
@@ -723,15 +746,13 @@ app.post("/createCharges", async (req, res) => {
         currency: "AUD",
         customer: customerId,
         payment_method: defaultPaymentMethod,
-        description: `Ramadan 2023 - Order #${generateOrderNumber()}`,
+        description: `Ramadan 2023 - Order #${orderNumber}`,
       });
       paymentIntentResult = paymentIntent;
       console.log(paymentIntent);
       paymentIntentResultsArray.push(paymentIntent);
     }
   }
-
-  let orderNumber = generateOrderNumber();
 
   res.status(200).send({
     paymentIntentResult,
@@ -822,7 +843,7 @@ app.post("/chargeCustomer", async (req, res) => {
         currency: "AUD",
         customer: req.body.customerId,
         payment_method: defaultPaymentMethod,
-        description: `Ramadan 2023 - Order #${generateOrderNumber()}`,
+        description: `Ramadan 2023 - Order #${orderNumber}`,
       });
     }
 
@@ -840,6 +861,7 @@ app.post("/chargeCustomer", async (req, res) => {
       if (plan) {
         const subscription = await stripe.subscriptions.create({
           customer: customer.id,
+          description: `Ramadan 2023 - Order #${orderNumber} - Subscription`,
           items: [
             {
               plan: plan.id,
@@ -1077,10 +1099,10 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
   const endpoint =
     "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
   console.log(req.body);
-  // const nameArray = req.body.personalDetails.fullName.split(" ");
-  // const firstName = nameArray[0]; // "Aniss"
-  // const lastName = nameArray[1]; // "Abbou"
-  // const query = `SELECT * FROM Customer WHERE DisplayName = '${req.body.personalDetails.fullName}'`;
+  const nameArray = req.body.personalDetails.fullName.split(" ");
+  const firstName = nameArray[0]; // "Aniss"
+  const lastName = nameArray[1]; // "Abbou"
+  const query = `SELECT * FROM Customer WHERE DisplayName = '${req.body.personalDetails.fullName}'`;
 
   let customerId;
 
@@ -1283,6 +1305,224 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
         console.error("Error writing document: ", error);
       });
   }
+});
+
+app.post("/syncReceipts", async (req, res) => {
+  const addSalesReceipts = async (saleItem) => {
+    const token = JSON.parse(oauth2_token_json);
+    // Set up the QuickBooks API endpoint
+    const endpoint =
+      "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+    const nameArray = saleItem.personalDetails.fullName.split(" ");
+    const firstName = nameArray[0]; // "Aniss"
+    const lastName = nameArray[1]; // "Abbou"
+    const query = `SELECT * FROM Customer WHERE DisplayName = '${saleItem.personalDetails.fullName}'`;
+
+    let customerId;
+
+    let success = false;
+
+    try {
+      const headers = {
+        Authorization: `Bearer ${token.access_token}`,
+        Accept: "application/json",
+      };
+      await axios
+        .get(endpoint, { params: { query }, headers })
+        .then(async (response) => {
+          const customer = response.data.QueryResponse.Customer;
+          if (customer) {
+            console.log("customer found.");
+            customerId = customer[0].Id;
+            console.log(customerId);
+          } else {
+            console.log("Customer not found, creating customer.");
+            const customerData = {
+              GivenName: firstName,
+              FamilyName: lastName,
+              PrimaryEmailAddr: {
+                Address: saleItem.personalDetails.email,
+              },
+              DisplayName: saleItem.personalDetails.fullName,
+              BillAddr: {
+                Line1: saleItem.billingDetails.streetAddress,
+                City: saleItem.billingDetails.city,
+                PostalCode: saleItem.billingDetails.zip,
+              },
+              Job: false,
+              SalesTermRef: {
+                value: "3",
+              },
+              CurrencyRef: {
+                value: "AUD",
+              },
+            };
+            const createCustomerResponse = await axios.post(
+              "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/customer?minorversion=65",
+              customerData,
+              { headers }
+            );
+            console.log(
+              "New customer created:",
+              createCustomerResponse.data.Customer
+            );
+            customerId = createCustomerResponse.data.Customer.Id;
+            console.log(customerId);
+          }
+          let totalAmount = 0;
+          let salesReceiptLines = [];
+          for (let i = 0; i < saleItem.cartItems.length; i++) {
+            const processingFee = 0.03 * saleItem.cartItems[i].amount;
+            const salesReceiptLine = {
+              Description: `Donation ${saleItem.cartItems[i].name}`,
+              DetailType: "SalesItemLineDetail",
+              SalesItemLineDetail: {
+                TaxCodeRef: {
+                  value: "5",
+                },
+                Qty: 1,
+                UnitPrice: saleItem.cartItems[i].amount,
+                ItemRef: {
+                  name: "42020 FG - Tax Ded Donations (NP)",
+                  value: "26",
+                },
+                ClassRef: {
+                  name: saleItem.cartItems[i].quickbooksClassName,
+                  value: saleItem.cartItems[i].quickbooksClassId,
+                },
+              },
+              LineNum: i + 1,
+              Amount: saleItem.cartItems[i].amount,
+              Id: `${i + 1}`,
+            };
+            salesReceiptLines.push(salesReceiptLine);
+            totalAmount += saleItem.cartItems[i].amount;
+            console.log(totalAmount);
+          }
+          if (saleItem.oneTimeDonation > 0) {
+            console.log("ONE TIME DONATION FOUND");
+            const salesReceiptLine = {
+              Description: `Donation One Time`,
+              DetailType: "SalesItemLineDetail",
+              SalesItemLineDetail: {
+                TaxCodeRef: {
+                  value: "5",
+                },
+                Qty: 1,
+                UnitPrice: 10,
+                ItemRef: {
+                  name: "42020 FG - Tax Ded Donations (NP)",
+                  value: "26",
+                },
+                ClassRef: {
+                  name: "General",
+                  value: "5100000000000049941",
+                },
+              },
+              LineNum: salesReceiptLines.length + 1,
+              Amount: 10,
+              Id: `${salesReceiptLines.length + 1}`,
+            };
+            salesReceiptLines.push(salesReceiptLine);
+            totalAmount += 10;
+          }
+          const processingFeeLine = {
+            Description: `Merchant Fees`,
+            DetailType: "SalesItemLineDetail",
+            SalesItemLineDetail: {
+              TaxCodeRef: {
+                value: "5",
+              },
+              Qty: 1,
+              UnitPrice: 0.03 * totalAmount,
+              ItemRef: {
+                name: "42020 FG - Tax Ded Donations (NP)",
+                value: "26",
+              },
+              ClassRef: {
+                name: "General",
+                value: "5100000000000049941",
+              },
+            },
+            LineNum: salesReceiptLines.length + 1,
+            Amount: (3 / 100) * totalAmount,
+            Id: `${salesReceiptLines.length + 1}`,
+          };
+          salesReceiptLines.push(processingFeeLine);
+          console.log(salesReceiptLines);
+          console.log(totalAmount + 0.03 * totalAmount);
+          const salesReceipt = {
+            Line: salesReceiptLines,
+            CustomerRef: {
+              value: `${customerId}`,
+            },
+            PaymentMethodRef: {
+              name: saleItem.paymentMethod,
+              value: saleItem.paymentId,
+            },
+            TotalAmt: totalAmount,
+          };
+          const createSalesReceiptResponse = await axios.post(
+            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
+            salesReceipt,
+            { headers }
+          );
+          success = true;
+        })
+        .catch((error) => {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.Fault &&
+            error.response.data.Fault.Error
+          ) {
+            const validationErrors = error.response.data.Fault.Error;
+            console.log(validationErrors);
+            console.error("Validation errors:");
+            validationErrors.forEach((validationError) => {
+              console.error("-", validationError.Message);
+            });
+          } else {
+            console.error("Error searching for customer:", error);
+          }
+          success = false;
+        });
+      // Make an API call using the OAuth2 token
+      // const response = await axios.get(
+      //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+      //   { headers }
+      // );
+      // res.send(response.data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error occurred while calling API");
+    }
+    return success;
+  };
+
+  console.log("Syncing receipts...");
+  const receiptsRef = db.collection("receipts");
+  receiptsRef.get().then((querySnapshot) => {
+    querySnapshot.forEach(async (saleItem) => {
+      console.log(saleItem.data());
+
+      const result = await addSalesReceipts(saleItem.data());
+      console.log(result);
+      if (result) {
+        const docRef = db.collection("receipts").doc(saleItem.id);
+
+        await docRef
+          .delete()
+          .then(() => {
+            console.log("Document deleted.");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
+  });
+  res.send("Syncing to quickbooks...");
 });
 
 setInterval(() => {
