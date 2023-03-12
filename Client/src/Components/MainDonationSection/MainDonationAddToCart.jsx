@@ -150,7 +150,15 @@ const MainDonationAddToCart = ({
             <span>ONE TIMER</span>
           </div>
           <div
-            onClick={() => setSchedule("schedule")}
+            onClick={() => {
+              NotificationManager.error(
+                `Schedule currently unavailable.`,
+                "Schedules.",
+                3000
+              );
+
+              // setSchedule("schedule");
+            }}
             className={`innerBtn ${schedule != "onetime" ? "active" : ""}`}
           >
             <span>SCHEDULE</span>

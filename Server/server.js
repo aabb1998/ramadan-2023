@@ -75,7 +75,7 @@ app.post(
 
           const token = JSON.parse(oauth2_token_json);
           const endpoint =
-            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+            "https://quickbooks.api.intuit.com/v3/company/403496926/query";
 
           // Set up the query parameters to search for a customer by email
           const query = `SELECT * FROM Customer WHERE DisplayName = '${paymentIntentSucceeded.data.object.metadata.fullName}'`;
@@ -104,7 +104,7 @@ app.post(
                     DetailType: "SalesItemLineDetail",
                     SalesItemLineDetail: {
                       TaxCodeRef: {
-                        value: "5",
+                        value: "6",
                       },
 
                       Qty: 1,
@@ -131,7 +131,7 @@ app.post(
                     DetailType: "SalesItemLineDetail",
                     SalesItemLineDetail: {
                       TaxCodeRef: {
-                        value: "5",
+                        value: "6",
                       },
                       Qty: 1,
                       UnitPrice: processingFee,
@@ -141,7 +141,7 @@ app.post(
                       },
                       ClassRef: {
                         name: "General",
-                        value: "5100000000000049941",
+                        value: 5100000000000049941,
                       },
                     },
                     LineNum: 2,
@@ -374,18 +374,11 @@ app.post("/generateInvoice", async (req, res) => {
 app.get("/allQuickbooksClasses", (req, res) => {
   const token = JSON.parse(oauth2_token_json);
   const endpoint =
-    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+    "https://quickbooks.api.intuit.com/v3/company/403496926/query";
 
   // Set up the query parameters to search for a customer by email
   const query = "SELECT * FROM Class";
   // Create a new OAuth2 client using the token
-  oauthClient = new OAuthClient({
-    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-    environment: "sandbox",
-    redirectUri: "http://localhost:3002/callback",
-    token: token,
-  });
 
   try {
     const headers = {
@@ -400,7 +393,7 @@ app.get("/allQuickbooksClasses", (req, res) => {
 
     // Make an API call using the OAuth2 token
     // const response = await axios.get(
-    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/403496926/query?query=SELECT * FROM Customer",
     //   { headers }
     // );
 
@@ -419,7 +412,12 @@ const countdown = 3600000; // 1 hour in milliseconds
 let startTime = Date.now();
 let timer = setInterval(() => {
   const elapsedTime = Date.now() - startTime;
-
+  oauthClient = new OAuthClient({
+    clientId: process.env.QUICKBOOKS_CLIENT_ID,
+    clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET,
+    environment: "production",
+    redirectUri: "http://localhost:3002/callback",
+  });
   if (elapsedTime >= countdown - 5000) {
     // if there are 5 seconds or less left on the timer, run your code here
     console.log("Time's almost up!");
@@ -466,6 +464,12 @@ function resetTimer() {
 }
 
 setInterval(() => {
+  oauthClient = new OAuthClient({
+    clientId: process.env.QUICKBOOKS_CLIENT_ID,
+    clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET,
+    environment: "production",
+    redirectUri: "http://localhost:3002/callback",
+  });
   const now = new Date().getTime() / 1000;
   if (oauth2_token_json) {
     const expirationTime = oauth2_token_json.expires_in;
@@ -490,6 +494,12 @@ setInterval(() => {
 }, 3600000);
 
 app.get("/refreshAccessToken", function (req, res) {
+  oauthClient = new OAuthClient({
+    clientId: process.env.QUICKBOOKS_CLIENT_ID,
+    clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET,
+    environment: "production",
+    redirectUri: "http://localhost:3002/callback",
+  });
   oauthClient
     .refresh()
     .then(function (authResponse) {
@@ -510,263 +520,522 @@ app.get("/config", (req, res) => {
   });
 });
 
+// app.post("/createCharges", async (req, res) => {
+// 	// const subscriptions = req.body.cartItems.filter(item => item.)
+// 	let { cart } = req.body;
+// 	let { customerId } = req.body;
+// 	let { oneTimeDonation } = req.body;
+// 	let { billingDetails } = req.body;
+// 	let { personalDetails } = req.body;
+// 	let { orderNumber } = req.body;
+// 	let paymentIntentResult;
+// 	let subscriptionResult = [];
+// 	let paymentIntentResultsArray = [];
+
+// 	let subscriptions = cart.filter((item) => item.subscription);
+// 	let oneTimePayments = cart.filter((item) => !item.subscription);
+
+// 	const oneTimePaymentsTotal = oneTimePayments.reduce(
+// 		(total, payment) => total + payment.amount,
+// 		0
+// 	);
+
+// 	const endDate = new Date("2023-04-20");
+
+// 	const Last10startDate = new Date("2023-04-10");
+// 	const currentDate = Date.now();
+
+// 	const ramadanDailyDate = new Date("2023-03-22");
+
+// 	if (currentDate >= ramadanDailyDate.getTime()) {
+// 		ramadanDailyDate.setTime(currentDate);
+// 	}
+
+// 	if (currentDate >= Last10startDate.getTime()) {
+// 		Last10startDate.setTime(currentDate);
+// 	}
+
+// 	if (subscriptions.length > 0) {
+// 		await Promise.all(
+// 			subscriptions.map(async (subscription) => {
+// 				console.log(subscription);
+// 				const plan = await stripe.plans.create({
+// 					amount:
+// 						(3 / 100) * subscription.amount * 100 +
+// 						subscription.amount * 100,
+// 					currency: "aud",
+// 					interval: subscription.scheduleDuration,
+// 					interval_count: 1,
+// 					product: {
+// 						name: `${subscription.name} - ${customerId} Ramadan 2023`,
+// 					},
+// 				});
+
+// 				if (subscription.start && subscription.end) {
+// 					let todaysDateTimestamp = Math.floor(Date.now() / 1000);
+// 					// const startDate = Math.floor(
+// 					//   (Date.now() + 30 * 24 * 60 * 60 * 1000) / 1000
+// 					// ); // Current timestamp
+// 					// const endDate = Math.floor(
+// 					//   (Date.now() + 60 * 24 * 60 * 60 * 1000) / 1000
+// 					// ); // 30 days from now\
+
+// 					// const ramadanStartDate = Math.floor(
+// 					//   new Date("2023-03-22").getTime() / 1000
+// 					// ); // March 20th, 2023
+// 					// const ramadanEndDate = Math.floor(
+// 					//   new Date("2023-04-20").getTime() / 1000
+// 					// ); // April 20th, 2023
+
+// 					if (subscription.time === "ramadan-daily") {
+// 						console.log(subscription);
+// 						const userSubscription =
+// 							await stripe.subscriptions.create({
+// 								customer: customerId,
+// 								items: [
+// 									{
+// 										plan: plan.id,
+// 									},
+// 								],
+// 								billing_cycle_anchor: Math.floor(
+// 									ramadanDailyDate.getTime() / 1000
+// 								),
+// 								billing_cycle_anchor: Math.floor(
+// 									ramadanDailyDate.getTime() / 1000
+// 								),
+// 								trial_end: Math.floor(
+// 									ramadanDailyDate.getTime() / 1000
+// 								),
+// 								cancel_at: Math.floor(endDate.getTime() / 1000),
+// 								metadata: {
+// 									start_date: ramadanDailyDate,
+// 									end_date: endDate,
+// 									paymentMethodRefName: "Stripe",
+// 									value: 6,
+// 									fullName: personalDetails.fullName,
+// 									quickbooksName:
+// 										subscription.quickbooksClassName,
+// 									quickbooksId:
+// 										subscription.quickbooksClassId,
+// 									campaignName: subscription.name,
+// 								},
+// 							});
+// 						const customer = await stripe.customers.retrieve(
+// 							customerId
+// 						);
+// 						const defaultPaymentMethod =
+// 							customer.invoice_settings.default_payment_method;
+// 						try {
+// 							const paymentIntent =
+// 								await stripe.paymentIntents.create({
+// 									amount:
+// 										(subscription.amount +
+// 											0.03 * subscription.amount) *
+// 										100,
+// 									currency: "AUD",
+// 									customer: customerId,
+// 									payment_method: defaultPaymentMethod,
+// 									description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
+// 								});
+// 							paymentIntentResult = paymentIntent;
+// 							console.log("paument intent created");
+// 							paymentIntentResultsArray.push(paymentIntent);
+
+// 							subscriptionResult.push(subscription);
+// 							console.error(error);
+// 							console.log("PAYMENT FAILLEDDDDDD");
+// 							res.status(200).send({
+// 								success: false,
+// 								message: "Payment failed",
+// 							});
+// 						} catch {
+// 							console.error(error);
+// 							console.log("PAYMENT FAILLEDDDDDD");
+// 							res.status(500).send({
+// 								success: true,
+// 								message: "Payment successful",
+// 							});
+// 						}
+// 					} else if (subscription.time === "ramadan-last-10") {
+// 						console.log(subscription);
+// 						const userSubscription =
+// 							await stripe.subscriptions.create({
+// 								customer: customerId,
+// 								items: [
+// 									{
+// 										plan: plan.id,
+// 									},
+// 								],
+// 								billing_cycle_anchor: Math.floor(
+// 									Last10startDate.getTime() / 1000
+// 								),
+// 								trial_end: Math.floor(
+// 									Last10startDate.getTime() / 1000
+// 								),
+// 								cancel_at: Math.floor(endDate.getTime() / 1000),
+// 								metadata: {
+// 									start_date: ramadanDailyDate,
+// 									end_date: endDate,
+// 									paymentMethodRefName: "Stripe",
+// 									value: 6,
+// 									fullName: personalDetails.fullName,
+// 									quickbooksName:
+// 										subscription.quickbooksClassName,
+// 									quickbooksId:
+// 										subscription.quickbooksClassId,
+// 									campaignName: subscription.name,
+// 								},
+// 							});
+// 						const customer = await stripe.customers.retrieve(
+// 							customerId
+// 						);
+// 						const defaultPaymentMethod =
+// 							customer.invoice_settings.default_payment_method;
+// 						try {
+// 							const paymentIntent =
+// 								await stripe.paymentIntents.create({
+// 									amount:
+// 										(subscription.amount +
+// 											0.03 * subscription.amount) *
+// 										100,
+// 									currency: "AUD",
+// 									customer: customerId,
+// 									payment_method: defaultPaymentMethod,
+// 									description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
+// 								});
+// 							paymentIntentResult = paymentIntent;
+
+// 							paymentIntentResultsArray.push(paymentIntent);
+// 							console.log(paymentIntent);
+// 						} catch (error) {
+// 							console.error("Error creating payment: ", error);
+// 							return { error: error.message };
+// 						}
+// 					} else {
+// 						const userSubscription =
+// 							await stripe.subscriptions.create({
+// 								customer: customerId,
+// 								description: `Ramadan 2023 - Order #${orderNumber} - Subscription`,
+
+// 								items: [
+// 									{
+// 										plan: plan.id,
+// 									},
+// 								],
+// 								metadata: {
+// 									start_date: ramadanDailyDate,
+// 									end_date: endDate,
+// 									paymentMethodRefName: "Stripe",
+// 									value: 6,
+// 									fullName: personalDetails.fullName,
+// 									quickbooksName:
+// 										subscription.quickbooksClassName,
+// 									quickbooksId:
+// 										subscription.quickbooksClassId,
+// 									campaignName: subscription.name,
+// 								},
+// 							});
+// 					}
+// 				} else {
+// 					await stripe.subscriptions.create({
+// 						customer: customerId,
+// 						description: `Ramadan 2023 - Order #${orderNumber} - Subscription`,
+
+// 						items: [
+// 							{
+// 								plan: plan.id,
+// 							},
+// 						],
+// 						metadata: {
+// 							start_date: ramadanDailyDate,
+// 							end_date: endDate,
+// 							paymentMethodRefName: "Stripe",
+// 							value: 6,
+// 							fullName: personalDetails.fullName,
+// 							quickbooksName: subscription.quickbooksClassName,
+// 							quickbooksId: subscription.quickbooksClassId,
+// 							campaignName: subscription.name,
+// 						},
+// 					});
+// 				}
+// 			})
+// 		);
+// 	}
+
+// 	if (oneTimePaymentsTotal > 0) {
+// let totalWithProcessing;
+// if (oneTimeDonation > 0) {
+// 	let totalAmountCalc = oneTimePaymentsTotal + 10;
+// 	let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
+// 	totalWithProcessing =
+// 		totalAmountCalc + totalAmountCalcProcessingFee;
+// } else {
+// 	let totalAmountCalc = oneTimePaymentsTotal;
+// 	let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
+// 	totalWithProcessing =
+// 		totalAmountCalc + totalAmountCalcProcessingFee;
+// }
+
+// 		const customer = await stripe.customers.retrieve(customerId);
+// 		const defaultPaymentMethod =
+// 			customer.invoice_settings.default_payment_method;
+// 		try {
+// 			const paymentIntent = await stripe.paymentIntents.create({
+// 				amount: Math.round(totalWithProcessing * 100),
+// 				currency: "AUD",
+// 				customer: customerId,
+// 				payment_method: defaultPaymentMethod,
+// 				description: `Ramadan 2023 - Order #${orderNumber}`,
+// 			});
+// 			paymentIntentResult = paymentIntent;
+// 			console.log(paymentIntent);
+// 			paymentIntentResultsArray.push(paymentIntent);
+// 			res.status(200).send({
+// 				success: true,
+// 				message: "Payment successful",
+// 			});
+// 		} catch {
+// 			console.error(error);
+// 			console.log("PAYMENT FAILLEDDDDDD");
+// 			res.status(500).send({
+// 				success: false,
+// 				message: "Payment failed",
+// 			});
+// 		}
+// 	} else {
+// 		let totalWithProcessing;
+
+// 		if (oneTimeDonation > 0) {
+// 			let totalAmountCalc = 10;
+// 			let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
+// 			totalWithProcessing =
+// 				totalAmountCalc + totalAmountCalcProcessingFee;
+// 			const customer = await stripe.customers.retrieve(customerId);
+// 			const defaultPaymentMethod =
+// 				customer.invoice_settings.default_payment_method;
+// 			try {
+// 				const paymentIntent = await stripe.paymentIntents.create({
+// 					amount:
+// 						(subscription.amount + 0.03 * subscription.amount) *
+// 						100,
+// 					currency: "AUD",
+// 					customer: customerId,
+// 					payment_method: defaultPaymentMethod,
+// 					description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
+// 				});
+// 				paymentIntentResult = paymentIntent;
+// 				console.log("paument intent created");
+// 				paymentIntentResultsArray.push(paymentIntent);
+// 				subscriptionResult.push(subscription);
+// 				res.status(200).send({
+// 					success: true,
+// 					message: "Payment successful",
+// 				});
+// 			} catch (error) {
+// 				console.error(error);
+// 				console.log("PAYMENT FAILLEDDDDDD");
+// 				res.status(500).send({
+// 					success: false,
+// 					message: "Payment failed",
+// 				});
+// 			}
+// 			// const paymentIntent = await stripe.paymentIntents.create({
+// 			// 	amount: Math.round(totalWithProcessing * 100),
+// 			// 	currency: "AUD",
+// 			// 	customer: customerId,
+// 			// 	payment_method: defaultPaymentMethod,
+// 			// 	description: `Ramadan 2023 - Order #${orderNumber}`,
+// 			// });
+// 			// paymentIntentResult = paymentIntent;
+// 			// console.log(paymentIntent);
+// 			// paymentIntentResultsArray.push(paymentIntent);
+// 		}
+// 	}
+
+// 	res.status(200).send({
+// 		paymentIntentResult,
+// 		subscriptionResult,
+// 		orderNumber,
+// 		cart,
+// 		paymentIntentResultsArray,
+// 	});
+// });
+
 app.post("/createCharges", async (req, res) => {
-  // const subscriptions = req.body.cartItems.filter(item => item.)
-  let { cart } = req.body;
-  let { customerId } = req.body;
-  let { oneTimeDonation } = req.body;
-  let { billingDetails } = req.body;
-  let { personalDetails } = req.body;
-  let { orderNumber } = req.body;
-  let paymentIntentResult;
-  let subscriptionResult = [];
-  let paymentIntentResultsArray = [];
+  try {
+    let { cart } = req.body;
+    let { customerId } = req.body;
+    let { oneTimeDonation } = req.body;
+    let { billingDetails } = req.body;
+    let { personalDetails } = req.body;
+    let { orderNumber } = req.body;
+    let paymentIntentResult;
+    let subscriptionResult = [];
+    let paymentIntentResultsArray = [];
 
-  let subscriptions = cart.filter((item) => item.subscription);
-  let oneTimePayments = cart.filter((item) => !item.subscription);
+    let subscriptions = cart.filter((item) => item.subscription);
+    let oneTimePayments = cart.filter((item) => !item.subscription);
 
-  const oneTimePaymentsTotal = oneTimePayments.reduce(
-    (total, payment) => total + payment.amount,
-    0
-  );
+    const oneTimePaymentsTotal = oneTimePayments.reduce(
+      (total, payment) => total + payment.amount,
+      0
+    );
 
-  const endDate = new Date("2023-04-20");
+    const endDate = new Date("2023-04-20");
 
-  const Last10startDate = new Date("2023-04-10");
-  const currentDate = Date.now();
+    const Last10startDate = new Date("2023-04-10");
+    const currentDate = Date.now();
 
-  const ramadanDailyDate = new Date("2023-03-22");
+    const ramadanDailyDate = new Date("2023-03-22");
 
-  if (currentDate >= ramadanDailyDate.getTime()) {
-    ramadanDailyDate.setTime(currentDate);
-  }
+    if (currentDate >= ramadanDailyDate.getTime()) {
+      ramadanDailyDate.setTime(currentDate);
+    }
 
-  if (currentDate >= Last10startDate.getTime()) {
-    Last10startDate.setTime(currentDate);
-  }
+    if (currentDate >= Last10startDate.getTime()) {
+      Last10startDate.setTime(currentDate);
+    }
 
-  if (subscriptions.length > 0) {
-    await Promise.all(
-      subscriptions.map(async (subscription) => {
-        console.log(subscription);
-        const plan = await stripe.plans.create({
-          amount:
-            (3 / 100) * subscription.amount * 100 + subscription.amount * 100,
-          currency: "aud",
-          interval: subscription.scheduleDuration,
-          interval_count: 1,
-          product: {
-            name: `${subscription.name} - ${customerId} Ramadan 2023`,
-          },
-        });
+    if (subscriptions.length > 0) {
+      await Promise.all(
+        subscriptions.map(async (subscription) => {
+          console.log(subscription);
+          const plan = await stripe.plans.create({
+            amount:
+              (3 / 100) * subscription.amount * 100 + subscription.amount * 100,
+            currency: "aud",
+            interval: subscription.scheduleDuration,
+            interval_count: 1,
+            product: {
+              name: `${subscription.name} - ${customerId} Ramadan 2023`,
+            },
+          });
 
-        if (subscription.start && subscription.end) {
-          let todaysDateTimestamp = Math.floor(Date.now() / 1000);
-          // const startDate = Math.floor(
-          //   (Date.now() + 30 * 24 * 60 * 60 * 1000) / 1000
-          // ); // Current timestamp
-          // const endDate = Math.floor(
-          //   (Date.now() + 60 * 24 * 60 * 60 * 1000) / 1000
-          // ); // 30 days from now\
+          if (subscription.start && subscription.end) {
+            let todaysDateTimestamp = Math.floor(Date.now() / 1000);
 
-          // const ramadanStartDate = Math.floor(
-          //   new Date("2023-03-22").getTime() / 1000
-          // ); // March 20th, 2023
-          // const ramadanEndDate = Math.floor(
-          //   new Date("2023-04-20").getTime() / 1000
-          // ); // April 20th, 2023
-
-          if (subscription.time === "ramadan-daily") {
-            console.log(subscription);
-            const userSubscription = await stripe.subscriptions.create({
-              customer: customerId,
-              items: [
-                {
-                  plan: plan.id,
+            if (subscription.time === "ramadan-daily") {
+              console.log(subscription);
+              const userSubscription = await stripe.subscriptions.create({
+                customer: customerId,
+                items: [
+                  {
+                    plan: plan.id,
+                  },
+                ],
+                billing_cycle_anchor: Math.floor(
+                  ramadanDailyDate.getTime() / 1000
+                ),
+                trial_end: Math.floor(ramadanDailyDate.getTime() / 1000),
+                cancel_at: Math.floor(endDate.getTime() / 1000),
+                metadata: {
+                  start_date: ramadanDailyDate,
+                  end_date: endDate,
+                  paymentMethodRefName: "Stripe",
+                  value: 6,
+                  fullName: personalDetails.fullName,
+                  quickbooksName: subscription.quickbooksClassName,
+                  quickbooksId: subscription.quickbooksClassId,
+                  campaignName: subscription.name,
                 },
-              ],
-              billing_cycle_anchor: Math.floor(
-                ramadanDailyDate.getTime() / 1000
-              ),
-              billing_cycle_anchor: Math.floor(
-                ramadanDailyDate.getTime() / 1000
-              ),
-              trial_end: Math.floor(ramadanDailyDate.getTime() / 1000),
-              cancel_at: Math.floor(endDate.getTime() / 1000),
-              metadata: {
-                start_date: ramadanDailyDate,
-                end_date: endDate,
-                paymentMethodRefName: "Stripe",
-                value: 6,
-                fullName: personalDetails.fullName,
-                quickbooksName: subscription.quickbooksClassName,
-                quickbooksId: subscription.quickbooksClassId,
-                campaignName: subscription.name,
-              },
-            });
-            const customer = await stripe.customers.retrieve(customerId);
-            const defaultPaymentMethod =
-              customer.invoice_settings.default_payment_method;
-            const paymentIntent = await stripe.paymentIntents.create({
-              amount: (subscription.amount + 0.03 * subscription.amount) * 100,
-              currency: "AUD",
-              customer: customerId,
-              payment_method: defaultPaymentMethod,
-              description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
-            });
-            paymentIntentResult = paymentIntent;
-            console.log("paument intent created");
-            paymentIntentResultsArray.push(paymentIntent);
-
-            subscriptionResult.push(subscription);
-          } else if (subscription.time === "ramadan-last-10") {
-            console.log(subscription);
-            const userSubscription = await stripe.subscriptions.create({
-              customer: customerId,
-              items: [
-                {
-                  plan: plan.id,
+              });
+              const customer = await stripe.customers.retrieve(customerId);
+              subscriptionResult.push(userSubscription);
+            } else if (subscription.time === "ramadan-last-10") {
+              const userSubscription = await stripe.subscriptions.create({
+                customer: customerId,
+                items: [
+                  {
+                    plan: plan.id,
+                  },
+                ],
+                billing_cycle_anchor: Math.floor(
+                  Last10startDate.getTime() / 1000
+                ),
+                trial_end: Math.floor(Last10startDate.getTime() / 1000),
+                cancel_at: Math.floor(endDate.getTime() / 1000),
+                metadata: {
+                  start_date: Last10startDate,
+                  end_date: endDate,
+                  paymentMethodRefName: "Stripe",
+                  value: 5,
+                  fullName: personalDetails.fullName,
+                  quickbooksName: subscription.quickbooksClassName,
+                  quickbooksId: subscription.quickbooksClassId,
+                  campaignName: subscription.name,
                 },
-              ],
-              billing_cycle_anchor: Math.floor(
-                Last10startDate.getTime() / 1000
-              ),
-              trial_end: Math.floor(Last10startDate.getTime() / 1000),
-              cancel_at: Math.floor(endDate.getTime() / 1000),
-              metadata: {
-                start_date: ramadanDailyDate,
-                end_date: endDate,
-                paymentMethodRefName: "Stripe",
-                value: 6,
-                fullName: personalDetails.fullName,
-                quickbooksName: subscription.quickbooksClassName,
-                quickbooksId: subscription.quickbooksClassId,
-                campaignName: subscription.name,
-              },
-            });
-            const customer = await stripe.customers.retrieve(customerId);
-            const defaultPaymentMethod =
-              customer.invoice_settings.default_payment_method;
-            const paymentIntent = await stripe.paymentIntents.create({
-              amount: (subscription.amount + 0.03 * subscription.amount) * 100,
-              currency: "AUD",
-              customer: customerId,
-              payment_method: defaultPaymentMethod,
-              description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
-            });
-            paymentIntentResultsArray.push(paymentIntent);
-            console.log(paymentIntent);
-
-            paymentIntentResult = paymentIntent;
+              });
+              const customer = await stripe.customers.retrieve(customerId);
+              subscriptionResult.push(userSubscription);
+            }
           } else {
             const userSubscription = await stripe.subscriptions.create({
               customer: customerId,
-              description: `Ramadan 2023 - Order #${orderNumber} - Subscription`,
-
               items: [
                 {
                   plan: plan.id,
                 },
               ],
               metadata: {
-                start_date: ramadanDailyDate,
-                end_date: endDate,
                 paymentMethodRefName: "Stripe",
-                value: 6,
                 fullName: personalDetails.fullName,
                 quickbooksName: subscription.quickbooksClassName,
                 quickbooksId: subscription.quickbooksClassId,
                 campaignName: subscription.name,
               },
             });
+            const customer = await stripe.customers.retrieve(customerId);
+            subscriptionResult.push(userSubscription);
           }
-        } else {
-          await stripe.subscriptions.create({
-            customer: customerId,
-            description: `Ramadan 2023 - Order #${orderNumber} - Subscription`,
-
-            items: [
-              {
-                plan: plan.id,
-              },
-            ],
-            metadata: {
-              start_date: ramadanDailyDate,
-              end_date: endDate,
-              paymentMethodRefName: "Stripe",
-              value: 6,
-              fullName: personalDetails.fullName,
-              quickbooksName: subscription.quickbooksClassName,
-              quickbooksId: subscription.quickbooksClassId,
-              campaignName: subscription.name,
-            },
-          });
-        }
-      })
-    );
-  }
-
-  if (oneTimePaymentsTotal > 0) {
-    let totalWithProcessing;
-    if (oneTimeDonation > 0) {
-      let totalAmountCalc = oneTimePaymentsTotal + 10;
-      let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
-      totalWithProcessing = totalAmountCalc + totalAmountCalcProcessingFee;
-    } else {
-      let totalAmountCalc = oneTimePaymentsTotal;
-      let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
-      totalWithProcessing = totalAmountCalc + totalAmountCalcProcessingFee;
+        })
+      );
     }
 
-    const customer = await stripe.customers.retrieve(customerId);
-    const defaultPaymentMethod =
-      customer.invoice_settings.default_payment_method;
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(totalWithProcessing * 100),
-      currency: "AUD",
-      customer: customerId,
-      payment_method: defaultPaymentMethod,
-      description: `Ramadan 2023 - Order #${orderNumber}`,
-    });
-    paymentIntentResult = paymentIntent;
-    console.log(paymentIntent);
-    paymentIntentResultsArray.push(paymentIntent);
-  } else {
-    let totalWithProcessing;
+    if (oneTimePaymentsTotal > 0) {
+      let totalWithProcessing;
+      if (oneTimeDonation > 0) {
+        let totalAmountCalc = oneTimePaymentsTotal + 10;
+        let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
+        totalWithProcessing = totalAmountCalc + totalAmountCalcProcessingFee;
+      } else {
+        let totalAmountCalc = oneTimePaymentsTotal;
+        let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
+        totalWithProcessing = totalAmountCalc + totalAmountCalcProcessingFee;
+      }
 
-    if (oneTimeDonation > 0) {
-      let totalAmountCalc = 10;
-      let totalAmountCalcProcessingFee = (3 / 100) * totalAmountCalc;
-      totalWithProcessing = totalAmountCalc + totalAmountCalcProcessingFee;
       const customer = await stripe.customers.retrieve(customerId);
       const defaultPaymentMethod =
         customer.invoice_settings.default_payment_method;
-      const paymentIntent = await stripe.paymentIntents.create({
+      paymentIntentResult = await stripe.paymentIntents.create({
         amount: Math.round(totalWithProcessing * 100),
-        currency: "AUD",
+        currency: "aud",
         customer: customerId,
         payment_method: defaultPaymentMethod,
+        confirmation_method: "manual",
+        confirm: true,
         description: `Ramadan 2023 - Order #${orderNumber}`,
-      });
-      paymentIntentResult = paymentIntent;
-      console.log(paymentIntent);
-      paymentIntentResultsArray.push(paymentIntent);
-    }
-  }
 
-  res.status(200).send({
-    paymentIntentResult,
-    subscriptionResult,
-    orderNumber,
-    cart,
-    paymentIntentResultsArray,
-  });
+        metadata: {
+          fullName: personalDetails.fullName,
+          orderNumber: orderNumber,
+        },
+      });
+      paymentIntentResultsArray.push(paymentIntentResult);
+    }
+
+    res.status(200).send({ subscriptionResult, paymentIntentResultsArray });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error processing payments");
+  }
 });
 
 app.post("/createCustomer", async (req, res) => {
   console.log(req.body);
   try {
-    const customers = await stripe.customers.list({ email: req.body.email });
+    const customers = await stripe.customers.list({
+      email: req.body.email,
+    });
     let customerCheck;
     let customer;
 
@@ -800,9 +1069,9 @@ app.post("/createCustomer", async (req, res) => {
     res.json(defaultCard);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occured while creating a customer." });
+    res.status(500).json({
+      error: "An error occured while creating a customer.",
+    });
   }
 });
 
@@ -875,9 +1144,9 @@ app.post("/chargeCustomer", async (req, res) => {
     res.json(paymentIntent);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while charging the customer." });
+    res.status(500).json({
+      error: "An error occurred while charging the customer.",
+    });
   }
 });
 
@@ -963,9 +1232,9 @@ let oauthClient = null;
 
 app.get("/authUri", async (req, res) => {
   oauthClient = new OAuthClient({
-    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-    environment: "sandbox",
+    clientId: process.env.QUICKBOOKS_CLIENT_ID,
+    clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET,
+    environment: "production",
     redirectUri: "http://localhost:3002/callback",
   });
 
@@ -999,30 +1268,6 @@ app.get("/api", async (req, res) => {
   const token = JSON.parse(oauth2_token_json);
   let data = await getTokenFromFirebase();
   console.log(JSON.stringify(data));
-  // Create a new OAuth2 client using the token
-  // oauthClient = new OAuthClient({
-  //   clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-  //   clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-  //   environment: "sandbox",
-  //   redirectUri: "http://localhost:3002/callback",
-  //   token: token,
-  // });
-
-  // try {
-  //   const headers = {
-  //     Authorization: `Bearer ${token.access_token}`,
-  //     Accept: "application/json",
-  //   };
-  //   // Make an API call using the OAuth2 token
-  //   const response = await axios.get(
-  //     "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
-  //     { headers }
-  //   );
-  //   res.send(response.data);
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).send("Error occurred while calling API");
-  // }
 });
 
 const updateAccessToken = (body) => {
@@ -1097,13 +1342,12 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
   const token = JSON.parse(oauth2_token_json);
   // Set up the QuickBooks API endpoint
   const endpoint =
-    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+    "https://quickbooks.api.intuit.com/v3/company/403496926/query";
   console.log(req.body);
   const nameArray = req.body.personalDetails.fullName.split(" ");
   const firstName = nameArray[0]; // "Aniss"
   const lastName = nameArray[1]; // "Abbou"
   const query = `SELECT * FROM Customer WHERE DisplayName = '${req.body.personalDetails.fullName}'`;
-
   let customerId;
 
   if (token !== null) {
@@ -1122,28 +1366,45 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
             customerId = customer[0].Id;
           } else {
             console.log("Customer not found, creating customer.");
+            // const customerData = {
+            //   GivenName: firstName,
+            //   FamilyName: lastName,
+            //   PrimaryEmailAddr: {
+            //     Address: req.body.personalDetails.email,
+            //   },
+            //   DisplayName: req.body.personalDetails.fullName,
+            //   BillAddr: {
+            //     Line1: req.body.billingDetails.streetAddress,
+            //     City: req.body.billingDetails.city,
+            //     PostalCode: req.body.billingDetails.zip,
+            //   },
+            //   Job: false,
+            //   SalesTermRef: {
+            //     value: "3",
+            //   },
+            //   CurrencyRef: {
+            //     value: "AUD",
+            //   },
+            // };
             const customerData = {
-              GivenName: firstName,
-              FamilyName: lastName,
+              FullyQualifiedName: req.body.personalDetails.fullName,
               PrimaryEmailAddr: {
-                Address: req.body.email,
+                Address: req.body.personalDetails.email,
               },
               DisplayName: req.body.personalDetails.fullName,
+
               BillAddr: {
-                Line1: req.body.billingDetails.streetAddress,
                 City: req.body.billingDetails.city,
                 PostalCode: req.body.billingDetails.zip,
-              },
-              Job: false,
-              SalesTermRef: {
-                value: "3",
+                Line1: req.body.billingDetails.streetAddress,
+                Country: req.body.billingDetails.country,
               },
               CurrencyRef: {
                 value: "AUD",
               },
             };
             const createCustomerResponse = await axios.post(
-              "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/customer?minorversion=65",
+              "https://quickbooks.api.intuit.com/v3/company/403496926/customer?minorversion=65",
               customerData,
               { headers }
             );
@@ -1163,13 +1424,13 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
               DetailType: "SalesItemLineDetail",
               SalesItemLineDetail: {
                 TaxCodeRef: {
-                  value: "5",
+                  value: "6",
                 },
                 Qty: 1,
                 UnitPrice: req.body.cartItems[i].amount,
                 ItemRef: {
                   name: "42020 FG - Tax Ded Donations (NP)",
-                  value: "26",
+                  value: "9",
                 },
                 ClassRef: {
                   name: req.body.cartItems[i].quickbooksClassName,
@@ -1191,17 +1452,17 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
               DetailType: "SalesItemLineDetail",
               SalesItemLineDetail: {
                 TaxCodeRef: {
-                  value: "5",
+                  value: "6",
                 },
                 Qty: 1,
                 UnitPrice: 10,
                 ItemRef: {
                   name: "42020 FG - Tax Ded Donations (NP)",
-                  value: "26",
+                  value: "9",
                 },
                 ClassRef: {
-                  name: "General",
-                  value: "5100000000000049941",
+                  name: "AIFIL:General (i.e Used for Merchant Fee Donations)",
+                  value: "3700000000001013281",
                 },
               },
               LineNum: salesReceiptLines.length + 1,
@@ -1216,17 +1477,17 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
             DetailType: "SalesItemLineDetail",
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: "5",
+                value: "6",
               },
               Qty: 1,
               UnitPrice: 0.03 * totalAmount,
               ItemRef: {
                 name: "42020 FG - Tax Ded Donations (NP)",
-                value: "26",
+                value: "9",
               },
               ClassRef: {
-                name: "General",
-                value: "5100000000000049941",
+                name: "AIFIL:General (i.e Used for Merchant Fee Donations)",
+                value: "3700000000001013281",
               },
             },
             LineNum: salesReceiptLines.length + 1,
@@ -1241,14 +1502,19 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
             CustomerRef: {
               value: customerId,
             },
+            PaymentRefNum: req.body.orderNumber,
+
             PaymentMethodRef: {
               name: req.body.paymentMethod,
               value: req.body.paymentId,
             },
+            BillEmail: {
+              Address: req.body.personalDetails.email,
+            },
             TotalAmt: totalAmount,
           };
           const createSalesReceiptResponse = await axios.post(
-            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
+            "https://quickbooks.api.intuit.com/v3/company/403496926/salesreceipt?minorversion=65",
             salesReceipt,
             { headers }
           );
@@ -1273,7 +1539,7 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
         });
       // Make an API call using the OAuth2 token
       // const response = await axios.get(
-      //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+      //   "https://sandbox-quickbooks.api.intuit.com/v3/company/403496926/query?query=SELECT * FROM Customer",
       //   { headers }
       // );
       // res.send(response.data);
@@ -1300,24 +1566,26 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
       })
       .then(() => {
         console.log("Document successfully written!");
+        res.send("Document written to firebase.");
       })
       .catch((error) => {
         console.error("Error writing document: ", error);
       });
   }
+  // res.send("Adding sales receipts...");
 });
 
 app.post("/syncReceipts", async (req, res) => {
   const addSalesReceipts = async (saleItem) => {
+    console.log(saleItem);
     const token = JSON.parse(oauth2_token_json);
     // Set up the QuickBooks API endpoint
     const endpoint =
-      "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+      "https://quickbooks.api.intuit.com/v3/company/403496926/query";
     const nameArray = saleItem.personalDetails.fullName.split(" ");
     const firstName = nameArray[0]; // "Aniss"
     const lastName = nameArray[1]; // "Abbou"
     const query = `SELECT * FROM Customer WHERE DisplayName = '${saleItem.personalDetails.fullName}'`;
-
     let customerId;
 
     let success = false;
@@ -1338,27 +1606,44 @@ app.post("/syncReceipts", async (req, res) => {
           } else {
             console.log("Customer not found, creating customer.");
             const customerData = {
-              GivenName: firstName,
-              FamilyName: lastName,
+              FullyQualifiedName: saleItem.personalDetails.fullName,
               PrimaryEmailAddr: {
                 Address: saleItem.personalDetails.email,
               },
               DisplayName: saleItem.personalDetails.fullName,
+
               BillAddr: {
-                Line1: saleItem.billingDetails.streetAddress,
                 City: saleItem.billingDetails.city,
                 PostalCode: saleItem.billingDetails.zip,
-              },
-              Job: false,
-              SalesTermRef: {
-                value: "3",
+                Line1: saleItem.billingDetails.streetAddress,
+                Country: saleItem.billingDetails.country,
               },
               CurrencyRef: {
                 value: "AUD",
               },
             };
+            // const customerData = {
+            //   GivenName: firstName,
+            //   FamilyName: lastName,
+            //   PrimaryEmailAddr: {
+            //     Address: saleItem.personalDetails.email,
+            //   },
+            //   DisplayName: saleItem.personalDetails.fullName,
+            //   BillAddr: {
+            //     Line1: saleItem.billingDetails.streetAddress,
+            //     City: saleItem.billingDetails.city,
+            //     PostalCode: saleItem.billingDetails.zip,
+            //   },
+            //   Job: false,
+            //   SalesTermRef: {
+            //     value: "3",
+            //   },
+            //   CurrencyRef: {
+            //     value: "AUD",
+            //   },
+            // };
             const createCustomerResponse = await axios.post(
-              "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/customer?minorversion=65",
+              "https://quickbooks.api.intuit.com/v3/company/403496926/customer?minorversion=65",
               customerData,
               { headers }
             );
@@ -1378,7 +1663,7 @@ app.post("/syncReceipts", async (req, res) => {
               DetailType: "SalesItemLineDetail",
               SalesItemLineDetail: {
                 TaxCodeRef: {
-                  value: "5",
+                  value: "6",
                 },
                 Qty: 1,
                 UnitPrice: saleItem.cartItems[i].amount,
@@ -1406,7 +1691,7 @@ app.post("/syncReceipts", async (req, res) => {
               DetailType: "SalesItemLineDetail",
               SalesItemLineDetail: {
                 TaxCodeRef: {
-                  value: "5",
+                  value: "6",
                 },
                 Qty: 1,
                 UnitPrice: 10,
@@ -1416,7 +1701,7 @@ app.post("/syncReceipts", async (req, res) => {
                 },
                 ClassRef: {
                   name: "General",
-                  value: "5100000000000049941",
+                  value: 5100000000000049941,
                 },
               },
               LineNum: salesReceiptLines.length + 1,
@@ -1431,7 +1716,7 @@ app.post("/syncReceipts", async (req, res) => {
             DetailType: "SalesItemLineDetail",
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: "5",
+                value: "6",
               },
               Qty: 1,
               UnitPrice: 0.03 * totalAmount,
@@ -1441,7 +1726,7 @@ app.post("/syncReceipts", async (req, res) => {
               },
               ClassRef: {
                 name: "General",
-                value: "5100000000000049941",
+                value: 5100000000000049941,
               },
             },
             LineNum: salesReceiptLines.length + 1,
@@ -1451,19 +1736,25 @@ app.post("/syncReceipts", async (req, res) => {
           salesReceiptLines.push(processingFeeLine);
           console.log(salesReceiptLines);
           console.log(totalAmount + 0.03 * totalAmount);
+
           const salesReceipt = {
             Line: salesReceiptLines,
             CustomerRef: {
-              value: `${customerId}`,
+              value: customerId,
             },
+            PaymentRefNum: saleItem.orderNumber,
+
             PaymentMethodRef: {
               name: saleItem.paymentMethod,
               value: saleItem.paymentId,
             },
+            BillEmail: {
+              Address: saleItem.personalDetails.email,
+            },
             TotalAmt: totalAmount,
           };
           const createSalesReceiptResponse = await axios.post(
-            "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/salesreceipt?minorversion=65",
+            "https://quickbooks.api.intuit.com/v3/company/403496926/salesreceipt?minorversion=65",
             salesReceipt,
             { headers }
           );
@@ -1489,7 +1780,7 @@ app.post("/syncReceipts", async (req, res) => {
         });
       // Make an API call using the OAuth2 token
       // const response = await axios.get(
-      //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+      //   "https://sandbox-quickbooks.api.intuit.com/v3/company/403496926/query?query=SELECT * FROM Customer",
       //   { headers }
       // );
       // res.send(response.data);
@@ -1529,14 +1820,14 @@ setInterval(() => {
   console.log("CHECKING");
   const token = JSON.parse(oauth2_token_json);
   const endpoint =
-    "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query";
+    "https://quickbooks.api.intuit.com/v3/company/403496926/query";
   const query = "SELECT * FROM Class";
+
   oauthClient = new OAuthClient({
-    clientId: "ABO7mjlXZjdutUJtWYmKYtaFfBdJ6uugnxfnFUfCRh5jGimE2h",
-    clientSecret: "tRZqGo6Vsz9XsnYh6SYtYnFJUd3cu4qjlA6YmMOE",
-    environment: "sandbox",
+    clientId: process.env.QUICKBOOKS_CLIENT_ID,
+    clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET,
+    environment: "production",
     redirectUri: "http://localhost:3002/callback",
-    token: token,
   });
   try {
     const headers = {
@@ -1545,16 +1836,20 @@ setInterval(() => {
     };
     axios
       .get(endpoint, { params: { query }, headers })
-      .then(async (response) => {});
+      .then(async (response) => {})
+      .catch((error) => {
+        console.log(error);
+      });
 
     // Make an API call using the OAuth2 token
     // const response = await axios.get(
-    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/4620816365281993540/query?query=SELECT * FROM Customer",
+    //   "https://sandbox-quickbooks.api.intuit.com/v3/company/403496926/query?query=SELECT * FROM Customer",
     //   { headers }
     // );
 
     // res.send(response.data);
   } catch (error) {
+    console.error(error);
     console.log("TOKEN ERROR");
     oauthClient
       .refresh()
@@ -1568,7 +1863,6 @@ setInterval(() => {
       .catch(function (e) {});
   }
 }, 10000);
-
-app.listen(3002, () => {
+app.listen(process.env.PORT || 3002, () => {
   console.log("Example app is listening on port 3002");
 });
