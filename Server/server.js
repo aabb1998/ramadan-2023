@@ -1555,7 +1555,6 @@ setInterval(() => {
 
     // res.send(response.data);
   } catch (error) {
-    console.error(error);
     console.log("TOKEN ERROR");
     oauthClient
       .refresh()
