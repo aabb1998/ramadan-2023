@@ -28,16 +28,6 @@ const Header = () => {
             Donations of $2 or more are Tax Deductible
           </span>
         </div>
-
-        <div className="header-inner-right">
-          <User />
-          <span>
-            <a href="https://alihsan.org.au/my-account/">REGISTER</a>
-          </span>
-          <span>
-            <a href="https://alihsan.org.au/my-account/">LOGIN</a>
-          </span>
-        </div>
       </div>
 
       <div className="headerMenu">

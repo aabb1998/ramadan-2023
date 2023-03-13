@@ -941,6 +941,37 @@ app.post("/createCharges", async (req, res) => {
               });
               const customer = await stripe.customers.retrieve(customerId);
               subscriptionResult.push(userSubscription);
+              const defaultPaymentMethod =
+                customer.invoice_settings.default_payment_method;
+              try {
+                const paymentIntent = await stripe.paymentIntents.create({
+                  amount:
+                    (subscription.amount + 0.03 * subscription.amount) * 100,
+                  currency: "AUD",
+                  customer: customerId,
+                  payment_method: defaultPaymentMethod,
+                  description: `Ramadan 2023 - Order #${orderNumber} - (first charge)`,
+                  confirmation_method: "manual",
+                  confirm: true,
+                  metadata: {
+                    start_date: Last10startDate,
+                    end_date: endDate,
+                    paymentMethodRefName: "Stripe",
+                    value: 5,
+                    fullName: personalDetails.fullName,
+                    quickbooksName: subscription.quickbooksClassName,
+                    quickbooksId: subscription.quickbooksClassId,
+                    campaignName: subscription.name,
+                  },
+                });
+                paymentIntentResult = paymentIntent;
+
+                paymentIntentResultsArray.push(paymentIntent);
+                console.log(paymentIntent);
+              } catch (error) {
+                console.error("Error creating payment: ", error);
+                return { error: error.message };
+              }
             } else if (subscription.time === "ramadan-last-10") {
               const userSubscription = await stripe.subscriptions.create({
                 customer: customerId,
@@ -1027,6 +1058,51 @@ app.post("/createCharges", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error processing payments");
+  }
+});
+
+app.post("/createCustomer", async (req, res) => {
+  console.log(req.body);
+  try {
+    const customers = await stripe.customers.list({
+      email: req.body.email,
+    });
+    let customerCheck;
+    let customer;
+
+    if (customers.data.length > 0) {
+      customer = customers.data[0];
+    } else {
+      customer = await stripe.customers.create({
+        email: req.body.email,
+        name: req.body.personalDetails.fullName,
+        phone: req.body.personalDetails.phoneNumber,
+        address: {
+          city: req.body.billingDetails.city,
+          country: req.body.billingDetails.country,
+          postal_code: req.body.billingDetails.zip,
+          line1: req.body.billingDetails.streetAddress,
+        },
+      });
+    }
+
+    const paymentMethod = await stripe.paymentMethods.attach(
+      req.body.paymentMethodId,
+      { customer: customer.id }
+    );
+
+    // set card as default
+    const defaultCard = await stripe.customers.update(customer.id, {
+      invoice_settings: {
+        default_payment_method: req.body.paymentMethodId,
+      },
+    });
+    res.json(defaultCard);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "An error occured while creating a customer.",
+    });
   }
 });
 
