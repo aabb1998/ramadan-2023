@@ -103,6 +103,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                 }
               );
               console.log(response.data);
+
               return response.data;
             })
             .then(async (customer) => {
@@ -117,30 +118,14 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
                   orderNumber,
                 }
               );
+              console.log(response.data);
               return response.data;
             })
             .then(async (response) => {
-              let result = response.paymentIntentResultsArray.length > 0;
-              console.log(response);
-              if (result) {
-                for (
-                  let i = 0;
-                  i < response.paymentIntentResultsArray.length;
-                  i++
-                ) {
-                  const confirmResponse = await stripe.confirmCardPayment(
-                    response.paymentIntentResultsArray[i].client_secret,
-                    {
-                      payment_method:
-                        response.paymentIntentResultsArray[i].payment_method,
-                    }
-                  );
-                  console.log(confirmResponse);
-                }
-              }
+              console.log("Create charges response: " + response);
               return response.orderNumber;
             })
-            .then(async (orderNumber) => {
+            .then(async (order) => {
               // elements.getElement(CardElement).clear();
 
               // add sales receipt
@@ -195,6 +180,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               setLoading(false);
               setError("");
               setErrorMessage("");
+              const cardElement = elements.getElement(CardElement);
             })
             .catch((error) => {
               setLoading(false);
@@ -202,6 +188,7 @@ const CardPayment = ({ billingDetails, personalDetails }) => {
               setError("Please enter valid details.");
               setErrorMessage("Please enter valid details.");
               NotificationManager.error("Payment failed.", "Payment.", 3000);
+              const cardElement = elements.getElement(CardElement);
             });
         } else {
           setLoading(false);

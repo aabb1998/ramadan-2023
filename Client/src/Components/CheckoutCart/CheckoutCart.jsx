@@ -29,6 +29,10 @@ const CheckoutCart = () => {
     setDonation(false);
   };
 
+  const togglePaypalButton = () => {
+    setPaypal(false);
+  };
+
   const dispatch = useDispatch();
 
   const disablePayments = () => {
@@ -75,6 +79,10 @@ const CheckoutCart = () => {
   }, [donation]);
 
   useEffect(() => {
+    togglePaypalButton();
+  }, [oneTimeDonation, cartItems]);
+
+  useEffect(() => {
     if (paypal) {
       const hasScheduledItem = cartItems.some((item) => item.schedule === true);
       if (hasScheduledItem) {
@@ -86,6 +94,10 @@ const CheckoutCart = () => {
       }
     }
   }, [paypal]);
+
+  const changePaypalStatus = () => {
+    setPaypal(false);
+  };
 
   return (
     <>
@@ -364,6 +376,7 @@ const CheckoutCart = () => {
                     personalDetails={personalDetails}
                     disablePayments={disablePayments}
                     toggle={toggle}
+                    changePaypalStatus
                   />
                 ) : (
                   <CardCheckout

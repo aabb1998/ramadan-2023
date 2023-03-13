@@ -102,6 +102,7 @@ const PaypalCheckout = ({
                             ? totalAmount + 10 + processingFee + 0.3
                             : totalAmount + processingFee,
                       },
+                      custom_id: orderNumber + "-" + Date.now().toString(),
                     },
                   ],
                 });

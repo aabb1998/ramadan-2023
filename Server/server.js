@@ -1549,28 +1549,28 @@ app.post("/getCustomersQuickbooks", async (req, res) => {
     }
   } else {
     console.log("TOKEN IS NULL - STORE SALES ITEMS IN FIREBASE TO SYNC");
-    console.log(req.body);
-    const receiptsRef = db.collection("receipts");
-    const newDocumentRef = receiptsRef.doc(req.body.orderNumber);
-    newDocumentRef
-      .set({
-        // Add your object properties here
-        orderNumber: req.body.orderNumber,
-        oneTimeDonation: req.body.oneTimeDonation,
-        personalDetails: req.body.personalDetails,
-        billingDetails: req.body.billingDetails,
-        userEmail: req.body.personalDetails.email,
-        paymentId: req.body.paymentId,
-        paymentMethod: req.body.paymentMethod,
-        cartItems: req.body.cartItems,
-      })
-      .then(() => {
-        console.log("Document successfully written!");
-        res.send("Document written to firebase.");
-      })
-      .catch((error) => {
-        console.error("Error writing document: ", error);
-      });
+    // console.log(req.body);
+    // const receiptsRef = db.collection("receipts");
+    // const newDocumentRef = receiptsRef.doc(req.body.orderNumber);
+    // newDocumentRef
+    //   .set({
+    //     // Add your object properties here
+    //     orderNumber: req.body.orderNumber,
+    //     oneTimeDonation: req.body.oneTimeDonation,
+    //     personalDetails: req.body.personalDetails,
+    //     billingDetails: req.body.billingDetails,
+    //     userEmail: req.body.personalDetails.email,
+    //     paymentId: req.body.paymentId,
+    //     paymentMethod: req.body.paymentMethod,
+    //     cartItems: req.body.cartItems,
+    //   })
+    //   .then(() => {
+    //     console.log("Document successfully written!");
+    //     res.send("Document written to firebase.");
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error writing document: ", error);
+    //   });
   }
   // res.send("Adding sales receipts...");
 });
